@@ -155,14 +155,14 @@ public class PlayerLocator extends ZyinHUDModBase {
     /**
      * Get the type of the horse armor in int type
      *
-     * @param armor_list
+     * @param armor_list List of the armors that player's horse currently have
      * @return Horse Armor Type
      */
     public static int getHorseArmorType(Iterable<ItemStack> armor_list) {
         if (armor_list == null) {
             return 0;
         } else {
-            while (armor_list.iterator().hasNext()) {
+            if (armor_list.iterator().hasNext()) {
                 Item armor_single_item;
                 try {
                     armor_single_item = armor_list.iterator().next().getItem();
@@ -204,7 +204,7 @@ public class PlayerLocator extends ZyinHUDModBase {
                 && !mc.gameSettings.showDebugInfo) {
 
             //only show entities that are close by
-            float distanceFromMe = mc.player.getDistanceToEntity(entity);
+            float distanceFromMe = mc.player.getDistance(entity);
 
             if (distanceFromMe > maxViewDistanceCutoff
                     || distanceFromMe < viewDistanceCutoff
@@ -289,7 +289,7 @@ public class PlayerLocator extends ZyinHUDModBase {
             //also render whatever the player is currently riding on
             if (entity.getRidingEntity() instanceof EntityHorse) {
                 //armor is 0 when no horse armor is equipped
-                Iterable<ItemStack> armor_list = ((EntityHorse) entity.getRidingEntity()).getArmorInventoryList();
+                Iterable<ItemStack> armor_list = entity.getRidingEntity().getArmorInventoryList();
                 int armor = getHorseArmorType(armor_list);
 
                 if (armor == 1)
