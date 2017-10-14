@@ -87,7 +87,7 @@ public class ZyinHUDUtil
 	 * @param <E>           The class the field is in
 	 * @param classToAccess The ".class" of the class the field is in
 	 * @param instance      The instance of the class
-	 * @param fieldNames    comma seperated names the field may have (i.e. obfuscated, non obfuscated). Obfustated field names can be found in %USERPROFILE%\.gradle\caches\minecraft\de\oceanlabs\mcp\...\fields.csv
+	 * @param fieldNames    comma separated names the field may have (i.e. obfuscated, non obfuscated). Obfustated field names can be found in %USERPROFILE%\.gradle\caches\minecraft\de\oceanlabs\mcp\...\fields.csv
 	 * @return t
 	 */
 	public static <T, E> T GetFieldByReflection(Class<? super E> classToAccess, E instance, String... fieldNames) {
@@ -108,8 +108,7 @@ public class ZyinHUDUtil
 			T fieldT = null;
 			try {
 				fieldT = (T) field.get(instance);
-			} catch (IllegalArgumentException ignored) {
-			} catch (IllegalAccessException ignored) {
+			} catch (IllegalArgumentException | IllegalAccessException ignored) {
 			}
 
 			return fieldT;
