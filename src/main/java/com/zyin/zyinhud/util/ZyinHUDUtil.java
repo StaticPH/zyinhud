@@ -51,8 +51,7 @@ public class ZyinHUDUtil
 		if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
 			Block block = GetMouseOveredBlock();
 
-            if(ZyinHUDUtil.IsBlockRightClickable(block))
-            	return true;
+			return ZyinHUDUtil.IsBlockRightClickable(block);
         }
         return false;
 	}
@@ -90,6 +89,7 @@ public class ZyinHUDUtil
 	 * @param fieldNames    comma separated names the field may have (i.e. obfuscated, non obfuscated). Obfustated field names can be found in %USERPROFILE%\.gradle\caches\minecraft\de\oceanlabs\mcp\...\fields.csv
 	 * @return t
 	 */
+	@SuppressWarnings("unchecked")
 	public static <T, E> T GetFieldByReflection(Class<? super E> classToAccess, E instance, String... fieldNames) {
 		Field field = null;
 		for (String fieldName : fieldNames) {
