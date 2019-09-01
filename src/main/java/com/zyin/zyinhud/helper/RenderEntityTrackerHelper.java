@@ -39,15 +39,14 @@ public class RenderEntityTrackerHelper
             //iterate over all the loaded Entity objects and find just the players
             for (int i = 0; i < mc.world.loadedEntityList.size(); i++)
             {
-            	Object object = mc.world.loadedEntityList.get(i);
+            	Entity object = mc.world.loadedEntityList.get(i);
             	
-                if(object == null
-                	|| !(object instanceof EntityAnimal || object instanceof EntityVillager))
+                if(!(object instanceof EntityAnimal || object instanceof EntityVillager))
                 {
                 	continue;
                 }
 
-                RenderEntityInfoInWorld((Entity)object, partialTickTime);
+                RenderEntityInfoInWorld(object, partialTickTime);
             }
         }
     }

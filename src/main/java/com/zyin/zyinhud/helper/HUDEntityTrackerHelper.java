@@ -98,7 +98,7 @@ public class HUDEntityTrackerHelper {
             //iterate over all the loaded Entity objects and find just the entities we are tracking
             for (int i = 0; i < mc.world.loadedEntityList.size(); i++)
             {
-            	Object object = mc.world.loadedEntityList.get(i);
+            	Entity object = mc.world.loadedEntityList.get(i);
             	
             	if(object == null)
             		continue;
@@ -108,12 +108,10 @@ public class HUDEntityTrackerHelper {
                 	 object instanceof EntityWolf ||
                 	 object instanceof EntityWitherSkeleton))
                     continue;
-                
-                Entity entity = (Entity)object;
-                
-                double entityX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTickTime;
-                double entityY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTickTime;
-                double entityZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTickTime;
+
+                double entityX = object.lastTickPosX + (object.posX - object.lastTickPosX) * partialTickTime;
+                double entityY = object.lastTickPosY + (object.posY - object.lastTickPosY) * partialTickTime;
+                double entityZ = object.lastTickPosZ + (object.posZ - object.lastTickPosZ) * partialTickTime;
                 
                 // direction to target entity
                 Vec3d toEntity = new Vec3d(entityX - meX, entityY - meY, entityZ - meZ);
@@ -122,7 +120,7 @@ public class HUDEntityTrackerHelper {
                 float y = (float)toEntity.y;
                 float z = (float)toEntity.z;
                 
-                double dist = toEntity.lengthVector();
+                double dist = Math.sqrt(toEntity.lengthSquared());
                 toEntity = toEntity.normalize();
                 
                 if (lookDir.dotProduct(toEntity) <= 0.02)
@@ -191,7 +189,7 @@ public class HUDEntityTrackerHelper {
                 hudX = newHudX;
                 hudY = newHudY;
                 
-                RenderEntityInfoOnHUD(entity, hudX, hudY);
+                RenderEntityInfoOnHUD(object, hudX, hudY);
             }
         }
     }
