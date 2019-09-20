@@ -1,0 +1,28 @@
+# The name of the mod loader type to load - for regular FML @Mod mods it should be javafml
+modLoader="javafml" #mandatory
+# A version range to match for said mod loader - for regular FML @Mod it will be the forge version
+loaderVersion="[25,)" #mandatory (24 is current forge version)
+# A URL to refer people to when problems occur with this mod
+issueTrackerURL="https://github.com/liushuyu/zyinhud/issues/" #optional
+# A list of mods - how many allowed here is determined by the individual mod loader
+[[mods]] #mandatory
+# The modid of the mod
+modId="zyinhud" #mandatory
+# The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
+version="${file.jarVersion}" #mandatory
+ # A display name for the mod
+displayName="Zyin's HUD" #mandatory
+# A URL to query for updates for this mod. See the JSON update specification <here>
+#updateJSONURL="http://myurl.me/" #optional
+# A URL for the "homepage" for this mod, displayed in the mod UI
+displayURL="https://github.com/liushuyu/zyinhud" #optional
+# A file name (in the root of the mod JAR) containing a logo for display
+#logoFile="examplemod.png" #optional
+# A text field displayed in the mod UI
+#credits="Thanks for this example mod goes to Java" #optional
+# A text field displayed in the mod UI
+authors="Zyin055, cyilin, liushuyu" #optional
+# The description text for the mod (multi line!) (#mandatory)
+description='''
+This is a mod which adds various utilities and enhancements to make your life easier. Designed with the advanced Minecrafter in mind. It adds your coordinates, a compass, a clock, calculates distances, shows nearby players, shows unsafe areas, shows potion durations, quick deposit, eating aid, ender pearl aid, potion aid, torch aid, weapon swapper, an fps counter, displays animal info, item selector, health monitor, and dynamically displays your equipment's durability. Any one of these features can be disabled. It works in both single player and multiplayer servers.
+'''
