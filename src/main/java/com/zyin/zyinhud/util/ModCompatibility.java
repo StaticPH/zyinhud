@@ -119,20 +119,20 @@ public class ModCompatibility
 		 * @return returns the damage value of the tool, 			returns the energy if it has any, 			or returns -1 if the tool is broken.
 		 */
 		public static Integer GetDamage(ItemStack itemStack) {
-			NBTTagCompound tags = itemStack.getTagCompound();
+			NBTTagCompound tags = itemStack.getTag();
 	        if (tags == null)
 	        {
 	        	return null;
 	        }
 	        else if (tags.hasKey("Energy"))
 	        {
-				return tags.getInteger("Energy");
+				return tags.getInt("Energy");
 	        }
 	        else {
-				if (tags.getCompoundTag("InfiTool").getBoolean("Broken"))
+				if (tags.getCompound("InfiTool").getBoolean("Broken"))
 					return -1;
 				else
-					return tags.getCompoundTag("InfiTool").getInteger("Damage");
+					return tags.getCompound("InfiTool").getInt("Damage");
 			}
 		}
 
@@ -143,7 +143,7 @@ public class ModCompatibility
 		 * @return returns the max durability of the tool. 			returns 400000 if it has energy.
 		 */
 		public static int GetMaxDamage(ItemStack itemStack) {
-			NBTTagCompound tags = itemStack.getTagCompound();
+			NBTTagCompound tags = itemStack.getTag();
 	        if (tags == null)
 	        {
 	        	return -1;
@@ -154,7 +154,7 @@ public class ModCompatibility
 	        }
 	        else
 	        {
-				return tags.getCompoundTag("InfiTool").getInteger("TotalDurability");
+				return tags.getCompound("InfiTool").getInt("TotalDurability");
 	        }
 	    }
 		

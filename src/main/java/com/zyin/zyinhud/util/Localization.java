@@ -16,6 +16,6 @@ public class Localization
      */
     public static String get(String key)
     {
-    	return I18n.format(key, new Object[0]);
+    	return I18n.format(key);
     }
 }

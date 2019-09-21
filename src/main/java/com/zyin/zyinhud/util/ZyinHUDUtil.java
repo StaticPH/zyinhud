@@ -16,7 +16,7 @@ import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.BlockWorkbench;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.math.BlockPos;
@@ -31,11 +31,11 @@ public class ZyinHUDUtil
 	/**
 	 * The constant mc.
 	 */
-	protected static Minecraft mc = Minecraft.getMinecraft();
+	protected static Minecraft mc = Minecraft.getInstance();
 	/**
 	 * The constant itemRenderer.
 	 */
-	protected static final RenderItem itemRenderer = mc.getRenderItem();
+	protected static final ItemRenderer itemRenderer = mc.getItemRenderer();
 	/**
 	 * The constant textureManager.
 	 */
@@ -48,7 +48,7 @@ public class ZyinHUDUtil
 	 * @return boolean
 	 */
 	public static boolean IsMouseoveredBlockRightClickable() {
-		if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
+		if (mc.objectMouseOver != null && mc.objectMouseOver.type == RayTraceResult.Type.BLOCK) {
 			Block block = GetMouseOveredBlock();
 
 			return ZyinHUDUtil.IsBlockRightClickable(block);

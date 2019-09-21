@@ -52,7 +52,7 @@ public class InventoryUtil {
      * 
 	 */
 
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static Minecraft mc = Minecraft.getInstance();
     private Timer timer = new Timer();
 
     /**
@@ -92,10 +92,10 @@ public class InventoryUtil {
      * @param pos
      * @return
      */
-    public static int getDamageValue(World worldIn, BlockPos pos) {
-        IBlockState iBlockState = worldIn.getBlockState(pos);
-        return iBlockState.getBlock().getMetaFromState(iBlockState);
-    }
+//    public static int getDamageValue(World worldIn, BlockPos pos) {
+//        IBlockState iBlockState = worldIn.getBlockState(pos);
+//        return iBlockState.getBlock().getMetaFromState(iBlockState);
+//    }
 
     /**
      * Uses an item locaed in your inventory or hotbar.
@@ -822,7 +822,7 @@ public class InventoryUtil {
         if (!handStack.isEmpty()) {
             if (!inputStack.isEmpty() && areItemStacksEqualIgnoreAmount(handStack, inputStack)) {
                 LeftClickContainerSlot(3);
-            } else if (Items.POTIONITEM == handStack.getItem() && !handStack.hasEffect()) {
+            } else if (Items.POTION == handStack.getItem() && !handStack.hasEffect()) {
                 //if handStack is a "Water Bottle"
                 //then deposit the water bottle in an empty output slot
                 if (outputStack1.isEmpty()) {
@@ -848,7 +848,7 @@ public class InventoryUtil {
             if (!itemStack.isEmpty()) {
                 if (!inputStack.isEmpty() && areItemStacksEqualIgnoreAmount(itemStack, inputStack)) {
                     DepositItemInBrewingStand(i, 3);
-                } else if (Items.POTIONITEM == itemStack.getItem() && !itemStack.hasEffect()) {
+                } else if (Items.POTION == itemStack.getItem() && !itemStack.hasEffect()) {
                     //if itemStack is a "Water Bottle"
                     //then deposit the water bottle in an empty output slot
                     if (outputStack1.isEmpty()) {
@@ -934,13 +934,14 @@ public class InventoryUtil {
                     Block blockToFind = ZyinHUDUtil.GetBlock((BlockPos) object);
 
                     if (Block.getBlockFromItem(itemStack.getItem()) == blockToFind) {
-                        int blockToFindDamage = getDamageValue(mc.world, (BlockPos) object);
-                        int inventoryBlockDamage = itemStack.getItemDamage();
-
-                        //check to see if their damage value matches (applicable to blocks such as wood planks)
-                        if (blockToFindDamage == inventoryBlockDamage) {
-                            return i;
-                        }
+//                        int blockToFindDamage = getDamageValue(mc.world, (BlockPos) object);
+//                        int inventoryBlockDamage = itemStack.getDamage();
+//
+//                        //check to see if their damage value matches (applicable to blocks such as wood planks)
+//                        if (blockToFindDamage == inventoryBlockDamage) {
+//                            return i;
+//                        }
+                        return i;
                     }
                 } else if ((object instanceof Block
                         && Block.getBlockFromItem(itemStack.getItem()) == object)) {
