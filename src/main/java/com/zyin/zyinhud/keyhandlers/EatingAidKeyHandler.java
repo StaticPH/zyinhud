@@ -2,7 +2,7 @@ package com.zyin.zyinhud.keyhandlers;
 
 import com.zyin.zyinhud.mods.EatingAid;
 
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
+import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
 /**
  * The type Eating aid key handler.

@@ -17,5 +17,5 @@ public interface ZyinHUDKeyHandlerBase
     /**
      * The constant mc.
      */
-    static Minecraft mc = Minecraft.getMinecraft();
+    static Minecraft mc = Minecraft.getInstance();
 }

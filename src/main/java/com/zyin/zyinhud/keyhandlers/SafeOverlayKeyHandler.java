@@ -1,8 +1,8 @@
 package com.zyin.zyinhud.keyhandlers;
 
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
+import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
-import org.lwjgl.input.Keyboard;
+import org.lwjgl.glfw.GLFW;
 
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.ZyinHUDSound;
@@ -13,8 +13,7 @@ import com.zyin.zyinhud.util.Localization;
 /**
  * The type Safe overlay key handler.
  */
-public class SafeOverlayKeyHandler implements ZyinHUDKeyHandlerBase
-{
+public class SafeOverlayKeyHandler implements ZyinHUDKeyHandlerBase {
     /**
      * The constant HotkeyDescription.
      */
@@ -26,75 +25,68 @@ public class SafeOverlayKeyHandler implements ZyinHUDKeyHandlerBase
      * @param event the event
      */
     public static void Pressed(KeyInputEvent event) {
-        if (mc.currentScreen != null)
-        {
+        long handle = mc.mainWindow.getHandle();
+
+        if (mc.currentScreen != null) {
             return;    //don't activate if the user is looking at a GUI
         }
-        
-        if(!SafeOverlay.Enabled)
-        	return;
+
+        if (!SafeOverlay.Enabled)
+            return;
 
         //if "+" is pressed, increase the draw distance
-        if (Keyboard.isKeyDown(Keyboard.KEY_EQUALS) || 	//keyboard "+" ("=")
-                Keyboard.isKeyDown(Keyboard.KEY_ADD))	//numpad "+"
+        if ((GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_EQUAL) == GLFW.GLFW_PRESS) ||    //keyboard "+" ("=")
+                (GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_KP_ADD) == GLFW.GLFW_PRESS))    //numpad "+"
         {
             int drawDistance = SafeOverlay.instance.IncreaseDrawDistance();
 
-            if (drawDistance == SafeOverlay.maxDrawDistance)
-            {
-            	ZyinHUDRenderer.DisplayNotification(Localization.get("safeoverlay.distance") + " " + drawDistance + " ("+Localization.get("safeoverlay.distance.max")+")");
-            }
-            else
-            {
-            	ZyinHUDRenderer.DisplayNotification(Localization.get("safeoverlay.distance") + " " + drawDistance);
+            if (drawDistance == SafeOverlay.maxDrawDistance) {
+                ZyinHUDRenderer.DisplayNotification(Localization.get("safeoverlay.distance") + " " + drawDistance + " (" + Localization.get("safeoverlay.distance.max") + ")");
+            } else {
+                ZyinHUDRenderer.DisplayNotification(Localization.get("safeoverlay.distance") + " " + drawDistance);
             }
 
             return;
         }
 
         //if "-" is pressed, decrease the draw distance
-        if (Keyboard.isKeyDown(Keyboard.KEY_MINUS))
-        {
+        if ((GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_MINUS) == GLFW.GLFW_PRESS)) {
             int drawDistance = SafeOverlay.instance.DecreaseDrawDistance();
             ZyinHUDRenderer.DisplayNotification(Localization.get("safeoverlay.distance") + " " + drawDistance);
-            
+
             return;
         }
 
         //if "0" is pressed, set to the default draw distance
-        if (Keyboard.isKeyDown(Keyboard.KEY_0))
-        {
+        if ((GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_0) == GLFW.GLFW_PRESS)
+                || (GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_KP_0) == GLFW.GLFW_PRESS)) {
             int drawDistance = SafeOverlay.instance.SetDrawDistance(SafeOverlay.defaultDrawDistance);
             SafeOverlay.instance.SetSeeUnsafePositionsThroughWalls(false);
             ZyinHUDRenderer.DisplayNotification(Localization.get("safeoverlay.distance") + " " + Localization.get("safeoverlay.distance.default") + " (" + drawDistance + ")");
-            
-        	ZyinHUDSound.PlayButtonPress();
+
+            ZyinHUDSound.PlayButtonPress();
             return;
         }
-        
+
         //if Control is pressed, enable see through mode
-        if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)
-                || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL))
-        {
+        if ((GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS)
+                || (GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_RIGHT_CONTROL) == GLFW.GLFW_PRESS)) {
             boolean seeThroughWalls = SafeOverlay.instance.ToggleSeeUnsafePositionsThroughWalls();
 
-            if (seeThroughWalls)
-            {
-            	ZyinHUDRenderer.DisplayNotification(Localization.get("safeoverlay.seethroughwallsenabled"));
-            }
-            else
-            {
-            	ZyinHUDRenderer.DisplayNotification(Localization.get("safeoverlay.seethroughwallsdisabled"));
+            if (seeThroughWalls) {
+                ZyinHUDRenderer.DisplayNotification(Localization.get("safeoverlay.seethroughwallsenabled"));
+            } else {
+                ZyinHUDRenderer.DisplayNotification(Localization.get("safeoverlay.seethroughwallsdisabled"));
             }
 
-        	ZyinHUDSound.PlayButtonPress();
+            ZyinHUDSound.PlayButtonPress();
             return;
         }
-        
+
         //if nothing is pressed, do the default behavior
-        
+
         SafeOverlay.Modes.ToggleMode();
-    	ZyinHUDSound.PlayButtonPress();
-	}
-	
+        ZyinHUDSound.PlayButtonPress();
+    }
+
 }

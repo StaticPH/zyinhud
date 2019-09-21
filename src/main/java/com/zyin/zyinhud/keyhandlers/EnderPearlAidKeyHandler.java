@@ -2,7 +2,7 @@ package com.zyin.zyinhud.keyhandlers;
 
 import com.zyin.zyinhud.mods.EnderPearlAid;
 
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
+import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
 /**
  * The type Ender pearl aid key handler.

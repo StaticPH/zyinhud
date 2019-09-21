@@ -2,7 +2,7 @@ package com.zyin.zyinhud.keyhandlers;
 
 import com.zyin.zyinhud.mods.PotionAid;
 
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
+import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
 /**
  * The type Potion aid key handler.

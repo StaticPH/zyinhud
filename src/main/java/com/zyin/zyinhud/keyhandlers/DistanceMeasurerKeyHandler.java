@@ -3,7 +3,7 @@ package com.zyin.zyinhud.keyhandlers;
 import com.zyin.zyinhud.ZyinHUDSound;
 import com.zyin.zyinhud.mods.DistanceMeasurer;
 
-import net.minecraftforge.fml.common.gameevent.InputEvent.KeyInputEvent;
+import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
 /**
  * The type Distance measurer key handler.
