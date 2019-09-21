@@ -1,6 +1,7 @@
 package com.zyin.zyinhud.mods;
 
 import com.zyin.zyinhud.util.Localization;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
 
 /**
@@ -38,7 +39,7 @@ public class Fps extends ZyinHUDModBase
     {
         if (Fps.Enabled)
         {
-            currentFps = String.valueOf(mc.getDebugFPS());
+            currentFps = String.valueOf(Minecraft.getDebugFPS());
             return TextFormatting.WHITE + currentFps + " " + Localization.get("fps.infoline");
         }
         else

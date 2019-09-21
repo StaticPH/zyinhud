@@ -210,7 +210,7 @@ public class AnimalInfo extends ZyinHUDModBase {
         //if F3 is shown
         if (AnimalInfo.Enabled && ShowHorseStatsOnF3Menu && mc.gameSettings.showDebugInfo) {
             if (mc.player.isRidingHorse() ||
-                    mc.player.isRiding() && mc.player.getRidingEntity() instanceof EntityLlama) {
+                    mc.player.isPassenger() && mc.player.getRidingEntity() instanceof EntityLlama) {
                 AbstractHorse horse = (AbstractHorse) mc.player.getRidingEntity();
                 String horseSpeedMessage = Localization.get("animalinfo.debug.speed") + " " + GetHorseSpeedText(horse) + " m/s";
                 String horseJumpMessage = Localization.get("animalinfo.debug.jump") + " " + GetHorseJumpText(horse) + " blocks";
@@ -260,7 +260,7 @@ public class AnimalInfo extends ZyinHUDModBase {
         //and not looking at a menu
         //and F3 not pressed
         if (AnimalInfo.Enabled && Mode == Modes.ON &&
-                (mc.inGameHasFocus || mc.currentScreen == null || mc.currentScreen instanceof GuiChat)
+                (mc.mouseHelper.isMouseGrabbed() || mc.currentScreen == null || mc.currentScreen instanceof GuiChat)
                 && !mc.gameSettings.showDebugInfo) {
             if (i > maxNumberOfOverlays)
                 return;
@@ -358,7 +358,7 @@ public class AnimalInfo extends ZyinHUDModBase {
             else if (animal instanceof EntityWolf && !((EntityWolf) animal).isTamed())
                 ZyinHUDRenderer.RenderFloatingItemIcon(x, y + animal.height, z, Items.BONE, partialTickTime);
             else if (animal instanceof EntityOcelot)
-                ZyinHUDRenderer.RenderFloatingItemIcon(x, y + animal.height, z, Items.FISH, partialTickTime);
+                ZyinHUDRenderer.RenderFloatingItemIcon(x, y + animal.height, z, Items.TROPICAL_FISH, partialTickTime);
         }
 		
 		
@@ -565,7 +565,7 @@ public class AnimalInfo extends ZyinHUDModBase {
      * @return e.x. Steve = 20 hit points
      */
     private static int GetEntityMaxHP(EntityLivingBase entity) {
-        return (int) entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue();
+        return (int) entity.getAttribute(SharedMonsterAttributes.MAX_HEALTH).getValue();
     }
 
     /**
@@ -575,7 +575,7 @@ public class AnimalInfo extends ZyinHUDModBase {
      * @return e.x. Steve = 20 hit points
      */
     private static int GetEntityMaxHearts(EntityLivingBase entity) {
-        return (int) Math.round(entity.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).getAttributeValue() / 2);
+        return (int) Math.round(entity.getAttribute(SharedMonsterAttributes.MAX_HEALTH).getValue() / 2.0d);
     }
 
     /**
@@ -587,7 +587,7 @@ public class AnimalInfo extends ZyinHUDModBase {
     private static double GetEntityMaxSpeed(EntityLivingBase entity) {
         //Steve has a movement speed of 0.1 and walks 4.3 blocks per second,
         //so multiply this result by 43 to convert to blocks per second
-        return entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getAttributeValue() * 43;
+        return entity.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED).getValue() * 43;
     }
 
     /**

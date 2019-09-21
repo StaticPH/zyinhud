@@ -230,7 +230,7 @@ public class DurabilityInfo extends ZyinHUDModBase
         //and not in a menu (except for chat and the custom Options menu)
         //and F3 not shown
         if (DurabilityInfo.Enabled &&
-                (mc.inGameHasFocus || (mc.currentScreen != null && ((mc.currentScreen instanceof GuiChat && !HideDurabilityInfoInChat)|| TabIsSelectedInOptionsGui()))) &&
+                (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen != null && ((mc.currentScreen instanceof GuiChat && !HideDurabilityInfoInChat)|| TabIsSelectedInOptionsGui()))) &&
         		!mc.gameSettings.showDebugInfo)
         {
             //don't waste time recalculating things every tick
@@ -334,13 +334,13 @@ public class DurabilityInfo extends ZyinHUDModBase
 		else
 		{
 			//render the number of durability it has left
-			if(itemStack.getItemDamage() != 0)
+			if(itemStack.getDamage() != 0)
 			{
-				boolean unicodeFlag = mc.fontRenderer.getUnicodeFlag();
-				mc.fontRenderer.setUnicodeFlag(true);
+//				boolean unicodeFlag = mc.fontRenderer.getUnicodeFlag();
+//				mc.fontRenderer.setUnicodeFlag(true);
 				
 				String damageStringText;
-				int itemDamage = itemStack.getItemDamage();
+				int itemDamage = itemStack.getDamage();
 				int itemMaxDamage = itemStack.getMaxDamage();
 				
 				if(TextMode == TextModes.PERCENTAGE)
@@ -373,11 +373,11 @@ public class DurabilityInfo extends ZyinHUDModBase
 				int damageStringColor = 0xffffff;
 				
 				if(UseColoredNumbers)
-					damageStringColor = GetDamageColor(itemStack.getItemDamage(), itemStack.getMaxDamage());
+					damageStringColor = GetDamageColor(itemStack.getDamage(), itemStack.getMaxDamage());
 
 				GL11.glDisable(GL11.GL_DEPTH_TEST);	//so the text renders above the item
 				mc.fontRenderer.drawStringWithShadow(damageStringText, damageStringX, damageStringY, damageStringColor);
-				mc.fontRenderer.setUnicodeFlag(unicodeFlag);
+//				mc.fontRenderer.setUnicodeFlag(unicodeFlag);
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 			}
 		}
@@ -428,7 +428,7 @@ public class DurabilityInfo extends ZyinHUDModBase
         //if the player is in the world
         //and not in a menu (except for chat and the custom Options menu)
         //and not typing
-        if (mc.inGameHasFocus ||
+        if (mc.mouseHelper.isMouseGrabbed() ||
         		(mc.currentScreen != null && (mc.currentScreen instanceof GuiChat || mc.currentScreen instanceof GuiZyinHUDOptions && ((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("durabilityinfo.name")))) &&
         		!mc.gameSettings.keyBindPlayerList.isPressed())
         {
@@ -466,7 +466,7 @@ public class DurabilityInfo extends ZyinHUDModBase
                 Item item = itemStack.getItem();
                 if (IsTool(item))
                 {
-                    int itemDamage = itemStack.getItemDamage();
+                    int itemDamage = itemStack.getDamage();
                     int maxDamage = itemStack.getMaxDamage();
                     
                     if (maxDamage != 0 &&
@@ -493,7 +493,7 @@ public class DurabilityInfo extends ZyinHUDModBase
         	ItemStack armorStack = armorStacks.get(i);
             if (!armorStack.isEmpty())
             {
-                int itemDamage = armorStack.getItemDamage();
+                int itemDamage = armorStack.getDamage();
                 int maxDamage = armorStack.getMaxDamage();
 
                 if (maxDamage != 0 &&
@@ -539,9 +539,9 @@ public class DurabilityInfo extends ZyinHUDModBase
             {
             	ItemStack itemStack = itemStacks.get(i);
                 if (!itemStack.isEmpty() && !(itemStack.getItem() instanceof ItemElytra) &&
-                        !(itemStack.isItemEnchanted() && EnchantmentHelper.hasBindingCurse(itemStack)))
+                        !(itemStack.isEnchanted() && EnchantmentHelper.hasBindingCurse(itemStack)))
                 {
-                    int itemDamage = itemStack.getItemDamage();
+                    int itemDamage = itemStack.getDamage();
                     int maxDamage = itemStack.getMaxDamage();
                     
                     if (maxDamage != 0 &&
@@ -574,7 +574,7 @@ public class DurabilityInfo extends ZyinHUDModBase
                 if (item instanceof ItemTool || item instanceof ItemSword || item instanceof ItemBow || item instanceof ItemHoe
                         || item instanceof ItemShears || item instanceof ItemFishingRod)
                 {
-                    int itemDamage = itemStack.getItemDamage();
+                    int itemDamage = itemStack.getDamage();
                     int maxDamage = itemStack.getMaxDamage();
                     int threshold = (item instanceof ItemFishingRod) ? 5 : 15;
                     
@@ -584,8 +584,8 @@ public class DurabilityInfo extends ZyinHUDModBase
                     {
                     	InventoryUtil.MoveHeldItemIntoPlayerInventory();
                     	ZyinHUDSound.PlayPlopSound();
-                    	ZyinHUDRenderer.DisplayNotification(Localization.get("durabilityinfo.name") + Localization.get("durabilityinfo.unequippeditem") + item.getItemStackDisplayName(itemStack));
-                    	ZyinHUD.log("Unequipped " + item.getItemStackDisplayName(itemStack) + " because it was at low durability (" + itemDamage + "/" + maxDamage + ")");
+                    	ZyinHUDRenderer.DisplayNotification(Localization.get("durabilityinfo.name") + Localization.get("durabilityinfo.unequippeditem") + item.getDisplayName(itemStack).toString());
+                    	ZyinHUD.log("Unequipped " + item.getDisplayName(itemStack).toString() + " because it was at low durability (" + itemDamage + "/" + maxDamage + ")");
                     }
                 }
             }
@@ -661,7 +661,7 @@ public class DurabilityInfo extends ZyinHUDModBase
      */
     public static int SetHorizontalLocation(int x)
     {
-    	durabalityLocX = MathHelper.clamp(x, 0, mc.displayWidth);
+    	durabalityLocX = MathHelper.clamp(x, 0, mc.mainWindow.getWidth());
     	equipmentLocX = durabalityLocX + armorDurabilityIconX;
     	return durabalityLocX;
     }
@@ -684,7 +684,7 @@ public class DurabilityInfo extends ZyinHUDModBase
      */
     public static int SetVerticalLocation(int y)
     {
-    	durabalityLocY = MathHelper.clamp(y, 0, mc.displayHeight);
+    	durabalityLocY = MathHelper.clamp(y, 0, mc.mainWindow.getHeight());
     	equipmentLocY = durabalityLocY;
     	return durabalityLocY;
     }

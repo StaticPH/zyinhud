@@ -81,7 +81,7 @@ public class TorchAid extends ZyinHUDModBase
      */
     public void EquipTorchIfToolIsEquipped()
     {
-    	if(mc.currentScreen == null && mc.inGameHasFocus)
+    	if(mc.currentScreen == null && mc.mouseHelper.isMouseGrabbed())
     	{
             ItemStack currentItemStack = mc.player.getHeldItemMainhand();
             if (!currentItemStack.isEmpty()) {
@@ -104,7 +104,7 @@ public class TorchAid extends ZyinHUDModBase
             EatingAid.instance.StopEating();    //it's not good if we have a torch selected and hold right click down...
         }
 
-        if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK)
+        if (mc.objectMouseOver != null && mc.objectMouseOver.type == RayTraceResult.Type.BLOCK)
         {
             int torchHotbarIndex = InventoryUtil.GetItemIndexFromHotbar(Blocks.TORCH);
             
@@ -117,11 +117,9 @@ public class TorchAid extends ZyinHUDModBase
     				previousTorchIndex = torchInventoryIndex;
     				EquipItemFromInventory(torchInventoryIndex);
     			}
-    			else
-    			{
-    				//player has no torches
-    				//don't display a notification because the player may be trying to interact with a useable block
-    			}
+                //player has no torches
+                //don't display a notification because the player may be trying to interact with a usable block
+
             }
             else
             {

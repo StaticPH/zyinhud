@@ -87,7 +87,7 @@ public class InfoLine extends ZyinHUDModBase
         //and not looking at a menu
         //and F3 not pressed
         if (InfoLine.Enabled &&
-                (mc.inGameHasFocus || (mc.currentScreen != null && (mc.currentScreen instanceof GuiChat || TabIsSelectedInOptionsGui()))) &&
+                (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen != null && (mc.currentScreen instanceof GuiChat || TabIsSelectedInOptionsGui()))) &&
                 !mc.gameSettings.showDebugInfo)
         {
         	infoLineMessage = "";
@@ -159,8 +159,8 @@ public class InfoLine extends ZyinHUDModBase
         int zCoord = MathHelper.floor(mc.player.posZ);
         
         BlockPos pos = new BlockPos(xCoord, yCoord, zCoord);
-        
-    	boolean canSnowAtPlayersFeet = mc.world.canSnowAtBody(pos, false);
+
+    	boolean canSnowAtPlayersFeet = mc.world.getBiome(pos).doesSnowGenerate(mc.world, pos);
     	
     	if(canSnowAtPlayersFeet)
     	{
@@ -190,7 +190,7 @@ public class InfoLine extends ZyinHUDModBase
     	int xCoord = MathHelper.floor(mc.player.posX);
         int zCoord = MathHelper.floor(mc.player.posZ);
 
-        String biomeName = mc.world.getBiome(new BlockPos(xCoord, 64, zCoord)).getBiomeName();
+        String biomeName = mc.world.getBiome(new BlockPos(xCoord, 64, zCoord)).getDisplayName().toString();
         return TextFormatting.WHITE + biomeName;
     }
 
@@ -276,7 +276,7 @@ public class InfoLine extends ZyinHUDModBase
      */
     public static int SetHorizontalLocation(int x)
     {
-    	infoLineLocX = MathHelper.clamp(x, 0, mc.displayWidth);
+    	infoLineLocX = MathHelper.clamp(x, 0, mc.mainWindow.getWidth());
     	return infoLineLocX;
     }
 
@@ -298,7 +298,7 @@ public class InfoLine extends ZyinHUDModBase
      */
     public static int SetVerticalLocation(int y)
     {
-    	infoLineLocY = MathHelper.clamp(y, 0, mc.displayHeight);
+    	infoLineLocY = MathHelper.clamp(y, 0, mc.mainWindow.getHeight());
     	return infoLineLocY;
     }
 }

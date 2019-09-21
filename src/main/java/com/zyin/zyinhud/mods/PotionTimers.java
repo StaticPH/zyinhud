@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.PotionUtil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
@@ -174,7 +175,7 @@ public class PotionTimers extends ZyinHUDModBase {
         //and not in a menu (except for chat and the custom Options menu)
         //and F3 not shown
         if (PotionTimers.Enabled &&
-                (mc.inGameHasFocus || (mc.currentScreen != null && (mc.currentScreen instanceof GuiChat || TabIsSelectedInOptionsGui()))) &&
+                (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen != null && (mc.currentScreen instanceof GuiChat || TabIsSelectedInOptionsGui()))) &&
                 !mc.gameSettings.showDebugInfo) {
             Collection potionEffects = mc.player.getActivePotionEffects();    //key:potionId, value:potionEffect
             Iterator it = potionEffects.iterator();
@@ -192,7 +193,7 @@ public class PotionTimers extends ZyinHUDModBase {
                 PotionEffect potionEffect = (PotionEffect) it.next();
                 //Potion potion = Potion.potionTypes[potionEffect.getPotionID()];
                 Potion potion = potionEffect.getPotion();
-                Boolean isFromBeacon = potionEffect.getIsAmbient();
+                boolean isFromBeacon = potionEffect.isAmbient();
 
                 if (!isFromBeacon || !HideBeaconPotionEffects) {
                     if (ShowPotionIcons) {
@@ -224,7 +225,7 @@ public class PotionTimers extends ZyinHUDModBase {
      * @param potionEffect the potion effect
      */
     protected static void DrawPotionText(int x, int y, Potion potion, PotionEffect potionEffect) {
-        String potionText = Potion.getPotionDurationString(potionEffect, 1.0F);//TODO: Figure out that float number, this is a temporary fix
+        String potionText = PotionUtil.getPotionDurationString(potionEffect, 1.0F);//TODO: Figure out that float number, this is a temporary fix
         if (ShowEffectName) {
             potionText += " " + I18n.format(potionEffect.getEffectName());
         }
@@ -241,8 +242,8 @@ public class PotionTimers extends ZyinHUDModBase {
             colorInt = 0xFFFFFF;
 
 
-        boolean unicodeFlag = mc.fontRenderer.getUnicodeFlag();
-        mc.fontRenderer.setUnicodeFlag(true);
+//        boolean unicodeFlag = mc.fontRenderer.getUnicodeFlag();
+//        mc.fontRenderer.setUnicodeFlag(true);
 
         //render the potion duration text onto the screen
         if (potionDuration >= blinkingThresholds[blinkingThresholds.length - 1])    //if the text is not blinking then render it normally
@@ -262,7 +263,7 @@ public class PotionTimers extends ZyinHUDModBase {
             }
         }
 
-        mc.fontRenderer.setUnicodeFlag(unicodeFlag);
+//        mc.fontRenderer.setUnicodeFlag(unicodeFlag);
     }
 
     /**
@@ -299,13 +300,15 @@ public class PotionTimers extends ZyinHUDModBase {
     public static void DisableInventoryPotionEffects(InventoryEffectRenderer guiScreen) {
         if (PotionTimers.Enabled && HidePotionEffectsInInventory) {
             //Note for future Forge versions: field "field_147045_u" will probably be renamed to something like "playerHasPotionEffects"
-            boolean playerHasPotionEffects = ObfuscationReflectionHelper.getPrivateValue(InventoryEffectRenderer.class, (InventoryEffectRenderer) guiScreen, "field_147045_u", "hasActivePotionEffects");
+            // mapped field: hasActivePotionEffects
+            boolean playerHasPotionEffects = ObfuscationReflectionHelper.getPrivateValue(InventoryEffectRenderer.class, (InventoryEffectRenderer) guiScreen, "field_147045_u");
 
             if (playerHasPotionEffects) {
                 int guiLeftPx = (guiScreen.width - 176) / 2;
 
-                ObfuscationReflectionHelper.setPrivateValue(GuiContainer.class, (GuiContainer) guiScreen, guiLeftPx, "field_147003_i", "guiLeft");
-                ObfuscationReflectionHelper.setPrivateValue(InventoryEffectRenderer.class, (InventoryEffectRenderer) guiScreen, false, "field_147045_u", "hasActivePotionEffects");
+                // mapped field: guiLeft
+                ObfuscationReflectionHelper.setPrivateValue(GuiContainer.class, (GuiContainer) guiScreen, guiLeftPx, "field_147003_i");
+                ObfuscationReflectionHelper.setPrivateValue(InventoryEffectRenderer.class, (InventoryEffectRenderer) guiScreen, false, "field_147045_u");
             }
         }
     }
@@ -374,7 +377,7 @@ public class PotionTimers extends ZyinHUDModBase {
      * @return the new x location
      */
     public static int SetHorizontalLocation(int x) {
-        potionLocX = MathHelper.clamp(x, 0, mc.displayWidth);
+        potionLocX = MathHelper.clamp(x, 0, mc.mainWindow.getWidth());
         return potionLocX;
     }
 
@@ -394,7 +397,7 @@ public class PotionTimers extends ZyinHUDModBase {
      * @return the new y location
      */
     public static int SetVerticalLocation(int y) {
-        potionLocY = MathHelper.clamp(y, 0, mc.displayHeight);
+        potionLocY = MathHelper.clamp(y, 0, mc.mainWindow.getHeight());
         return potionLocY;
     }
 

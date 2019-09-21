@@ -4,7 +4,7 @@ import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.util.Localization;
 import net.minecraft.client.entity.EntityOtherPlayerMP;
 import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.ScaledResolution;
+//import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -25,6 +25,8 @@ import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
+
+import java.util.Objects;
 
 /**
  * The Player Locator checks for nearby players and displays their name on screen wherever they are.
@@ -200,7 +202,7 @@ public class PlayerLocator extends ZyinHUDModBase {
         //and not looking at a menu
         //and F3 not pressed
         if (PlayerLocator.Enabled && Mode == Modes.ON &&
-                (mc.inGameHasFocus || mc.currentScreen == null || mc.currentScreen instanceof GuiChat)
+                (mc.mouseHelper.isMouseGrabbed() || mc.currentScreen == null || mc.currentScreen instanceof GuiChat)
                 && !mc.gameSettings.showDebugInfo) {
 
             //only show entities that are close by
@@ -208,7 +210,7 @@ public class PlayerLocator extends ZyinHUDModBase {
 
             if (distanceFromMe > maxViewDistanceCutoff
                     || distanceFromMe < viewDistanceCutoff
-                    || distanceFromMe == 0) //don't render ourself!
+                    || distanceFromMe == 0) //don't render ourselves!
             {
                 return;
             }
@@ -224,7 +226,7 @@ public class PlayerLocator extends ZyinHUDModBase {
                 //format the string to be the same color as that persons team color
                 ScorePlayerTeam team = (ScorePlayerTeam) ((EntityOtherPlayerMP) entity).getTeam();
                 if (team != null)
-                    overlayMessage = team.formatString(overlayMessage);
+                    overlayMessage = team.getName();// .formatString(overlayMessage);
             } else if (entity instanceof EntityWolf) {
                 if (!ShowWolves || !PlayerIsWolfsOwner((EntityWolf) entity))
                     return;
@@ -259,23 +261,22 @@ public class PlayerLocator extends ZyinHUDModBase {
                 overlayMessage = "    " + overlayMessage;    //make room for any icons we render
 
             int overlayMessageWidth = mc.fontRenderer.getStringWidth(overlayMessage);    //the width in pixels of the message
-            ScaledResolution res = new ScaledResolution(mc);
-            int width = res.getScaledWidth();        //~427
-            int height = res.getScaledHeight();        //~240
+            int width = mc.mainWindow.getScaledWidth();        //~427
+            int height = mc.mainWindow.getScaledHeight();        //~240
 
             //center the text horizontally over the entity
             x -= overlayMessageWidth / 2;
 
             //check if the text is attempting to render outside of the screen, and if so, fix it to snap to the edge of the screen.
-            x = (x > width - overlayMessageWidth) ? width - overlayMessageWidth : x;
-            x = (x < 0) ? 0 : x;
+            x = Math.min(x, width - overlayMessageWidth);
+            x = Math.max(x, 0);
             y = (y > height - 10 && !ShowPlayerHealth) ? height - 10 : y;
             y = (y > height - 20 && ShowPlayerHealth) ? height - 20 : y;
             if (y < 10 && InfoLine.infoLineLocY <= 1 &&
                     (x > InfoLine.infoLineLocX + mc.fontRenderer.getStringWidth(InfoLine.infoLineMessage) || x < InfoLine.infoLineLocX - overlayMessageWidth))
-                y = (y < 0) ? 0 : y;    //if the text is to the right or left of the info line then allow it to render in that open space
+                y = Math.max(y, 0);    //if the text is to the right or left of the info line then allow it to render in that open space
             else
-                y = (y < 10) ? 10 : y;    //use 10 instead of 0 so that we don't write text onto the top left InfoLine message area
+                y = Math.max(y, 10);    //use 10 instead of 0 so that we don't write text onto the top left InfoLine message area
 
 
             //render the overlay message
@@ -341,7 +342,7 @@ public class PlayerLocator extends ZyinHUDModBase {
     private static String GetOverlayMessageForWitherSkeleton(EntityWitherSkeleton witherSkeleton, float distanceFromMe) {
         String overlayMessage;
         if (witherSkeleton.hasCustomName()) {
-            overlayMessage = witherSkeleton.getName();
+            overlayMessage = witherSkeleton.getName().getString();
             overlayMessage += "(";
             overlayMessage += I18n.format("entity.WitherSkeleton.name");
             overlayMessage += ")";
@@ -361,7 +362,7 @@ public class PlayerLocator extends ZyinHUDModBase {
         String overlayMessage;
 
         if (wolf.hasCustomName()) {
-            overlayMessage = wolf.getCustomNameTag() + "(" + Localization.get("entity.Wolf.name") + ")";
+            overlayMessage = Objects.requireNonNull(wolf.getCustomName()).getString() + "(" + Localization.get("entity.Wolf.name") + ")";
         } else {
             overlayMessage = Localization.get("entity.Wolf.name");
         }
@@ -376,7 +377,7 @@ public class PlayerLocator extends ZyinHUDModBase {
 
 
     private static String GetOverlayMessageForOtherPlayer(EntityOtherPlayerMP otherPlayer, float distanceFromMe) {
-        String overlayMessage = otherPlayer.getDisplayNameString();
+        String overlayMessage = otherPlayer.getDisplayName().getString();
 
         //add distance to this player into the message
         if (ShowDistanceToPlayers) {
@@ -391,7 +392,7 @@ public class PlayerLocator extends ZyinHUDModBase {
         if (otherPlayer.isSneaking()) {
             overlayMessage = sneakingMessagePrefix + overlayMessage;    //italics
         }
-        if (otherPlayer.isRiding() || otherPlayer.isElytraFlying())    //this doesn't work on some servers
+        if (otherPlayer.isPassenger() || otherPlayer.isElytraFlying())    //this doesn't work on some servers
         {
             overlayMessage = ridingMessagePrefix + overlayMessage;        //space for the saddle and horse armor icons
         }

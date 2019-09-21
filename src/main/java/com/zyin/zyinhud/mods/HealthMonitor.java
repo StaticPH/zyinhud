@@ -11,7 +11,7 @@ import com.zyin.zyinhud.ZyinHUDSound;
 import com.zyin.zyinhud.mods.EatingAid.Modes;
 import com.zyin.zyinhud.util.Localization;
 
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 
 /**

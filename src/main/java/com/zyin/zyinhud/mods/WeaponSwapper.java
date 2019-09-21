@@ -6,7 +6,7 @@ import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.Localization;
 import com.zyin.zyinhud.util.ModCompatibility;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.EnumCreatureAttribute;
+import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.init.Enchantments;
@@ -324,8 +324,8 @@ public class WeaponSwapper extends ZyinHUDModBase
 
     public static double GetEnchantDamage(ItemStack item) {
         double damage = 0.0D;
-        if (item.isItemEnchanted()) {
-            damage = EnchantmentHelper.getModifierForCreature(item, EnumCreatureAttribute.UNDEFINED);
+        if (item.isEnchanted()) {
+            damage = EnchantmentHelper.getModifierForCreature(item, CreatureAttribute.UNDEFINED);
         }
         return damage;
     }
@@ -348,7 +348,7 @@ public class WeaponSwapper extends ZyinHUDModBase
     
     public static double GetBowDamage(ItemStack item) {
         double damage = 0.0D;
-        if (item.isItemEnchanted()) {
+        if (item.isEnchanted()) {
             int power = EnchantmentHelper.getEnchantmentLevel(Enchantments.POWER, item);
             if (power > 0) {
                 damage = 2.0D + (double) power * 0.5D + 0.5D;

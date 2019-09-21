@@ -239,7 +239,7 @@ public class PotionAid extends ZyinHUDModBase
             {
             	ItemPotion potion = (ItemPotion)item;
                 boolean isSplashPotion;
-            	if ((itemStack.getItemDamage() & 16384) != 0)
+            	if ((itemStack.getDamage() & 16384) != 0)
                 {
                     isSplashPotion = true;
                 }else{

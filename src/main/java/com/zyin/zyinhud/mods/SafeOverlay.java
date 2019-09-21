@@ -7,16 +7,21 @@ import net.minecraft.block.BlockMagma;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntitySpawnPlacementRegistry;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.EnumLightType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldEntitySpawner;
+import net.minecraft.world.dimension.DimensionType;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,9 +44,9 @@ public class SafeOverlay extends ZyinHUDModBase {
     public static boolean ToggleEnabled() {
         return Enabled = !Enabled;
     }
-    
+
     public static EntityLiving zombie = null;
-    
+
     /**
      * The current mode for this mod
      */
@@ -224,6 +229,19 @@ public class SafeOverlay extends ZyinHUDModBase {
      * Determines if any mob can spawn at a position. Works very well at detecting
      * if bipeds or spiders can spawn there.
      *
+     * @param world The world to check
+     * @param pos Position of the block whose surface gets checked
+     * @param entityTypeIn Type of the entity
+     * @return boolean
+     */
+    private static boolean CanMobsSpawnAtPosition(BlockPos pos, World world, @Nullable EntityType<? extends EntityLiving> entityTypeIn) {
+        return WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.SpawnPlacementType.ON_GROUND, world, pos, entityTypeIn);
+    }
+
+    /**
+     * Determines if any mob can spawn at a position. Works very well at detecting
+     * if bipeds or spiders can spawn there.
+     *
      * @param pos Position of the block whos surface gets checked
      * @return boolean
      */
@@ -238,7 +256,8 @@ public class SafeOverlay extends ZyinHUDModBase {
         }
         World world = mc.player.world;
         boolean canSpawn = false;
-        canSpawn = WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntityLiving.SpawnPlacementType.ON_GROUND, world, pos);
+        // TODO: how many mod entities are there?
+        canSpawn = SafeOverlay.CanMobsSpawnAtPosition(pos, world, EntityType.ZOMBIE) || SafeOverlay.CanMobsSpawnAtPosition(pos, world, EntityType.SKELETON);
         if (canSpawn) {
             zombie.setLocationAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0F, 0.0F);
             canSpawn = zombie.isNotColliding();
@@ -246,7 +265,7 @@ public class SafeOverlay extends ZyinHUDModBase {
                 canSpawn = false;
             }
         }
-        return canSpawn && mc.world.getLightFor(EnumSkyBlock.BLOCK, pos) < 8;
+        return canSpawn && mc.world.getLightFor(EnumLightType.BLOCK, pos) < 8;
     }
 
 
@@ -261,7 +280,7 @@ public class SafeOverlay extends ZyinHUDModBase {
             return;
         }
 
-        if (!displayInNether && mc.player.dimension == -1)    //turn off in the nether, mobs can spawn no matter what
+        if (!displayInNether && mc.player.dimension == DimensionType.NETHER)    //turn off in the nether, mobs can spawn no matter what
         {
             return;
         }
@@ -325,13 +344,14 @@ public class SafeOverlay extends ZyinHUDModBase {
     protected void RenderUnsafeMarker(BlockPos position) {
         IBlockState state = mc.player.world.getBlockState(position);
         Block block = state.getBlock();
+        VoxelShape voxelshape = state.getShape(mc.player.world, position);
         //get bounding box data for this block
         //don't bother for horizontal (X and Z) bounds because every hostile mob spawns on a 1.0 wide block
         //some blocks, like farmland, have a different vertical (Y) bound
-        AxisAlignedBB boundingBox = state.getBoundingBox(mc.player.world, position);
+        AxisAlignedBB boundingBox = voxelshape.getBoundingBox();
         double boundingBoxMinX = 0.0D;
         double boundingBoxMaxX = 1.0D;
-        double boundingBoxMaxY = 0.0D;
+        double boundingBoxMaxY;
         if (block instanceof BlockAir) {
             boundingBoxMaxY = 0.0D;
         } else if (boundingBox.maxY < 1.0 &&
@@ -344,8 +364,8 @@ public class SafeOverlay extends ZyinHUDModBase {
         double boundingBoxMaxZ = 1.0D;
 
         float r, g, b, alpha;
-        int lightLevelWithSky = mc.world.getLightFor(EnumSkyBlock.SKY, position);
-        int lightLevelWithoutSky = mc.world.getLightFor(EnumSkyBlock.BLOCK, position);
+        int lightLevelWithSky = mc.world.getLightFor(EnumLightType.SKY, position);
+        int lightLevelWithoutSky = mc.world.getLightFor(EnumLightType.BLOCK, position);
 
         if (lightLevelWithSky > lightLevelWithoutSky && lightLevelWithSky > 7) {
             //yellow, but decrease the brightness of the "X" marks if the surrounding area is dark
@@ -377,7 +397,7 @@ public class SafeOverlay extends ZyinHUDModBase {
         //since we are using doubles it causes the marks to 'flicker' when very far from spawn (~5000 blocks)
         //if we use GL11.glVertex3i(int, int, int) it fixes the issue but then we can't render the marks
         //precisely where we want to
-        GlStateManager.color(r, g, b, alpha);    //alpha must be > 0.1
+        GlStateManager.color4f(r, g, b, alpha);    //alpha must be > 0.1
         GL11.glVertex3d(maxX, maxY, maxZ);
         GL11.glVertex3d(minX, maxY, minZ);
         GL11.glVertex3d(maxX, maxY, minZ);

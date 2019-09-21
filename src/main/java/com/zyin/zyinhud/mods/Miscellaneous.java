@@ -11,7 +11,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 
 import com.zyin.zyinhud.util.InventoryUtil;
@@ -174,7 +174,7 @@ public class Miscellaneous extends ZyinHUDModBase
 	 * it will put it into the hotbar, instead of it only working if the block is on your hotbar.
 	 */
 	public static void MoveMouseoveredBlockIntoHotbar() {
-		if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK) {
+		if (mc.objectMouseOver != null && mc.objectMouseOver.type == RayTraceResult.Type.BLOCK) {
 			//Block block = ZyinHUDUtil.GetMouseOveredBlock();
         	BlockPos blockPos = ZyinHUDUtil.GetMouseOveredBlockPos();
             

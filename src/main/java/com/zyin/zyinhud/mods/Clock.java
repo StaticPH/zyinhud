@@ -120,7 +120,7 @@ public class Clock extends ZyinHUDModBase
 		if (Clock.Enabled)
         {
 			if (Clock.Mode == Modes.STANDARD) {
-				long time = (mc.world.getWorldTime()) % 24000;
+				long time = (mc.world.getGameTime()) % 24000;
 
 				//0 game time is 6am, so add 6000
 				long hours = (time + 6000) / 1000;
@@ -147,7 +147,7 @@ public class Clock extends ZyinHUDModBase
         	}
         	else if(Clock.Mode == Modes.COUNTDOWN)
         	{
-                long time = (mc.world.getWorldTime()) % 24000;
+                long time = (mc.world.getGameTime()) % 24000;
 
         		if(IsNight())
         		{
@@ -203,7 +203,7 @@ public class Clock extends ZyinHUDModBase
 	 * @return the boolean
 	 */
 	public static boolean IsNight() {
-		long time = (mc.world.getWorldTime()) % 24000;
+		long time = (mc.world.getGameTime()) % 24000;
     	return time >= mobSpawningStartTime && time < mobSpawningStopTime;
     }
 }

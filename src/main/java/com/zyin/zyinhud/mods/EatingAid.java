@@ -10,8 +10,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemFishFood.FishType;
 import net.minecraft.item.ItemFood;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.item.crafting.FurnaceRecipe;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.potion.PotionEffect;
+import net.minecraftforge.common.crafting.VanillaRecipeTypes;
 
 import java.awt.*;
 import java.awt.event.InputEvent;
@@ -247,7 +249,7 @@ public class EatingAid extends ZyinHUDModBase
             ItemStack currentItemStack = mc.player.getHeldItemMainhand();
             ItemFood currentFood = (ItemFood) currentItemStack.getItem();
 
-            int eatingDurationInMilliseconds = 1000*currentFood.itemUseDuration / 20;
+            int eatingDurationInMilliseconds = 1000*currentFood.getUseDuration(currentItemStack) / 20;
             
             //after this timer runs out we'll release right click to stop eating and select the previously selected item
             eatTimerTask = new StopEatingTimerTask(r, previouslySelectedHotbarSlotIndex);
@@ -280,7 +282,7 @@ public class EatingAid extends ZyinHUDModBase
         ItemStack currentItemStack = mc.player.getHeldItemMainhand();
         ItemFood currentFood = (ItemFood)currentItemStack.getItem();
         
-        int eatingDurationInMilliseconds = 1000 * currentFood.itemUseDuration / 17; //I think 17 is better, for 20 can only be reached by fast computers
+        int eatingDurationInMilliseconds = 1000 * currentFood.getUseDuration(currentItemStack) / 17; //I think 17 is better, for 20 can only be reached by fast computers
         //Alternatively, may be we can introduce tps dectection in the future.
         if(UsePvPSoup && food.equals(Items.MUSHROOM_STEW) &&
     			(mc.player.getHealth() < 20 || mc.player.getFoodStats().needFood()))	//for PvP Soup eating
@@ -579,16 +581,12 @@ public class EatingAid extends ZyinHUDModBase
     private static boolean HasSmeltingRecipe(ItemStack itemStack)
     {
     	//if this function ends up taking a long time to run we can save the values into our own Map (without meta values) for fast lookup
-    	
-        Map smeltingList = FurnaceRecipes.instance().getSmeltingList();
+        List<FurnaceRecipe> smeltingList = mc.player.world.getRecipeManager().getRecipes(VanillaRecipeTypes.SMELTING);
         
         //if(smeltingList.containsKey(itemStack)) ... ;	//this doesn't work since the meta values for the item stacks are different
 
-        for (Object o : smeltingList.entrySet()) {
-            Entry entry = (Entry) o;
-            ItemStack furnaceRecipeItemStack = (ItemStack) entry.getKey();
-
-            if (furnaceRecipeItemStack.getItem().equals(itemStack.getItem())) {
+        for (IRecipe recipe : smeltingList) {
+            if (recipe.getIngredients().get(0).test(itemStack)) {
                 return true;
             }
         }

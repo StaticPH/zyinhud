@@ -156,7 +156,7 @@ public class QuickDeposit extends ZyinHUDModBase
 				|| (BlacklistArrow && itemStack.getItem() == Items.ARROW)
 				|| (BlacklistEnderPearl && itemStack.getItem() == Items.ENDER_PEARL)
 				|| (BlacklistWaterBucket && itemStack.getItem() == Items.WATER_BUCKET)
-				|| (BlacklistFood && (itemStack.getItem() instanceof ItemFood || itemStack.getItem() == Items.CAKE))
+				|| (BlacklistFood && (itemStack.getItem() instanceof ItemFood)) // || itemStack.getItem() == Items.CAKE))
 				|| (BlacklistClockCompass && (itemStack.getItem() == Items.COMPASS || itemStack.getItem() == Items.CLOCK))) {
 			return false;
 		}
