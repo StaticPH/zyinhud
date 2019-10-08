@@ -59,9 +59,9 @@ public class GuiNumberSliderWithUndo extends GuiNumberSlider
 	}
 	
 	@Override
-	public void drawButton(Minecraft mc, int mouseX, int mouseY, float partialTicks)
+	public void render(int mouseX, int mouseY, float partialTicks)
 	{
-		super.drawButton(mc, mouseX, mouseY, partialTicks);
+		super.render(mouseX, mouseY, partialTicks);
 
 		int undoSymbolColor = 0xffffff;
     	undoSymbolX = this.x + width - (undoSymbolWidth+1);
@@ -73,7 +73,7 @@ public class GuiNumberSliderWithUndo extends GuiNumberSlider
 			undoSymbolColor = 0x55ffff;	//0x55ffff is the same as EnumChatFormatting.AQUA
 		}
 		
-		mc.fontRenderer.drawStringWithShadow(undoSymbol, undoSymbolX, undoSymbolY, undoSymbolColor);	//func_175063_a() is drawStringWithShadow()
+		Minecraft.getInstance().fontRenderer.drawStringWithShadow(undoSymbol, undoSymbolX, undoSymbolY, undoSymbolColor);	//func_175063_a() is drawStringWithShadow()
 	}
 
 	/**
@@ -98,7 +98,7 @@ public class GuiNumberSliderWithUndo extends GuiNumberSlider
 		UpdateLabel();
 	}
 	
-	public boolean mousePressed(Minecraft mc, int mouseX, int mouseY)
+	public boolean mouseClicked(Minecraft mc, int mouseX, int mouseY)
     {
 		//this is the mousePressed method for GuiButton, we want to skip the dragging behavior of GuiNumberSlider
 		//boolean mousePressed = this.enabled && this.visible && mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
@@ -112,7 +112,7 @@ public class GuiNumberSliderWithUndo extends GuiNumberSlider
         }
         else
         {
-        	return super.mousePressed(mc, mouseX, mouseY);
+        	return super.mouseClicked(mc, mouseX, mouseY);
         }
     }
 }

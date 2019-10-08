@@ -1,12 +1,12 @@
 package com.zyin.zyinhud.gui.buttons;
 
+import com.zyin.zyinhud.util.Localization;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.text.TextFormatting;
-
-import com.zyin.zyinhud.util.Localization;
+import net.minecraftforge.client.settings.KeyModifier;
 
 /**
  * A button used to change Minecraft's key bindings
@@ -16,7 +16,7 @@ public class GuiHotkeyButton extends GuiButton
 	/**
 	 * The constant mc.
 	 */
-	protected static Minecraft mc = Minecraft.getMinecraft();
+	protected static Minecraft mc = Minecraft.getInstance();
 
 	/**
 	 * The Waiting for hotkey input.
@@ -116,7 +116,8 @@ public class GuiHotkeyButton extends GuiButton
 	public void ApplyHotkey(int newHotkey)
 	{
 		waitingForHotkeyInput = false;
-		hotkey = GameSettings.getKeyDisplayString(newHotkey);
+		InputMappings.Input key = InputMappings.getInputByCode(newHotkey, 0);
+		hotkey = KeyModifier.getActiveModifier().getLocalizedComboName(key);
 		
 		//SetHotkey(hotkey);
 		UpdateDisplayString();
@@ -125,7 +126,7 @@ public class GuiHotkeyButton extends GuiButton
         KeyBinding keyBinding = FindKeyBinding(GetHotkeyDescription());
         if(keyBinding != null)
         {
-        	keyBinding.setKeyCode(newHotkey);
+        	keyBinding.bind(key);
         	KeyBinding.resetKeyBindingArrayAndHash();
         }
 	}
@@ -145,7 +146,7 @@ public class GuiHotkeyButton extends GuiButton
 	        if(keyBinding != null)
 	        {
 	        	SetHotkey(hotkey);
-	        	return keyBinding.getDisplayName();
+	        	return keyBinding.func_197978_k();
 	        }
 	        else
 	        {

@@ -191,9 +191,9 @@ public class GuiNumberSlider extends GuiButton
      * Returns true if the mouse has been pressed on this control. Equivalent of MouseListener.mousePressed(MouseEvent
      * e).
      */
-    public boolean mousePressed(Minecraft mc, int x, int y)
+    public boolean mouseClicked(Minecraft mc, int x, int y)
     {
-        if (super.mousePressed(mc, x, y))
+        if (super.mouseClicked(x, y, 1))
         {
             sliderValue = (float)(x - (this.x + 4)) / (float)(width - 8);
 
