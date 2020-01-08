@@ -2,22 +2,15 @@ package com.zyin.zyinhud.util;
 
 import java.lang.reflect.Field;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockAnvil;
-import net.minecraft.block.BlockBed;
-import net.minecraft.block.BlockButton;
-import net.minecraft.block.BlockCake;
-import net.minecraft.block.BlockContainer;
-import net.minecraft.block.BlockDoor;
-import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockLever;
-import net.minecraft.block.BlockRedstoneDiode;
-import net.minecraft.block.BlockTrapDoor;
-import net.minecraft.block.BlockWorkbench;
-import net.minecraft.block.state.IBlockState;
+import net.minecraft.block.*;
+import net.minecraft.block.AnvilBlock;
+import net.minecraft.block.RedstoneDiodeBlock;
+import net.minecraft.block.TrapDoorBlock;
+import net.minecraft.block.CraftingTableBlock;
+import net.minecraft.block.FenceGateBlock;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.util.math.BlockPos;
 //import net.minecraft.util.IIcon;
@@ -48,7 +41,7 @@ public class ZyinHUDUtil
 	 * @return boolean
 	 */
 	public static boolean IsMouseoveredBlockRightClickable() {
-		if (mc.objectMouseOver != null && mc.objectMouseOver.type == RayTraceResult.Type.BLOCK) {
+		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.BLOCK) {
 			Block block = GetMouseOveredBlock();
 
 			return ZyinHUDUtil.IsBlockRightClickable(block);
@@ -66,17 +59,17 @@ public class ZyinHUDUtil
 	{
         //couldn't find a way to see if a block is 'right click-able' without running the onBlockActivated() method
         //for that block, which we don't want to do
-        return block instanceof BlockContainer	//BlockContainer = beacons, brewing stand, chest, command block, daylight detector, dispenser, enchantment table, ender chest, end portal, flower pot, furnace, hopper, jukebox, mob spawner, note block, piston moving, sign, skull
-                || block instanceof BlockButton
-                || block instanceof BlockLever
-                || block instanceof BlockRedstoneDiode	//BlockRedstoneDiode = repeaters + comparators
-                || block instanceof BlockDoor
-                || block instanceof BlockAnvil
-                || block instanceof BlockBed
-                || block instanceof BlockCake
-                || block instanceof BlockFenceGate
-                || block instanceof BlockTrapDoor
-                || block instanceof BlockWorkbench;
+        return block instanceof ContainerBlock    //BlockContainer = beacons, brewing stand, chest, command block, daylight detector, dispenser, enchantment table, ender chest, end portal, flower pot, furnace, hopper, jukebox, mob spawner, note block, piston moving, sign, skull
+               || block instanceof AbstractButtonBlock
+               || block instanceof LeverBlock
+               || block instanceof RedstoneDiodeBlock    //BlockRedstoneDiode = repeaters + comparators
+               || block instanceof DoorBlock
+               || block instanceof AnvilBlock
+               || block instanceof BedBlock
+               || block instanceof CakeBlock
+               || block instanceof FenceGateBlock
+               || block instanceof TrapDoorBlock
+               || block instanceof CraftingTableBlock;
 	}
 
 	/**
@@ -123,9 +116,9 @@ public class ZyinHUDUtil
 	 * @return the block
 	 */
 	public static Block GetMouseOveredBlock() {
-		int x = mc.objectMouseOver.getBlockPos().getX();
-    	int y = mc.objectMouseOver.getBlockPos().getY();
-		int z = mc.objectMouseOver.getBlockPos().getZ();
+		int x = (int) mc.objectMouseOver.getHitVec().getX();
+    	int y = (int) mc.objectMouseOver.getHitVec().getY();
+		int z = (int) mc.objectMouseOver.getHitVec().getZ();
 		return GetBlock(x, y, z);
 	}
 
@@ -135,9 +128,9 @@ public class ZyinHUDUtil
 	 * @return the block pos
 	 */
 	public static BlockPos GetMouseOveredBlockPos() {
-		int x = mc.objectMouseOver.getBlockPos().getX();
-    	int y = mc.objectMouseOver.getBlockPos().getY();
-		int z = mc.objectMouseOver.getBlockPos().getZ();
+		int x = (int) mc.objectMouseOver.getHitVec().getX();
+    	int y = (int) mc.objectMouseOver.getHitVec().getY();
+		int z = (int) mc.objectMouseOver.getHitVec().getZ();
 		return new BlockPos(x, y, z);
 	}
 
@@ -161,7 +154,7 @@ public class ZyinHUDUtil
 	 * @return the block
 	 */
 	public static Block GetBlock(BlockPos pos) {
-		IBlockState blockState = GetBlockState(pos);
+		BlockState blockState = GetBlockState(pos);
 		if (blockState == null)
 			return null;
 		else
@@ -176,7 +169,7 @@ public class ZyinHUDUtil
 	 * @param z the z
 	 * @return the block state
 	 */
-	public static IBlockState GetBlockState(int x, int y, int z) {
+	public static BlockState GetBlockState(int x, int y, int z) {
 		BlockPos pos = new BlockPos(x, y, z);
 		return GetBlockState(pos);
 	}
@@ -187,7 +180,7 @@ public class ZyinHUDUtil
 	 * @param pos the pos
 	 * @return the block state
 	 */
-	public static IBlockState GetBlockState(BlockPos pos) {
+	public static BlockState GetBlockState(BlockPos pos) {
 		if(mc.world != null)
 			return mc.world.getBlockState(pos);
 		else

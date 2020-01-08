@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import net.minecraft.inventory.Slot;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemPotion;
+import net.minecraft.item.PotionItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionEffect;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.PotionUtils;
 
 import com.zyin.zyinhud.ZyinHUDRenderer;
@@ -211,8 +211,9 @@ public class PotionAid extends ZyinHUDModBase
      */
     public int GetMostAppropriatePotionItemIndexFromInventory()
     {
-        List inventorySlots = mc.player.inventoryContainer.inventorySlots;
-        
+//        List inventorySlots = mc.player.container.inventorySlots;
+        List inventorySlots = mc.player.inventory.mainInventory;
+
         //indexes of potions in the player's inventory
         int fireResistancePotionIndex = -1;
         int healPotionIndex = -1;
@@ -235,9 +236,9 @@ public class PotionAid extends ZyinHUDModBase
 
             Item item = itemStack.getItem();
 
-            if (item instanceof ItemPotion)
+            if (item instanceof PotionItem)
             {
-            	ItemPotion potion = (ItemPotion)item;
+            	PotionItem potion = (PotionItem)item;
                 boolean isSplashPotion;
             	if ((itemStack.getDamage() & 16384) != 0)
                 {
@@ -255,7 +256,7 @@ public class PotionAid extends ZyinHUDModBase
                 if (potionEffects.isEmpty()) {
                     continue;
                 }
-                PotionEffect potionEffect = (PotionEffect) potionEffects.get(0);
+                EffectInstance potionEffect = (EffectInstance) potionEffects.get(0);
                 String potionEffectName = potionEffect.getEffectName();
                 
         	if(potionEffectName.equals("effect.fireResistance"))
@@ -286,7 +287,7 @@ public class PotionAid extends ZyinHUDModBase
         Iterator it = potionEffects.iterator();
         while (it.hasNext())
         {
-            PotionEffect potionEffect = (PotionEffect)it.next();
+            EffectInstance potionEffect = (EffectInstance)it.next();
             String potionEffectName = potionEffect.getEffectName();
 
         	if(potionEffectName.equals("effect.regeneration"))

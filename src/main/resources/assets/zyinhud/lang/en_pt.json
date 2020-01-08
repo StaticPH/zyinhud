@@ -1,0 +1,55 @@
+{
+    "animalinfo": "Wild beasts",
+    "animalinfo.infoline": "beasts",
+
+    "clock": "Pocketwatch",
+    "clock.mode.graphic": "PIRATE STYLE",
+
+    "compass": "Bearing compass",
+
+    "coordinates": "Treasure coordinates",
+
+    "distancemeasurer": "Ring dial",
+
+    "durabilityinfo": "Armory",
+
+    "eatingaid": "Grub Aid",
+    "eatingaid.mode.basic": "Hungry Pirate",
+    "eatingaid.mode.intelligent": "Smart Pirate",
+
+    "enderpearlaid": "Cave Pearl Aid",
+
+    "fps": "Renderin' speed",
+    "fps.infoline": "clicks",
+
+    "gui.override.options.buttons.options": "ZE PIRATE'S HUD...",
+    "gui.options.title": "Yer PIRATE'S HUD Settings",
+    "gui.options.enabled": "Does it work?",
+    "gui.options.saveandexit": "Abandon ship!",
+
+    "healthmonitor": "Am I dead yet?",
+
+    "infoline": "Line with markings",
+
+    "itemselector": "Big ol' backpack",
+    "itemselector.mode.all": "Whole backpack",
+    "itemselector.mode.column": "Just meh pocket",
+
+    "miscellaneous": "Peg legs",
+
+    "playerlocator": "Priate Finder",
+    "playerlocator.infoline": "pirates",
+
+    "potionaid": "Drinkin' Aid",
+
+    "potiontimers": "Hangover Timers",
+
+    "safeoverlay": "X marks the spot",
+    "safeoverlay.infoline": "buriedtreasure",
+
+    "torchaid": "Fire on a stick",
+
+    "weaponswapper": "Draw yer blade!",
+
+    "quickdeposit": "Bury yer treasure"
+}

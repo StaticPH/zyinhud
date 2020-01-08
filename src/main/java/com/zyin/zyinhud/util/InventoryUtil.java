@@ -2,23 +2,22 @@ package com.zyin.zyinhud.util;
 
 import com.zyin.zyinhud.mods.QuickDeposit;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiMerchant;
-import net.minecraft.client.gui.inventory.GuiBrewingStand;
-import net.minecraft.client.gui.inventory.GuiFurnace;
-import net.minecraft.client.gui.inventory.GuiScreenHorseInventory;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.Slot;
+import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
+import net.minecraft.client.gui.screen.inventory.FurnaceScreen;
+import net.minecraft.client.gui.screen.inventory.HorseInventoryScreen;
+import net.minecraft.client.gui.screen.inventory.MerchantScreen;
+import net.minecraft.inventory.container.ClickType;
+import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
+import net.minecraft.item.Items;
+import net.minecraft.item.MerchantOffer;
+import net.minecraft.item.MerchantOffers;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.village.MerchantRecipe;
-import net.minecraft.village.MerchantRecipeList;
-import net.minecraft.world.World;
+import net.minecraft.util.math.BlockRayTraceResult;
 
 import java.util.List;
 import java.util.Timer;
@@ -33,10 +32,10 @@ public class InventoryUtil {
 	 * -Useful Info-
 	 * -------------
 	 * "Inventory" in the method names refers to slots 9-44, and 
-	 * "Hotbar" in the method names referes to slots 36-44.
-	 * 
+	 * "Hotbar" in the method names refers to slots 36-44.
+	 *
 	 * -------------
-	 * mc.thePlayer.inventoryContainer.inventorySlots index values:
+	 * mc.thePlayer.container.inventorySlots index values:
      *	0 = crafting output?
      *	1-4 = 2x2 crafting grid
      *	5-8 = armor
@@ -214,9 +213,9 @@ public class InventoryUtil {
     public static boolean SendUseItem() {
         //Items need to use the sendUseItem() function to work properly (only works for instant-use items, NOT something like food!)
         boolean sendUseItem = false;//mc.playerController.sendUseItem((EntityPlayer) mc.thePlayer, (World) mc.theWorld, mc.thePlayer.getHeldItemMainhand());
-        EnumActionResult sendUseItem_result = mc.playerController.processRightClick(mc.player, mc.world, EnumHand.MAIN_HAND);
+        ActionResultType sendUseItem_result = mc.playerController.processRightClick(mc.player, mc.world, Hand.MAIN_HAND);
         //TODO: More expressions!!
-        if (sendUseItem_result == EnumActionResult.SUCCESS) {
+        if (sendUseItem_result == ActionResultType.SUCCESS) {
             sendUseItem = true;
         }
         return sendUseItem;
@@ -232,16 +231,16 @@ public class InventoryUtil {
         //Blocks need to use the onPlayerRightClick() function to work properly
         //return mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, mc.thePlayer.getHeldItem(), mc.objectMouseOver.blockX, mc.objectMouseOver.blockY, mc.objectMouseOver.blockZ, mc.objectMouseOver.sideHit, mc.objectMouseOver.hitVec);
 
-        //boolean
-        EnumActionResult sendUseBlock_result = mc.playerController.processRightClickBlock(mc.player,
-                mc.world,
-                new BlockPos(mc.objectMouseOver.hitVec.x, mc.objectMouseOver.hitVec.y, mc.objectMouseOver.hitVec.z),
-                mc.objectMouseOver.sideHit,
-                mc.objectMouseOver.hitVec,
-                EnumHand.MAIN_HAND);
-        BlockPos pos = new BlockPos(mc.objectMouseOver.hitVec.x, mc.objectMouseOver.hitVec.y, mc.objectMouseOver.hitVec.z);
-        boolean sendUseBlock = (sendUseBlock_result == EnumActionResult.SUCCESS);
-        return sendUseBlock;
+        //process right click with block
+        ActionResultType sendUseBlock_result = mc.playerController.func_217292_a(
+            mc.player, mc.world, Hand.MAIN_HAND, (BlockRayTraceResult) mc.objectMouseOver
+        );
+        BlockPos pos = new BlockPos(
+            mc.objectMouseOver.getHitVec().x,
+            mc.objectMouseOver.getHitVec().y,
+            mc.objectMouseOver.getHitVec().z
+        );
+        return (sendUseBlock_result == ActionResultType.SUCCESS);
     }
 
     /**
@@ -276,7 +275,7 @@ public class InventoryUtil {
                 || destIndex < 0)
             return false;
 
-        List inventorySlots = mc.player.inventoryContainer.inventorySlots;
+        List inventorySlots = mc.player.inventory.mainInventory;
 
         ItemStack srcStack = ((Slot) inventorySlots.get(srcIndex)).getStack();
         ItemStack destStack = ((Slot) inventorySlots.get(destIndex)).getStack();
@@ -576,7 +575,7 @@ public class InventoryUtil {
      * @return boolean
      */
     public static boolean DepositAllMatchingItemsInMerchant() {
-        if (!(mc.currentScreen instanceof GuiMerchant))
+        if (!(mc.currentScreen instanceof MerchantScreen))
             return false;
 
         //villager container = 39 big
@@ -589,19 +588,19 @@ public class InventoryUtil {
         int numInventorySlots = 36;
         int numMerchantSlots = numDisplayedSlots - numInventorySlots;
 
-        GuiMerchant guiMerchant = ((GuiMerchant) mc.currentScreen);
-        MerchantRecipeList merchantRecipeList = guiMerchant.getMerchant().getRecipes(mc.player);
+        MerchantScreen guiMerchant = ((MerchantScreen) mc.currentScreen);
+        MerchantOffers merchantRecipeList = guiMerchant.getContainer().func_217051_h();
 
         if (merchantRecipeList == null || merchantRecipeList.isEmpty())
             return false;
 
         //field_70473_e used to work in 1.6.4
-        //field_147041_z works in 1.7.2
-        int currentRecipeIndex = ZyinHUDUtil.GetFieldByReflection(GuiMerchant.class, guiMerchant, "selectedMerchantRecipe", "field_147041_z");
-        MerchantRecipe merchantRecipe = merchantRecipeList.get(currentRecipeIndex);
+        //field_147041_z works in 1.7.2, and appears to still be the same for 1.14.4
+        int currentRecipeIndex = ZyinHUDUtil.GetFieldByReflection(MerchantScreen.class, guiMerchant, "selectedMerchantRecipe", "field_147041_z");
+        MerchantOffer merchantRecipe = merchantRecipeList.get(currentRecipeIndex);
 
-        ItemStack buyingItemStack1 = merchantRecipe.getItemToBuy();
-        ItemStack buyingItemStack2 = merchantRecipe.getSecondItemToBuy();
+        ItemStack buyingItemStack1 = merchantRecipe.func_222218_a(); // Get first item the trade requires
+        ItemStack buyingItemStack2 = merchantRecipe.func_222202_c(); // Get second item the trade requires
 
         //check if we have an item in our cursor
         ItemStack handStack = mc.player.inventory.getItemStack();
@@ -682,7 +681,7 @@ public class InventoryUtil {
      * @return the boolean
      */
     public static boolean DepositAllMatchingItemsInFurance() {
-        if (!(mc.currentScreen instanceof GuiFurnace))
+        if (!(mc.currentScreen instanceof FurnaceScreen))
             return false;
 
         //furance container = 39 big
@@ -796,7 +795,7 @@ public class InventoryUtil {
      * @return the boolean
      */
     public static boolean DepositAllMatchingItemsInBrewingStand() {
-        if (!(mc.currentScreen instanceof GuiBrewingStand))
+        if (!(mc.currentScreen instanceof BrewingStandScreen))
             return false;
 
         //brewing stand container = 40 big
@@ -923,7 +922,7 @@ public class InventoryUtil {
      * @return 9-44, -1 if not found
      */
     private static int GetItemIndex(Object object, int iStart, int iEnd) {
-        List inventorySlots = mc.player.inventoryContainer.inventorySlots;
+        List inventorySlots = mc.player.container.inventorySlots;   //???:think this one might actually be inventory.mainInventory
 
         //iterate over the main inventory (9~44)
         for (int i = iStart; i <= iEnd; i++) {
@@ -984,7 +983,7 @@ public class InventoryUtil {
      * @return 9-44, -1 if no empty spot
      */
     private static int GetFirstEmptyIndexInInventory() {
-        List inventorySlots = mc.player.inventoryContainer.inventorySlots;
+        List inventorySlots = mc.player.inventory.mainInventory; // almost certain this should NOT be container.inventorySlots
 
         //iterate over the main inventory (9-35) then the hotbar (36-44)
         for (int i = 9; i <= 44; i++) {
@@ -1076,7 +1075,7 @@ public class InventoryUtil {
         int iStart = 0;
         int iEnd = numContainerSlots;
 
-        if (mc.currentScreen instanceof GuiScreenHorseInventory)
+        if (mc.currentScreen instanceof HorseInventoryScreen)
             iStart = 2;    //the first index is the saddle slot, second index is the armor slot
 
         int firstEmptyIndex = -1;
@@ -1120,7 +1119,7 @@ public class InventoryUtil {
         int iStart = 0;
         int iEnd = numContainerSlots;
 
-        if (mc.currentScreen instanceof GuiScreenHorseInventory)
+        if (mc.currentScreen instanceof HorseInventoryScreen)
             iStart = 2;    //the first index is the saddle slot, second index is the armor slot - skip these
 
         //iterate over the chest's inventory (0,1-16,27,54)
@@ -1234,7 +1233,7 @@ public class InventoryUtil {
 
         try {
             mc.playerController.windowClick(
-                    mc.player.inventoryContainer.windowId,
+                    mc.player.container.windowId,
                     itemIndex,
                     (rightClick) ? 1 : 0,
                     (shiftHold) ? ClickType.PICKUP_ALL : ClickType.PICKUP, //Former : (ShiftHold) ? 1:0;

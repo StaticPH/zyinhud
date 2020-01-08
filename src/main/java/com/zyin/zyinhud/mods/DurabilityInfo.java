@@ -3,11 +3,11 @@ package com.zyin.zyinhud.mods;
 import com.zyin.zyinhud.ZyinHUD;
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.ZyinHUDSound;
-import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
+//import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
 import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.Localization;
 import com.zyin.zyinhud.util.ModCompatibility;
-import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.*;
 import net.minecraft.util.NonNullList;
@@ -51,21 +51,21 @@ public class DurabilityInfo extends ZyinHUDModBase
         /**
          * None text modes.
          */
-        NONE(Localization.get("durabilityinfo.textmode.none")),
+        NONE("durabilityinfo.textmode.none"),
         /**
          * Text text modes.
          */
-        TEXT(Localization.get("durabilityinfo.textmode.text")),
+        TEXT("durabilityinfo.textmode.text"),
         /**
          * Percentage text modes.
          */
-        PERCENTAGE(Localization.get("durabilityinfo.textmode.percentage"));
+        PERCENTAGE("durabilityinfo.textmode.percentage");
         
-        private String friendlyName;
+        private String unfriendlyName;
         
-        private TextModes(String friendlyName)
+        private TextModes(String unfriendlyName)
         {
-        	this.friendlyName = friendlyName;
+        	this.unfriendlyName = unfriendlyName;
         }
 
         /**
@@ -111,7 +111,7 @@ public class DurabilityInfo extends ZyinHUDModBase
          */
         public String GetFriendlyName()
         {
-        	return friendlyName;
+        	return Localization.get(unfriendlyName);
         }
     }
 
@@ -230,8 +230,8 @@ public class DurabilityInfo extends ZyinHUDModBase
         //and not in a menu (except for chat and the custom Options menu)
         //and F3 not shown
         if (DurabilityInfo.Enabled &&
-                (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen != null && ((mc.currentScreen instanceof GuiChat && !HideDurabilityInfoInChat)|| TabIsSelectedInOptionsGui()))) &&
-        		!mc.gameSettings.showDebugInfo)
+            (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen != null && ((mc.currentScreen instanceof ChatScreen && !HideDurabilityInfoInChat)/* || TabIsSelectedInOptionsGui()*/))) &&
+            !mc.gameSettings.showDebugInfo)
         {
             //don't waste time recalculating things every tick
         	if(System.currentTimeMillis() - lastGenerate > durabilityUpdateFrequency)
@@ -243,7 +243,7 @@ public class DurabilityInfo extends ZyinHUDModBase
 
             for (ItemStack itemStack : damagedItemsList)
             {
-                if (itemStack.getItem() instanceof ItemArmor || itemStack.getItem() instanceof ItemElytra)
+                if (itemStack.getItem() instanceof ArmorItem || itemStack.getItem() instanceof ElytraItem)
                     armorExists = true;
             }
 
@@ -256,7 +256,7 @@ public class DurabilityInfo extends ZyinHUDModBase
                 
                 
                 //if this tool is an armor
-                if (tool instanceof ItemArmor || tool instanceof ItemElytra)
+                if (tool instanceof ArmorItem || tool instanceof ElytraItem)
                 {
                     if (ShowArmorDurability)
                     {
@@ -429,8 +429,8 @@ public class DurabilityInfo extends ZyinHUDModBase
         //and not in a menu (except for chat and the custom Options menu)
         //and not typing
         if (mc.mouseHelper.isMouseGrabbed() ||
-        		(mc.currentScreen != null && (mc.currentScreen instanceof GuiChat || mc.currentScreen instanceof GuiZyinHUDOptions && ((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("durabilityinfo.name")))) &&
-        		!mc.gameSettings.keyBindPlayerList.isPressed())
+            (mc.currentScreen != null && (mc.currentScreen instanceof ChatScreen /*|| mc.currentScreen instanceof GuiZyinHUDOptions && ((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("durabilityinfo.name"))*/)) &&
+            !mc.gameSettings.keyBindPlayerList.isPressed())
         {
             damagedItemsList.clear();
             UnequipDamagedArmor();
@@ -512,13 +512,13 @@ public class DurabilityInfo extends ZyinHUDModBase
      */
     private static boolean IsTool(Item item)
     {
-    	return item instanceof ItemTool
-	    	|| item instanceof ItemSword
-	    	|| item instanceof ItemBow
-	    	|| item instanceof ItemHoe
-	        || item instanceof ItemShears
-	        || item instanceof ItemFishingRod
-                || item instanceof ItemShield
+    	return item instanceof ToolItem
+	    	|| item instanceof SwordItem
+	    	|| item instanceof BowItem
+	    	|| item instanceof HoeItem
+	        || item instanceof ShearsItem
+	        || item instanceof FishingRodItem
+                || item instanceof ShieldItem
 	        || ModCompatibility.TConstruct.IsTConstructHarvestTool(item)
 	        || ModCompatibility.TConstruct.IsTConstructWeapon(item)
 	        || ModCompatibility.TConstruct.IsTConstructBow(item);
@@ -538,8 +538,8 @@ public class DurabilityInfo extends ZyinHUDModBase
             for(int i = 0; i < itemStacks.size(); i++)
             {
             	ItemStack itemStack = itemStacks.get(i);
-                if (!itemStack.isEmpty() && !(itemStack.getItem() instanceof ItemElytra) &&
-                        !(itemStack.isEnchanted() && EnchantmentHelper.hasBindingCurse(itemStack)))
+                if (!itemStack.isEmpty() && !(itemStack.getItem() instanceof ElytraItem) &&
+                    !(itemStack.isEnchanted() && EnchantmentHelper.hasBindingCurse(itemStack)))
                 {
                     int itemDamage = itemStack.getDamage();
                     int maxDamage = itemStack.getMaxDamage();
@@ -549,8 +549,15 @@ public class DurabilityInfo extends ZyinHUDModBase
                     {
                        InventoryUtil.MoveArmorIntoPlayerInventory(i);
 	                   	ZyinHUDSound.PlayPlopSound();
-	                   	ZyinHUDRenderer.DisplayNotification(Localization.get("durabilityinfo.name") + Localization.get("durabilityinfo.unequippeditem") + itemStack.getDisplayName());
-	                   	ZyinHUD.log("Unequipped " + itemStack.getDisplayName() + " because it was at low durability (" + itemDamage + "/" + maxDamage + ")");
+	                   	ZyinHUDRenderer.DisplayNotification(
+		                    Localization.get("durabilityinfo.name") +
+		                    Localization.get("durabilityinfo.unequippeditem") +
+		                    itemStack.getDisplayName()
+	                    );
+	                    ZyinHUD.ZyinLogger.info(
+		                    "Unequipped {} because it was at low durability ({}/{})", itemStack.getDisplayName(),
+		                    itemDamage, maxDamage
+	                    );
                     }
                 }
             }
@@ -571,12 +578,12 @@ public class DurabilityInfo extends ZyinHUDModBase
             {
                 Item item = itemStack.getItem();
 
-                if (item instanceof ItemTool || item instanceof ItemSword || item instanceof ItemBow || item instanceof ItemHoe
-                        || item instanceof ItemShears || item instanceof ItemFishingRod)
+                if (item instanceof ToolItem || item instanceof SwordItem || item instanceof BowItem || item instanceof HoeItem
+                    || item instanceof ShearsItem || item instanceof FishingRodItem)
                 {
                     int itemDamage = itemStack.getDamage();
                     int maxDamage = itemStack.getMaxDamage();
-                    int threshold = (item instanceof ItemFishingRod) ? 5 : 15;
+                    int threshold = (item instanceof FishingRodItem) ? 5 : 15;
                     
                     if (maxDamage != 0
                     	&& maxDamage - itemDamage < threshold				//less than 15 durability
@@ -585,7 +592,10 @@ public class DurabilityInfo extends ZyinHUDModBase
                     	InventoryUtil.MoveHeldItemIntoPlayerInventory();
                     	ZyinHUDSound.PlayPlopSound();
                     	ZyinHUDRenderer.DisplayNotification(Localization.get("durabilityinfo.name") + Localization.get("durabilityinfo.unequippeditem") + item.getDisplayName(itemStack).toString());
-                    	ZyinHUD.log("Unequipped " + item.getDisplayName(itemStack).toString() + " because it was at low durability (" + itemDamage + "/" + maxDamage + ")");
+	                    ZyinHUD.ZyinLogger.info(
+		                    "Unequipped {} because it was at low durability ({}/{})",
+		                    item.getDisplayName(itemStack).toString(), itemDamage, maxDamage
+	                    );
                     }
                 }
             }
@@ -597,11 +607,11 @@ public class DurabilityInfo extends ZyinHUDModBase
      * Checks to see if the Durability Info tab is selected in GuiZyinHUDOptions
      * @return
      */
-    private static boolean TabIsSelectedInOptionsGui()
-    {
-    	return mc.currentScreen instanceof GuiZyinHUDOptions &&
-    		(((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("durabilityinfo.name")));
-    }
+//    private static boolean TabIsSelectedInOptionsGui()
+//    {
+//    	return mc.currentScreen instanceof GuiZyinHUDOptions &&
+//    		(((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("durabilityinfo.name")));
+//    }
 
     /**
      * Get durability display threshold for armor float.

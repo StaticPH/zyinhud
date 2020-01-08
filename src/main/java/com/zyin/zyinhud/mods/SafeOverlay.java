@@ -1,23 +1,23 @@
 package com.zyin.zyinhud.mods;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.zyin.zyinhud.util.Localization;
+import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockAir;
-import net.minecraft.block.BlockMagma;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.block.MagmaBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.EntitySpawnPlacementRegistry;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.ZombieEntity;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.EnumLightType;
+import net.minecraft.world.LightType;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldEntitySpawner;
+import net.minecraft.world.spawner.WorldEntitySpawner;
 import net.minecraft.world.dimension.DimensionType;
 import org.lwjgl.opengl.GL11;
 
@@ -45,7 +45,7 @@ public class SafeOverlay extends ZyinHUDModBase {
         return Enabled = !Enabled;
     }
 
-    public static EntityLiving zombie = null;
+    public static MobEntity zombie = null;
 
     /**
      * The current mode for this mod
@@ -59,16 +59,16 @@ public class SafeOverlay extends ZyinHUDModBase {
         /**
          * Off modes.
          */
-        OFF(Localization.get("safeoverlay.mode.off")),
+        OFF("safeoverlay.mode.off"),
         /**
          * On modes.
          */
-        ON(Localization.get("safeoverlay.mode.on"));
+        ON("safeoverlay.mode.on");
 
-        private String friendlyName;
+        private String unfriendlyName;
 
-        private Modes(String friendlyName) {
-            this.friendlyName = friendlyName;
+        private Modes(String unfriendlyName) {
+            this.unfriendlyName = unfriendlyName;
         }
 
         /**
@@ -100,7 +100,7 @@ public class SafeOverlay extends ZyinHUDModBase {
          * @return the string
          */
         public String GetFriendlyName() {
-            return friendlyName;
+            return Localization.get(unfriendlyName);
         }
     }
 
@@ -194,7 +194,7 @@ public class SafeOverlay extends ZyinHUDModBase {
         SafeCalculatorThread(BlockPos playerPosition) {
             super("Safe Overlay Calculator Thread");
             this.cachedPlayerPosition = playerPosition;
-            SafeOverlay.zombie = new EntityZombie(mc.player.world);
+            SafeOverlay.zombie = new ZombieEntity(mc.player.world);
             //Start the thread
             start();
         }
@@ -234,8 +234,8 @@ public class SafeOverlay extends ZyinHUDModBase {
      * @param entityTypeIn Type of the entity
      * @return boolean
      */
-    private static boolean CanMobsSpawnAtPosition(BlockPos pos, World world, @Nullable EntityType<? extends EntityLiving> entityTypeIn) {
-        return WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.SpawnPlacementType.ON_GROUND, world, pos, entityTypeIn);
+    private static boolean CanMobsSpawnAtPosition(BlockPos pos, World world, @Nullable EntityType<? extends MobEntity> entityTypeIn) {
+        return WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntitySpawnPlacementRegistry.PlacementType.ON_GROUND, world, pos, entityTypeIn);
     }
 
     /**
@@ -260,12 +260,12 @@ public class SafeOverlay extends ZyinHUDModBase {
         canSpawn = SafeOverlay.CanMobsSpawnAtPosition(pos, world, EntityType.ZOMBIE) || SafeOverlay.CanMobsSpawnAtPosition(pos, world, EntityType.SKELETON);
         if (canSpawn) {
             zombie.setLocationAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0F, 0.0F);
-            canSpawn = zombie.isNotColliding();
-            if (!SafeOverlay.displayInNether && world.getBlockState(pos).getBlock() instanceof BlockMagma) {
+            canSpawn = zombie.isNotColliding(world);
+            if (!SafeOverlay.displayInNether && world.getBlockState(pos).getBlock() instanceof MagmaBlock) {
                 canSpawn = false;
             }
         }
-        return canSpawn && mc.world.getLightFor(EnumLightType.BLOCK, pos) < 8;
+        return canSpawn && mc.world.getLightFor(LightType.BLOCK, pos) < 8;
     }
 
 
@@ -280,7 +280,7 @@ public class SafeOverlay extends ZyinHUDModBase {
             return;
         }
 
-        if (!displayInNether && mc.player.dimension == DimensionType.NETHER)    //turn off in the nether, mobs can spawn no matter what
+        if (!displayInNether && mc.player.dimension == DimensionType.THE_NETHER)    //turn off in the nether, mobs can spawn no matter what
         {
             return;
         }
@@ -307,7 +307,7 @@ public class SafeOverlay extends ZyinHUDModBase {
 
         GL11.glPushMatrix();
         GL11.glTranslated(-x, -y, -z);        //go from cartesian x,y,z coordinates to in-world x,y,z coordinates
-        GlStateManager.disableTexture2D();    //fixes color rendering bug (we aren't rendering textures)
+        GlStateManager.disableTexture();    //fixes color rendering bug (we aren't rendering textures)
         GlStateManager.disableLighting();
 
         //BLEND and ALPHA allow for color transparency
@@ -328,7 +328,7 @@ public class SafeOverlay extends ZyinHUDModBase {
         }
         //GL11.glColor4f(0, 0, 0, 1);    //change alpha back to 100% after we're done rendering
         GL11.glEnd();
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableTexture();
         GlStateManager.enableLighting();
         //GL11.glBlendFunc(GL11.GL_ONE, GL11.GL_ZERO);    //puts blending back to normal, fixes bad HD texture rendering
         GL11.glDisable(GL11.GL_BLEND);    //fixes [Journeymap] beacons being x-rayed as well
@@ -342,7 +342,7 @@ public class SafeOverlay extends ZyinHUDModBase {
      * @param position A position defined by (x,y,z) coordinates
      */
     protected void RenderUnsafeMarker(BlockPos position) {
-        IBlockState state = mc.player.world.getBlockState(position);
+        BlockState state = mc.player.world.getBlockState(position);
         Block block = state.getBlock();
         VoxelShape voxelshape = state.getShape(mc.player.world, position);
         //get bounding box data for this block
@@ -352,7 +352,7 @@ public class SafeOverlay extends ZyinHUDModBase {
         double boundingBoxMinX = 0.0D;
         double boundingBoxMaxX = 1.0D;
         double boundingBoxMaxY;
-        if (block instanceof BlockAir) {
+        if (block instanceof AirBlock) {
             boundingBoxMaxY = 0.0D;
         } else if (boundingBox.maxY < 1.0 &&
                 ((boundingBox.maxX - boundingBox.minX) < 1.0 || (boundingBox.maxZ - boundingBox.minZ) < 1.0)) {
@@ -364,8 +364,8 @@ public class SafeOverlay extends ZyinHUDModBase {
         double boundingBoxMaxZ = 1.0D;
 
         float r, g, b, alpha;
-        int lightLevelWithSky = mc.world.getLightFor(EnumLightType.SKY, position);
-        int lightLevelWithoutSky = mc.world.getLightFor(EnumLightType.BLOCK, position);
+        int lightLevelWithSky = mc.world.getLightFor(LightType.SKY, position);
+        int lightLevelWithoutSky = mc.world.getLightFor(LightType.BLOCK, position);
 
         if (lightLevelWithSky > lightLevelWithoutSky && lightLevelWithSky > 7) {
             //yellow, but decrease the brightness of the "X" marks if the surrounding area is dark

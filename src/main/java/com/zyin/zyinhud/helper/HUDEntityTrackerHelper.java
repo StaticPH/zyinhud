@@ -3,18 +3,20 @@ package com.zyin.zyinhud.helper;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.entity.player.RemoteClientPlayerEntity;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.EntityWitherSkeleton;
-import net.minecraft.entity.passive.EntityWolf;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.monster.WitherSkeletonEntity;
+import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.glu.GLU;
 
 import com.zyin.zyinhud.mods.PlayerLocator;
 
@@ -23,7 +25,7 @@ import com.zyin.zyinhud.mods.PlayerLocator;
  * entities in the game world.
  */
 public class HUDEntityTrackerHelper {
-    private static final Minecraft mc = Minecraft.getMinecraft();
+    private static final Minecraft mc = Minecraft.getInstance();
 
     private static FloatBuffer modelMatrix = BufferUtils.createFloatBuffer(16);
     private static FloatBuffer projMatrix = BufferUtils.createFloatBuffer(16);
@@ -36,9 +38,9 @@ public class HUDEntityTrackerHelper {
      */
     public static void StoreMatrices() {
         modelMatrix.rewind();
-        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelMatrix);
+        GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, modelMatrix);
         projMatrix.rewind();
-        GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projMatrix);
+        GL11.glGetFloatv(GL11.GL_PROJECTION_MATRIX, projMatrix);
     }
 
     /**
@@ -68,9 +70,9 @@ public class HUDEntityTrackerHelper {
         PlayerLocator.numOverlaysRendered = 0;
         
         if (PlayerLocator.Enabled && PlayerLocator.Mode == PlayerLocator.Modes.ON
-                && mc.inGameHasFocus)
+            && mc.isGameFocused())
         {
-        	EntityPlayer me = mc.player;
+        	PlayerEntity me = mc.player;
             
             double meX = me.lastTickPosX + (me.posX - me.lastTickPosX) * partialTickTime;
             double meY = me.lastTickPosY + (me.posY - me.lastTickPosY) * partialTickTime;
@@ -87,48 +89,57 @@ public class HUDEntityTrackerHelper {
                 // reversed 3rd-person view; flip the look direction
                 lookDir = new Vec3d(lookDir.x * -1, lookDir.y * -1, lookDir.z * -1);
             }
-            
-            ScaledResolution res = new ScaledResolution(mc);
+
+
+            MainWindow res = Minecraft.getInstance().mainWindow;
             int width = res.getScaledWidth();
             int height = res.getScaledHeight();
             
             IntBuffer viewport = BufferUtils.createIntBuffer(16);
-            GL11.glGetInteger(GL11.GL_VIEWPORT, viewport);
-            
-            //iterate over all the loaded Entity objects and find just the entities we are tracking
-            for (int i = 0; i < mc.world.loadedEntityList.size(); i++)
+            GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
+
+            // Best guess at a way to iterate through all loaded entities
+            Int2ObjectMap<Entity> entitiesById = ObfuscationReflectionHelper.getPrivateValue(ClientWorld.class, mc.world, "entitiesById"); // if mapped name doesnt work, try field_217429_b
+            if (entitiesById == null)
             {
-            	Entity object = mc.world.loadedEntityList.get(i);
-            	
-            	if(object == null)
+                return;
+            }
+
+            //iterate over all the loaded Entity objects and find just the entities we are tracking
+//            for (int i = 0; i < mc.world.loadedEntityList.size(); i++)
+//            {
+//            	Entity object = mc.world.loadedEntityList.get(i);
+            for(Entity object : entitiesById.values()) {
+
+                if(object == null)
             		continue;
-                
+
                 //only track entities that we are tracking (i.e. other players/wolves/witherskeletons)
-            	if(!(object instanceof EntityOtherPlayerMP || 
-                	 object instanceof EntityWolf ||
-                	 object instanceof EntityWitherSkeleton))
+            	if(!(object instanceof RemoteClientPlayerEntity ||
+	                 object instanceof WolfEntity ||
+	                 object instanceof WitherSkeletonEntity))
                     continue;
 
                 double entityX = object.lastTickPosX + (object.posX - object.lastTickPosX) * partialTickTime;
                 double entityY = object.lastTickPosY + (object.posY - object.lastTickPosY) * partialTickTime;
                 double entityZ = object.lastTickPosZ + (object.posZ - object.lastTickPosZ) * partialTickTime;
-                
+
                 // direction to target entity
                 Vec3d toEntity = new Vec3d(entityX - meX, entityY - meY, entityZ - meZ);
-                
+
                 float x = (float)toEntity.x;
                 float y = (float)toEntity.y;
                 float z = (float)toEntity.z;
-                
+
                 double dist = Math.sqrt(toEntity.lengthSquared());
                 toEntity = toEntity.normalize();
-                
+
                 if (lookDir.dotProduct(toEntity) <= 0.02)
                 {
                     // angle between vectors is greater than about 89 degrees, so
                     // create a dummy target location that is 89 degrees away from look direction
-                    // along the arc between look direction and direction to target entity  
-                    
+                    // along the arc between look direction and direction to target entity
+
                     final double angle = 89.0 * pi / 180;
                     final double sin = Math.sin(angle);
                     final double cos = Math.cos(angle);
@@ -137,7 +148,7 @@ public class HUDEntityTrackerHelper {
                     double ox = ortho.x;
                     double oy = ortho.y;
                     double oz = ortho.z;
-                    
+
                     // build a rotation matrix to rotate around a vector (ortho) by an angle (89 degrees)
                     // from http://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
                     double m00 = cos + ox*ox*(1-cos);
@@ -148,49 +159,120 @@ public class HUDEntityTrackerHelper {
                     double m12 = oy*oz*(1-cos) - ox*sin;
                     double m20 = oz*ox*(1-cos) - oy*sin;
                     double m21 = oz*oy*(1-cos) + ox*sin;
-                    double m22 = cos + oz*oz*(1-cos);                    
-                    
+                    double m22 = cos + oz*oz*(1-cos);
+
                     // transform (multiply) look direction vector with rotation matrix and scale by distance to target entity;
                     // this produces the coordinates for the dummy target
                     x = (float)(dist * (m00*lookDir.x + m01*lookDir.y + m02*lookDir.z));
                     y = (float)(dist * (m10*lookDir.x + m11*lookDir.y + m12*lookDir.z));
                     z = (float)(dist * (m20*lookDir.x + m21*lookDir.y + m22*lookDir.z));
                 }
-                
+
                 FloatBuffer screenCoords = BufferUtils.createFloatBuffer(3);
-                
+
                 modelMatrix.rewind();
                 projMatrix.rewind();
-                
+
                 // map target's object coordinates into window coordinates
                 // using world render transform matrices stored by StoreMatrices()
-                GLU.gluProject(x, y, z, modelMatrix, projMatrix, viewport, screenCoords);
-                
-                int hudX = Math.round(screenCoords.get(0)) / res.getScaleFactor();
-                int hudY = height - Math.round(screenCoords.get(1)) / res.getScaleFactor();
-                 
+                ProjectionHelper.mapTargetCoordsToWindowCoords(
+                    x, y, z, modelMatrix, projMatrix, viewport, screenCoords
+                );
+
+                int hudX = Math.round(screenCoords.get(0)) / (int)res.getGuiScaleFactor();
+                int hudY = height - Math.round(screenCoords.get(1)) / (int)res.getGuiScaleFactor();
+
                 // if <hudX, hudY> is outside the screen, scale the coordinates so they're
                 // at the edge of the screen (to preserve angle)
-                
+
                 int newHudX = hudX, newHudY = hudY;
-                
+
                 //use X overshoot to scale Y
                 if (hudX < 0)
                     newHudY = (int)((hudY - height / 2) / (1 - (2 * (float)hudX / width)) + height / 2);
                 else if (hudX > width)
                     newHudY = (int)((hudY - height / 2) / ((2 * (float)hudX / width) - 1) + height / 2);
-                
+
                 //use Y overshoot to scale X
                 if (hudY < 0)
                     newHudX = (int)((hudX - width / 2) / (1 - (2 * (float)hudY / height)) + width / 2);
                 else if (hudY > height)
                     newHudX = (int)((hudX - width / 2) / ((2 * (float)hudY / height) - 1) + width / 2);
-                
+
                 hudX = newHudX;
                 hudY = newHudY;
-                
+
                 RenderEntityInfoOnHUD(object, hudX, hudY);
             }
+        }
+    }
+//TODO: Move this elsewhere, probably to a utility class
+    @SuppressWarnings("PointlessArithmeticExpression")
+    private static class ProjectionHelper {
+        // Because lwjgl3 doesnt provide glu anymore, we're just going to have to provide the function we needed ourselves
+        private static final float[] in = new float[4];
+        private static final float[] out = new float[4];
+
+        /** This method is functionally identical to <tt>org.lwjgl.util.glu.GLU.__gluMultMatrixVecf</tt> from <tt>lwjgl2</tt>
+         * @param matrix
+         * @param in
+         * @param out
+         */
+        public static void multMatrixVecf(FloatBuffer matrix, float[] in, float[] out){
+            for (int i = 0; i < 4; i++) {
+                out[i] = in[0] * matrix.get(matrix.position() + i + 0) +
+                         in[1] * matrix.get(matrix.position() + i + 4) +
+                         in[2] * matrix.get(matrix.position() + i + 8) +
+                         in[3] * matrix.get(matrix.position() + i + 12);
+            }
+        }
+
+        /** This method is functionally identical to <tt>org.lwjgl.util.glu.GLU.gluProject</tt> from <tt>lwjgl2</tt>
+         * @param objx
+         * @param objy
+         * @param objz
+         * @param modelMatrix
+         * @param projMatrix
+         * @param viewport
+         * @param win_pos
+         * @return
+         */
+        public static boolean mapTargetCoordsToWindowCoords(
+            float objx, float objy, float objz,
+            FloatBuffer modelMatrix, FloatBuffer projMatrix,
+            IntBuffer viewport, FloatBuffer win_pos
+        ) {
+            float[] in = ProjectionHelper.in;
+            float[] out = ProjectionHelper.out;
+
+            in[0] = objx;
+            in[1] = objy;
+            in[2] = objz;
+            in[3] = 1.0f;
+
+            multMatrixVecf(modelMatrix, in, out);
+            multMatrixVecf(projMatrix, out, in);
+
+            if (in[3] == 0.0){
+                return false;
+            }
+
+            in[3] = 0.5f / in[3]; //(1.0f / in[3]) * 0.5f;
+            // Map x, y and z to range 0-1
+            in[0] = (in[0] * in[3]) + 0.5f;
+            in[1] = (in[1] * in[3]) + 0.5f;
+            in[2] = (in[2] * in[3]) + 0.5f;
+
+            // Map x,y to viewport
+            win_pos.put(
+                0, (in[0] * viewport.get(viewport.position() + 2)) + viewport.get(viewport.position() + 0)
+            ).put(
+                1, (in[1] * viewport.get(viewport.position() + 3)) + viewport.get(viewport.position() + 1)
+            ).put(
+                2, in[2]
+            );
+
+            return true;
         }
     }
 }

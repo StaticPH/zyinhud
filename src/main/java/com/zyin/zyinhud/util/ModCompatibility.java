@@ -2,7 +2,7 @@ package com.zyin.zyinhud.util;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundNBT;
 
 /**
  * The type Mod compatibility.
@@ -119,12 +119,12 @@ public class ModCompatibility
 		 * @return returns the damage value of the tool, 			returns the energy if it has any, 			or returns -1 if the tool is broken.
 		 */
 		public static Integer GetDamage(ItemStack itemStack) {
-			NBTTagCompound tags = itemStack.getTag();
+			CompoundNBT tags = itemStack.getTag();
 	        if (tags == null)
 	        {
 	        	return null;
 	        }
-	        else if (tags.hasKey("Energy"))
+	        else if (tags.contains("Energy"))
 	        {
 				return tags.getInt("Energy");
 	        }
@@ -143,12 +143,12 @@ public class ModCompatibility
 		 * @return returns the max durability of the tool. 			returns 400000 if it has energy.
 		 */
 		public static int GetMaxDamage(ItemStack itemStack) {
-			NBTTagCompound tags = itemStack.getTag();
+			CompoundNBT tags = itemStack.getTag();
 	        if (tags == null)
 	        {
 	        	return -1;
 	        }
-	        else if (tags.hasKey("Energy"))
+	        else if (tags.contains("Energy"))
 	        {
 				return 400000;	//is this right??
 	        }

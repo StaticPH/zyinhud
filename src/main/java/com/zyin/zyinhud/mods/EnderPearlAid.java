@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.mods;
 
-import net.minecraft.init.Items;
+import net.minecraft.item.Items;
 
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.util.InventoryUtil;
@@ -37,10 +37,10 @@ public class EnderPearlAid extends ZyinHUDModBase
         	return;
         }*/
         
-        if (EatingAid.instance.isEating())
-        {
-            EatingAid.instance.StopEating();    //it's not good if we have an ender pearl selected and hold right click down...
-        }
+//        if (EatingAid.instance.isEating())
+//        {
+//            EatingAid.instance.StopEating();    //it's not good if we have an ender pearl selected and hold right click down...
+//        }
         
         boolean usedEnderPearlSuccessfully = InventoryUtil.UseItem(Items.ENDER_PEARL);
         

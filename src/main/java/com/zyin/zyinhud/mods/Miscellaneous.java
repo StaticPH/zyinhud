@@ -1,9 +1,9 @@
 package com.zyin.zyinhud.mods;
 
 import com.zyin.zyinhud.ZyinHUD;
-import net.minecraft.client.gui.GuiRepair;
-import net.minecraft.client.gui.inventory.GuiEditSign;
-import net.minecraft.inventory.ContainerRepair;
+import net.minecraft.client.gui.screen.inventory.AnvilScreen;
+import net.minecraft.client.gui.screen.EditSignScreen;
+import net.minecraft.inventory.container.RepairContainer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -11,8 +11,8 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
+import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 
 import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.ZyinHUDUtil;
@@ -27,10 +27,6 @@ public class Miscellaneous extends ZyinHUDModBase
 	 */
 	public static final Miscellaneous instance = new Miscellaneous();
 
-	/**
-	 * The constant UseEnhancedMiddleClick.
-	 */
-	public static boolean UseEnhancedMiddleClick;
 	/**
 	 * The constant UseQuickPlaceSign.
 	 */
@@ -54,7 +50,7 @@ public class Miscellaneous extends ZyinHUDModBase
 	 */
 	@SubscribeEvent
 	public void GuiOpenEvent(GuiOpenEvent event) {
-		if (UseQuickPlaceSign && event.getGui() instanceof GuiEditSign && mc.player.isSneaking()) {
+		if (UseQuickPlaceSign && event.getGui() instanceof EditSignScreen && mc.player.isSneaking()) {
 			event.setCanceled(true);
 		}
 	}
@@ -67,8 +63,8 @@ public class Miscellaneous extends ZyinHUDModBase
 	 */
 	@SubscribeEvent
 	public void DrawScreenEvent(DrawScreenEvent.Post event) {
-		if (ShowAnvilRepairs && event.getGui() instanceof GuiRepair) {
-			DrawGuiRepairCounts((GuiRepair) event.getGui());
+		if (ShowAnvilRepairs && event.getGui() instanceof AnvilScreen) {
+			DrawGuiRepairCounts((AnvilScreen) event.getGui());
 		}
 	}
 
@@ -77,9 +73,9 @@ public class Miscellaneous extends ZyinHUDModBase
 	 *
 	 * @param guiRepair the gui repair
 	 */
-	public void DrawGuiRepairCounts(GuiRepair guiRepair) {
-		ContainerRepair anvil = ZyinHUDUtil.GetFieldByReflection(GuiRepair.class, guiRepair, "anvil", "field_147092_v");
-    	IInventory inputSlots = ZyinHUDUtil.GetFieldByReflection(ContainerRepair.class, anvil, "inputSlots", "field_82853_g");
+	public void DrawGuiRepairCounts(AnvilScreen guiRepair) {
+		RepairContainer anvil = guiRepair.getContainer();
+    	IInventory inputSlots = ZyinHUDUtil.GetFieldByReflection(RepairContainer.class, anvil, "inputSlots", "field_82853_g");
 
     	int xSize = guiRepair.getXSize();
     	int ySize = guiRepair.getYSize();
@@ -158,51 +154,6 @@ public class Miscellaneous extends ZyinHUDModBase
 		return (int)(Math.log(x) / Math.log(base));
     }
 
-
-	/**
-	 * When the player middle clicks
-	 */
-	public static void OnMiddleClick()
-	{
-		if(UseEnhancedMiddleClick)
-			MoveMouseoveredBlockIntoHotbar();
-	}
-
-
-	/**
-	 * Enhanced select block functionality (middle click). If the block exists in your inventory then
-	 * it will put it into the hotbar, instead of it only working if the block is on your hotbar.
-	 */
-	public static void MoveMouseoveredBlockIntoHotbar() {
-		if (mc.objectMouseOver != null && mc.objectMouseOver.type == RayTraceResult.Type.BLOCK) {
-			//Block block = ZyinHUDUtil.GetMouseOveredBlock();
-        	BlockPos blockPos = ZyinHUDUtil.GetMouseOveredBlockPos();
-            
-            //Item blockItem = Item.getItemFromBlock(block);
-            
-    		//first, scan the hotbar to see if the mouseovered block already exists on the hotbar
-            ZyinHUD.log("checking hotbar...");
-            int itemIndexInHotbar = InventoryUtil.GetItemIndexFromHotbar(blockPos);
-            ZyinHUD.log("returned "+itemIndexInHotbar);
-            if(itemIndexInHotbar > 0)
-            {
-            	//if it does then do nothing since Minecraft takes care of it already
-            }
-            else
-            {
-            	//if it is not on the hotbar, check to see if it is in our inventory
-                ZyinHUD.log("checking inventory...");
-            	int itemIndexInInventory = InventoryUtil.GetItemIndexFromInventory(blockPos);
-                ZyinHUD.log("returned "+itemIndexInInventory);
-            	if(itemIndexInInventory > 0)
-            	{
-            		//if it is in our inventory, swap it out to the hotbar
-            		InventoryUtil.Swap(InventoryUtil.GetCurrentlySelectedItemInventoryIndex(), itemIndexInInventory);
-				}
-			}
-		}
-	}
-
 	/**
 	 * Client tick event.
 	 *
@@ -220,7 +171,7 @@ public class Miscellaneous extends ZyinHUDModBase
 	/**
 	 * Lets the player sprint longer than 30 seconds at a time. Needs to be called on every game tick to be effective.
 	 */
-	public static void MakeSprintingUnlimited()
+	public static void MakeSprintingUnlimited() //_CHECK: something tells me this wont work anymore with a client-side only mod
 	{
 		if(mc.player == null)
 			return;
@@ -232,17 +183,9 @@ public class Miscellaneous extends ZyinHUDModBase
 	}
 
 
-	/**
-	 * Toggles improving the middle click functionality to work with blocks in your inventory
-	 *
-	 * @return boolean
-	 */
-	public static boolean ToggleUseEnchancedMiddleClick() {
-		return UseEnhancedMiddleClick = !UseEnhancedMiddleClick;
-	}
 
 	/**
-	 * Toggles improving the middle click functionality to work with blocks in your inventory
+	 * Toggles quick sign placement ability
 	 *
 	 * @return boolean
 	 */

@@ -2,7 +2,6 @@ package com.zyin.zyinhud.mods;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.entity.Render;
 
 /**
  * The type Zyin hud mod base.

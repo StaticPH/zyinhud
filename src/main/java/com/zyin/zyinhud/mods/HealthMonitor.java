@@ -3,16 +3,13 @@ package com.zyin.zyinhud.mods;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.TickEvent.ClientTickEvent;
 
 import com.zyin.zyinhud.ZyinHUDSound;
-import com.zyin.zyinhud.mods.EatingAid.Modes;
 import com.zyin.zyinhud.util.Localization;
 
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 
 /**
  * Plays a warning sound when the player is low on health.
@@ -45,36 +42,36 @@ public class HealthMonitor extends ZyinHUDModBase
 		/**
 		 * Oot modes.
 		 */
-		OOT(Localization.get("healthmonitor.mode.oot"), "lowhealth_oot"),
+		OOT("healthmonitor.mode.oot", "lowhealth_oot"),
 		/**
 		 * Lttp modes.
 		 */
-		LTTP(Localization.get("healthmonitor.mode.lttp"), "lowhealth_lttp"),
+		LTTP("healthmonitor.mode.lttp", "lowhealth_lttp"),
 		/**
 		 * Oracle modes.
 		 */
-		ORACLE(Localization.get("healthmonitor.mode.oracle"), "lowhealth_oracle"),
+		ORACLE("healthmonitor.mode.oracle", "lowhealth_oracle"),
 		/**
 		 * La modes.
 		 */
-		LA(Localization.get("healthmonitor.mode.la"), "lowhealth_la"),
+		LA("healthmonitor.mode.la", "lowhealth_la"),
 		/**
 		 * Loz modes.
 		 */
-		LOZ(Localization.get("healthmonitor.mode.loz"), "lowhealth_loz"),
+		LOZ("healthmonitor.mode.loz", "lowhealth_loz"),
 		/**
 		 * Aol modes.
 		 */
-		AOL(Localization.get("healthmonitor.mode.aol"), "lowhealth_aol");
+		AOL("healthmonitor.mode.aol", "lowhealth_aol");
 
-		private String friendlyName;
+		private String unfriendlyName;
 		/**
 		 * The Sound name.
 		 */
 		public String soundName;
 
-		private Modes(String friendlyName, String soundName) {
-			this.friendlyName = friendlyName;
+		private Modes(String unfriendlyName, String soundName) {
+			this.unfriendlyName = unfriendlyName;
 			this.soundName = soundName;
 		}
 
@@ -120,7 +117,7 @@ public class HealthMonitor extends ZyinHUDModBase
 		 * @return the string
 		 */
 		public String GetFriendlyName() {
-			return friendlyName;
+			return Localization.get(unfriendlyName);
         }
     }
     
@@ -216,7 +213,7 @@ public class HealthMonitor extends ZyinHUDModBase
 	 * Plays the low health warning sound right now.
 	 */
 	public static void PlayLowHealthSound() {
-		ZyinHUDSound.PlaySound(GetSoundNameFromMode(), Volume);
+		ZyinHUDSound.play(GetSoundNameFromMode(), Volume);
 	}
 
 	private static class PlayLowHealthSoundTimerTask extends TimerTask {

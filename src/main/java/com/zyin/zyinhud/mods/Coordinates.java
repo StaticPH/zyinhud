@@ -1,10 +1,9 @@
 package com.zyin.zyinhud.mods;
 
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.util.text.TextFormatting;
 
-import com.zyin.zyinhud.mods.Clock.Modes;
 import com.zyin.zyinhud.util.Localization;
 import com.zyin.zyinhud.util.ZyinHUDUtil;
 
@@ -41,17 +40,17 @@ public class Coordinates extends ZyinHUDModBase
         /**
          * Xzy modes.
          */
-        XZY(Localization.get("coordinates.mode.xzy")),
+        XZY("coordinates.mode.xzy"),
         /**
          * Xyz modes.
          */
-        XYZ(Localization.get("coordinates.mode.xyz"));
+        XYZ("coordinates.mode.xyz");
         
-        private String friendlyName;
+        private String unfriendlyName;
         
-        private Modes(String friendlyName)
+        private Modes(String unfriendlyName)
         {
-        	this.friendlyName = friendlyName;
+        	this.unfriendlyName = unfriendlyName;
         }
 
         /**
@@ -97,7 +96,7 @@ public class Coordinates extends ZyinHUDModBase
          */
         public String GetFriendlyName()
         {
-        	return friendlyName;
+        	return Localization.get(unfriendlyName);
         }
     }
 
@@ -196,14 +195,14 @@ public class Coordinates extends ZyinHUDModBase
      */
     public static void PasteCoordinatesIntoChat()
     {
-    	if(mc.currentScreen != null && mc.currentScreen instanceof GuiChat)
+    	if(mc.currentScreen != null && mc.currentScreen instanceof ChatScreen)
     	{
         	String coordinateString = Coordinates.ChatStringFormat;
         	coordinateString = coordinateString.replace("{x}", Integer.toString(Coordinates.GetXCoordinate()));
         	coordinateString = coordinateString.replace("{y}", Integer.toString(Coordinates.GetYCoordinate()));
         	coordinateString = coordinateString.replace("{z}", Integer.toString(Coordinates.GetZCoordinate()));
         	
-        	GuiTextField inputField = ZyinHUDUtil.GetFieldByReflection(GuiChat.class, (GuiChat)mc.currentScreen, "inputField","field_146415_a");
+        	TextFieldWidget inputField = ZyinHUDUtil.GetFieldByReflection(ChatScreen.class, (ChatScreen)mc.currentScreen, "inputField", "field_146415_a");
         	
         	if(inputField != null)
         	{

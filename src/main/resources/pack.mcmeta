@@ -1,6 +1,6 @@
 {
-    "pack": {
-        "description": "Zyin's HUD",
-        "pack_format": 4,
-    }
+   "pack":{
+      "pack_format":4,
+      "description":"Zyin's HUD"
+   }
 }

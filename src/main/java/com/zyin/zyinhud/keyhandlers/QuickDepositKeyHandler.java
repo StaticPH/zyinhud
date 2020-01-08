@@ -1,15 +1,11 @@
 package com.zyin.zyinhud.keyhandlers;
 
-import net.minecraft.client.gui.inventory.GuiChest;
-import net.minecraft.client.gui.inventory.GuiContainer;
-
-import org.lwjgl.glfw.GLFW;
-
 import com.zyin.zyinhud.ZyinHUDKeyHandlers;
 import com.zyin.zyinhud.mods.QuickDeposit;
-
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
+import net.minecraftforge.event.TickEvent.ClientTickEvent;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * The type Quick deposit key handler.
@@ -29,7 +25,7 @@ public class QuickDepositKeyHandler implements ZyinHUDKeyHandlerBase
 	 */
 	public static void Pressed(KeyInputEvent event)
 	{
-		if (!(mc.currentScreen instanceof GuiContainer))
+		if (!(mc.currentScreen instanceof ContainerScreen))
         {
             return;    //don't activate if the user isn't looking at a container gui
         }
@@ -57,7 +53,7 @@ public class QuickDepositKeyHandler implements ZyinHUDKeyHandlerBase
 		long handle = mc.mainWindow.getHandle();
 		int keyState = GLFW.glfwGetKey(handle, ZyinHUDKeyHandlers.KEY_BINDINGS[7].getKey().getKeyCode());
 
-    	if(mc.currentScreen instanceof GuiContainer)
+    	if(mc.currentScreen instanceof ContainerScreen)
     	{
     		if(keyState == GLFW.GLFW_PRESS || keyState == GLFW.GLFW_RELEASE)
     		{

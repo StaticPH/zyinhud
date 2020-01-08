@@ -1,22 +1,20 @@
 package com.zyin.zyinhud.mods;
 
 
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL11;
-
+import com.mojang.blaze3d.platform.GLX;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.Localization;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 /**
  * Item Selector allows the player to conveniently swap their currently selected
@@ -49,16 +47,16 @@ public class ItemSelector extends ZyinHUDModBase {
         /**
          * All modes.
          */
-        ALL(Localization.get("itemselector.mode.all")),
+        ALL("itemselector.mode.all"),
         /**
          * Same column modes.
          */
-        SAME_COLUMN(Localization.get("itemselector.mode.column"));
+        SAME_COLUMN("itemselector.mode.column");
 
-        private String friendlyName;
+        private String unfriendlyName;
 
-        private Modes(String friendlyName) {
-            this.friendlyName = friendlyName;
+        private Modes(String unfriendlyName) {
+            this.unfriendlyName = unfriendlyName;
         }
 
         /**
@@ -103,7 +101,7 @@ public class ItemSelector extends ZyinHUDModBase {
          * @return the string
          */
         public String GetFriendlyName() {
-            return friendlyName;
+            return Localization.get(unfriendlyName);
         }
     }
 
@@ -143,7 +141,7 @@ public class ItemSelector extends ZyinHUDModBase {
      */
     public static final int maxTimeout = 500;
 
-    private static int[] slotMemory = new int[InventoryPlayer.getHotbarSize()];
+    private static int[] slotMemory = new int[PlayerInventory.getHotbarSize()];
 
     /**
      * The constant isCurrentlySelecting.
@@ -330,7 +328,7 @@ public class ItemSelector extends ZyinHUDModBase {
 
                 // Draws the selection
                 if (idx + 9 == targetInvSlot) {
-                    OpenGlHelper.glBlendFuncSeparate(770, 771, 1, 0); // so the selection graphic renders properly
+                    GLX.glBlendFuncSeparate(770, 771, 1, 0); // so the selection graphic renders properly
                     GL11.glEnable(GL11.GL_BLEND);
                     GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.4F);
                     ZyinHUDRenderer.RenderCustomTexture(originX + (x * 20) - 1, originZ + (z * 22) - 1, 0, 22, 24, 24, widgetTexture, 1f);

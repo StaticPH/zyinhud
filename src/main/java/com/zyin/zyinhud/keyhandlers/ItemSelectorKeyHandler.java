@@ -2,8 +2,7 @@ package com.zyin.zyinhud.keyhandlers;
 
 import net.minecraftforge.client.event.InputEvent.MouseInputEvent;
 
-import com.zyin.zyinhud.ZyinHUDSound;
-import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
+//import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
 import com.zyin.zyinhud.mods.ItemSelector;
 
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;

@@ -9,12 +9,12 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.init.Enchantments;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.BowItem;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
+import net.minecraft.item.SwordItem;
 import net.minecraft.util.NonNullList;
 
 import java.util.ArrayList;
@@ -133,7 +133,7 @@ public class WeaponSwapper extends ZyinHUDModBase
 
             if (!itemStack.isEmpty())
             {
-                if (itemStack.getItem() instanceof ItemSword) {
+                if (itemStack.getItem() instanceof SwordItem) {
                     double swordDamage = GetItemWeaponDamage(itemStack);
                     double swordAttackSpeed = GetAttackSpeed(itemStack);
                     if ((swordDamage > highestSwordDamage && swordAttackSpeed >= highestSwordAttackSpeed) ||
@@ -192,7 +192,7 @@ public class WeaponSwapper extends ZyinHUDModBase
      */
     public static double GetItemWeaponDamage(ItemStack itemStack)
     {
-        EntityEquipmentSlot EquipmentSlot = EntityEquipmentSlot.MAINHAND;
+        EquipmentSlotType EquipmentSlot = EquipmentSlotType.MAINHAND;
         Multimap<String, AttributeModifier> multimap = itemStack.getItem().getAttributeModifiers(EquipmentSlot, itemStack);
         double enchantDamage=GetEnchantDamage(itemStack);
         
@@ -219,7 +219,7 @@ public class WeaponSwapper extends ZyinHUDModBase
         if(rangedWeaponClasses == null)
         {
         	rangedWeaponClasses = new ArrayList<Class>();
-        	rangedWeaponClasses.add(ItemBow.class);
+        	rangedWeaponClasses.add(BowItem.class);
         	
             if(ModCompatibility.TConstruct.isLoaded)
             {
@@ -331,7 +331,7 @@ public class WeaponSwapper extends ZyinHUDModBase
     }
 
     public static double GetAttackSpeed(ItemStack item) {
-        EntityEquipmentSlot EquipmentSlot = EntityEquipmentSlot.MAINHAND;
+        EquipmentSlotType EquipmentSlot = EquipmentSlotType.MAINHAND;
         Multimap<String, AttributeModifier> multimap = item.getItem().getAttributeModifiers(EquipmentSlot, item);
 
         if (multimap.containsKey(SharedMonsterAttributes.ATTACK_SPEED.getName())) {

@@ -2,23 +2,23 @@ package com.zyin.zyinhud.mods;
 
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.util.Localization;
-import net.minecraft.client.entity.EntityOtherPlayerMP;
-import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.entity.player.RemoteClientPlayerEntity;
+import net.minecraft.client.gui.screen.ChatScreen;
 //import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityBoat;
-import net.minecraft.entity.item.EntityMinecart;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntityWitherSkeleton;
-import net.minecraft.entity.passive.EntityHorse;
-import net.minecraft.entity.passive.EntityPig;
-import net.minecraft.entity.passive.EntitySheep;
-import net.minecraft.entity.passive.EntityWolf;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Items;
-import net.minecraft.item.EnumDyeColor;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.BoatEntity;
+import net.minecraft.entity.item.minecart.AbstractMinecartEntity;
+import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.monster.WitherSkeletonEntity;
+import net.minecraft.entity.passive.PigEntity;
+import net.minecraft.entity.passive.SheepEntity;
+import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.passive.horse.HorseEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
+import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -27,6 +27,8 @@ import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Objects;
+
+//TODO: Tamed cats, maybe birds and other creatures?
 
 /**
  * The Player Locator checks for nearby players and displays their name on screen wherever they are.
@@ -58,16 +60,16 @@ public class PlayerLocator extends ZyinHUDModBase {
         /**
          * Off modes.
          */
-        OFF(Localization.get("playerlocator.mode.off")),
+        OFF("playerlocator.mode.off"),
         /**
          * On modes.
          */
-        ON(Localization.get("playerlocator.mode.on"));
+        ON("playerlocator.mode.on");
 
-        private String friendlyName;
+        private String unfriendlyName;
 
-        private Modes(String friendlyName) {
-            this.friendlyName = friendlyName;
+        private Modes(String unfriendlyName) {
+            this.unfriendlyName = unfriendlyName;
         }
 
         /**
@@ -99,7 +101,7 @@ public class PlayerLocator extends ZyinHUDModBase {
          * @return the string
          */
         public String GetFriendlyName() {
-            return friendlyName;
+            return Localization.get(unfriendlyName);
         }
     }
 
@@ -192,9 +194,9 @@ public class PlayerLocator extends ZyinHUDModBase {
         if (numOverlaysRendered > maxNumberOfOverlays)
             return;
 
-        if (!(entity instanceof EntityOtherPlayerMP ||
-                entity instanceof EntityWolf ||
-                entity instanceof EntityWitherSkeleton)) {
+        if (!(entity instanceof RemoteClientPlayerEntity ||
+              entity instanceof WolfEntity ||
+              entity instanceof WitherSkeletonEntity)) {
             return;    //we only care about other players and wolves
         }
 
@@ -202,7 +204,7 @@ public class PlayerLocator extends ZyinHUDModBase {
         //and not looking at a menu
         //and F3 not pressed
         if (PlayerLocator.Enabled && Mode == Modes.ON &&
-                (mc.mouseHelper.isMouseGrabbed() || mc.currentScreen == null || mc.currentScreen instanceof GuiChat)
+                (mc.mouseHelper.isMouseGrabbed() || mc.currentScreen == null || mc.currentScreen instanceof ChatScreen)
                 && !mc.gameSettings.showDebugInfo) {
 
             //only show entities that are close by
@@ -220,22 +222,22 @@ public class PlayerLocator extends ZyinHUDModBase {
             //calculate the color of the overlayMessage based on the distance from me
             int alpha = (int) (0x55 + 0xAA * ((maxViewDistanceCutoff - distanceFromMe) / maxViewDistanceCutoff));
 
-            if (entity instanceof EntityOtherPlayerMP) {
-                overlayMessage = GetOverlayMessageForOtherPlayer((EntityOtherPlayerMP) entity, distanceFromMe);
+            if (entity instanceof RemoteClientPlayerEntity) {
+                overlayMessage = GetOverlayMessageForOtherPlayer((RemoteClientPlayerEntity) entity, distanceFromMe);
 
                 //format the string to be the same color as that persons team color
-                ScorePlayerTeam team = (ScorePlayerTeam) ((EntityOtherPlayerMP) entity).getTeam();
+                ScorePlayerTeam team = (ScorePlayerTeam) ((RemoteClientPlayerEntity) entity).getTeam();
                 if (team != null)
                     overlayMessage = team.getName();// .formatString(overlayMessage);
-            } else if (entity instanceof EntityWolf) {
-                if (!ShowWolves || !PlayerIsWolfsOwner((EntityWolf) entity))
+            } else if (entity instanceof WolfEntity) {
+                if (!ShowWolves || !PlayerIsWolfsOwner((WolfEntity) entity))
                     return;
 
-                overlayMessage = GetOverlayMessageForWolf((EntityWolf) entity, distanceFromMe);
+                overlayMessage = GetOverlayMessageForWolf((WolfEntity) entity, distanceFromMe);
 
                 if (UseWolfColors) {
-                    EnumDyeColor collarColor = ((EntityWolf) entity).getCollarColor();
-                    float[] dyeRGBColors = EntitySheep.getDyeRgb(collarColor);    //func_175513_a() friendly name is probably "getHexColorsFromDye"
+                    DyeColor collarColor = ((WolfEntity) entity).getCollarColor();
+                    float[] dyeRGBColors = SheepEntity.getDyeRgb(collarColor);    //func_175513_a() friendly name is probably "getHexColorsFromDye"
 
                     int r = (int) (dyeRGBColors[0] * 255);
                     int g = (int) (dyeRGBColors[1] * 255);
@@ -247,11 +249,11 @@ public class PlayerLocator extends ZyinHUDModBase {
                     b = (0xFF - b) / 2;
                     rgb = rgb + ((r << 4 * 4) + (g << 4 * 2) + b);    //a more white version of the collar color
                 }
-            } else if (entity instanceof EntityWitherSkeleton) {
+            } else if (entity instanceof WitherSkeletonEntity) {
                 if (!ShowWitherSkeletons)
                     return;
 
-                overlayMessage = GetOverlayMessageForWitherSkeleton((EntityWitherSkeleton) entity, distanceFromMe);
+                overlayMessage = GetOverlayMessageForWitherSkeleton((WitherSkeletonEntity) entity, distanceFromMe);
 
                 rgb = 0x555555;
                 alpha = alpha / 6;
@@ -288,7 +290,7 @@ public class PlayerLocator extends ZyinHUDModBase {
             mc.fontRenderer.drawStringWithShadow(overlayMessage, x, y, color);
 
             //also render whatever the player is currently riding on
-            if (entity.getRidingEntity() instanceof EntityHorse) {
+            if (entity.getRidingEntity() instanceof HorseEntity) {
                 //armor is 0 when no horse armor is equipped
                 Iterable<ItemStack> armor_list = entity.getRidingEntity().getArmorInventoryList();
                 int armor = getHorseArmorType(armor_list);
@@ -299,23 +301,23 @@ public class PlayerLocator extends ZyinHUDModBase {
                     RenderHorseArmorGoldIcon(x, y);
                 else if (armor == 3)
                     RenderHorseArmorDiamondIcon(x, y);
-                else if (((EntityHorse) entity.getRidingEntity()).isHorseSaddled())
+                else if (((HorseEntity) entity.getRidingEntity()).isHorseSaddled())
                     RenderSaddleIcon(x, y);
             }
-            if (entity.getRidingEntity() instanceof EntityPig) {
+            if (entity.getRidingEntity() instanceof PigEntity) {
                 RenderSaddleIcon(x, y);
-            } else if (entity.getRidingEntity() instanceof EntityMinecart) {
+            } else if (entity.getRidingEntity() instanceof AbstractMinecartEntity) {
                 RenderMinecartIcon(x, y);
-            } else if (entity.getRidingEntity() instanceof EntityBoat) {
-                RenderBoatIcon(x, y, ((EntityBoat) entity.getRidingEntity()).getItemBoat());
-            } else if (entity instanceof EntityPlayer && ((EntityPlayer) entity).isElytraFlying()) {
+            } else if (entity.getRidingEntity() instanceof BoatEntity) {
+                RenderBoatIcon(x, y, ((BoatEntity) entity.getRidingEntity()).getItemBoat());
+            } else if (entity instanceof PlayerEntity && ((PlayerEntity) entity).isElytraFlying()) {
                 RenderElytraIcon(x, y);
             }
 
             //if showing player health is turned on, render the hp and a heart icon under their name
-            if (ShowPlayerHealth && !(entity instanceof EntityMob))    //but don't show health for mobs, such as Wither Skeletons
+            if (ShowPlayerHealth && !(entity instanceof MonsterEntity))    //but don't show health for mobs, such as Wither Skeletons
             {
-                int numHearts = (int) ((((EntityLivingBase) entity).getHealth() + 1) / 2);
+                int numHearts = (int) ((((LivingEntity) entity).getHealth() + 1) / 2);
                 String hpOverlayMessage = numHearts + "";
 
                 int hpOverlayMessageWidth = mc.fontRenderer.getStringWidth(hpOverlayMessage);
@@ -334,12 +336,12 @@ public class PlayerLocator extends ZyinHUDModBase {
     }
 
 
-    private static boolean PlayerIsWolfsOwner(EntityWolf wolf) {
+    private static boolean PlayerIsWolfsOwner(WolfEntity wolf) {
         return wolf.isOnSameTeam(mc.player);
     }
 
 
-    private static String GetOverlayMessageForWitherSkeleton(EntityWitherSkeleton witherSkeleton, float distanceFromMe) {
+    private static String GetOverlayMessageForWitherSkeleton(WitherSkeletonEntity witherSkeleton, float distanceFromMe) {
         String overlayMessage;
         if (witherSkeleton.hasCustomName()) {
             overlayMessage = witherSkeleton.getName().getString();
@@ -358,7 +360,7 @@ public class PlayerLocator extends ZyinHUDModBase {
         return overlayMessage;
     }
 
-    private static String GetOverlayMessageForWolf(EntityWolf wolf, float distanceFromMe) {
+    private static String GetOverlayMessageForWolf(WolfEntity wolf, float distanceFromMe) {
         String overlayMessage;
 
         if (wolf.hasCustomName()) {
@@ -376,7 +378,7 @@ public class PlayerLocator extends ZyinHUDModBase {
     }
 
 
-    private static String GetOverlayMessageForOtherPlayer(EntityOtherPlayerMP otherPlayer, float distanceFromMe) {
+    private static String GetOverlayMessageForOtherPlayer(RemoteClientPlayerEntity otherPlayer, float distanceFromMe) {
         String overlayMessage = otherPlayer.getDisplayName().getString();
 
         //add distance to this player into the message

@@ -3,9 +3,9 @@ package com.zyin.zyinhud.mods;
 
 import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.ModCompatibility;
-import net.minecraft.init.Blocks;
+import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemTool;
+import net.minecraft.item.ToolItem;
 import net.minecraft.util.math.RayTraceResult;
 
 import java.awt.*;
@@ -85,7 +85,7 @@ public class TorchAid extends ZyinHUDModBase
     	{
             ItemStack currentItemStack = mc.player.getHeldItemMainhand();
             if (!currentItemStack.isEmpty()) {
-    			if(currentItemStack.getItem() instanceof ItemTool
+    			if(currentItemStack.getItem() instanceof ToolItem
     				|| ModCompatibility.TConstruct.IsTConstructToolWithoutARightClickAction(currentItemStack.getItem()))
 	    		{
 	    			UseTorch();
@@ -99,12 +99,12 @@ public class TorchAid extends ZyinHUDModBase
      */
     public void UseTorch()
     {
-        if (EatingAid.instance.isEating())
-        {
-            EatingAid.instance.StopEating();    //it's not good if we have a torch selected and hold right click down...
-        }
+//        if (EatingAid.instance.isEating())
+//        {
+//            EatingAid.instance.StopEating();    //it's not good if we have a torch selected and hold right click down...
+//        }
 
-        if (mc.objectMouseOver != null && mc.objectMouseOver.type == RayTraceResult.Type.BLOCK)
+        if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.BLOCK)
         {
             int torchHotbarIndex = InventoryUtil.GetItemIndexFromHotbar(Blocks.TORCH);
             

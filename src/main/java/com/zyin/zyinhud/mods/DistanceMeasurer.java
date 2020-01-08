@@ -1,8 +1,8 @@
 package com.zyin.zyinhud.mods;
 
-import net.minecraft.client.gui.GuiChat;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceFluidMode;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.math.RayTraceResult;
 
@@ -39,20 +39,20 @@ public class DistanceMeasurer extends ZyinHUDModBase {
         /**
          * Off modes.
          */
-        OFF(Localization.get("distancemeasurer.mode.off")),
+        OFF("distancemeasurer.mode.off"),
         /**
          * Simple modes.
          */
-        SIMPLE(Localization.get("distancemeasurer.mode.simple")),
+        SIMPLE("distancemeasurer.mode.simple"),
         /**
          * Coordinate modes.
          */
-        COORDINATE(Localization.get("distancemeasurer.mode.complex"));
+        COORDINATE("distancemeasurer.mode.complex");
 
-        private String friendlyName;
+        private String unfriendlyName;
 
-        private Modes(String friendlyName) {
-            this.friendlyName = friendlyName;
+        private Modes(String unfriendlyName) {
+            this.unfriendlyName = unfriendlyName;
         }
 
         /**
@@ -84,7 +84,7 @@ public class DistanceMeasurer extends ZyinHUDModBase {
          * @return the string
          */
         public String GetFriendlyName() {
-            return friendlyName;
+            return Localization.get(unfriendlyName);
         }
     }
 
@@ -97,8 +97,8 @@ public class DistanceMeasurer extends ZyinHUDModBase {
         //and not looking at a menu
         //and F3 not pressed
         if (DistanceMeasurer.Enabled && Mode != Modes.OFF &&
-                (mc.mouseHelper.isMouseGrabbed() || ((mc.currentScreen instanceof GuiChat))) &&
-                !mc.gameSettings.showDebugInfo) {
+            (mc.mouseHelper.isMouseGrabbed() || ((mc.currentScreen instanceof ChatScreen))) &&
+            !mc.gameSettings.showDebugInfo) {
             String distanceString = CalculateDistanceString();
 
             int width = mc.mainWindow.getScaledWidth();
@@ -116,17 +116,19 @@ public class DistanceMeasurer extends ZyinHUDModBase {
      * @return the distance to a block if Distance Measurer is enabled, otherwise "".
      */
     protected static String CalculateDistanceString() {
-        RayTraceResult objectMouseOver = mc.player.rayTrace(300.0d, 1.0f, RayTraceFluidMode.ALWAYS);
+//        RayTraceResult objectMouseOver = mc.player.rayTrace(300.0d, 1.0f, RayTraceFluidMode.ALWAYS);
+        // If the third parameter of "func_213324_a" here is true, the raytrace will use RayTraceContext.FluidMode.ANY
+        RayTraceResult objectMouseOver = mc.player.func_213324_a(300.0d, 1.0f, true); // see DebugOverlayGui:rayTraceFluid
 
-        if (objectMouseOver != null && objectMouseOver.type == RayTraceResult.Type.BLOCK) {
+        if (objectMouseOver != null && objectMouseOver.getType() == RayTraceResult.Type.BLOCK) {
             if (Mode == Modes.SIMPLE) {
                 double playerX = mc.player.posX;
                 double playerY = mc.player.posY + mc.player.getEyeHeight();
                 double playerZ = mc.player.posZ;
 
-                double blockX = objectMouseOver.hitVec.x;
-                double blockY = objectMouseOver.hitVec.y;
-                double blockZ = objectMouseOver.hitVec.z;
+                double blockX = objectMouseOver.getHitVec().x;
+                double blockY = objectMouseOver.getHitVec().y;
+                double blockZ = objectMouseOver.getHitVec().z;
 
                 double deltaX;
                 double deltaY;
@@ -158,7 +160,7 @@ public class DistanceMeasurer extends ZyinHUDModBase {
 
                 return TextFormatting.GOLD + "[" + String.format("%1$,.1f", farthestDistance) + "]";
             } else if (Mode == Modes.COORDINATE) {
-                BlockPos pos = objectMouseOver.getBlockPos();
+                BlockPos pos = ((BlockRayTraceResult)objectMouseOver).getPos();
 
                 return TextFormatting.GOLD + "[" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + "]";
             } else {

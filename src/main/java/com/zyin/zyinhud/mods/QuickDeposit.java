@@ -1,23 +1,21 @@
 package com.zyin.zyinhud.mods;
 
-import net.minecraft.client.gui.GuiEnchantment;
-import net.minecraft.client.gui.GuiMerchant;
-import net.minecraft.client.gui.GuiRepair;
-import net.minecraft.client.gui.inventory.GuiBeacon;
-import net.minecraft.client.gui.inventory.GuiBrewingStand;
-import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.gui.inventory.GuiCrafting;
-import net.minecraft.client.gui.inventory.GuiFurnace;
-import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
+import net.minecraft.client.gui.screen.EnchantmentScreen;
+import net.minecraft.client.gui.screen.inventory.*;
+import net.minecraft.client.gui.screen.inventory.BeaconScreen;
+import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.screen.inventory.CraftingScreen;
+import net.minecraft.client.gui.screen.inventory.FurnaceScreen;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.HoeItem;
+import net.minecraft.item.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBow;
-import net.minecraft.item.ItemFood;
-import net.minecraft.item.ItemHoe;
-import net.minecraft.item.ItemShears;
+import net.minecraft.item.ShearsItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
-import net.minecraft.item.ItemTool;
+import net.minecraft.item.SwordItem;
+import net.minecraft.item.ToolItem;
 
 import com.zyin.zyinhud.ZyinHUDSound;
 import com.zyin.zyinhud.util.InventoryUtil;
@@ -91,46 +89,46 @@ public class QuickDeposit extends ZyinHUDModBase
 	 * @param onlyDepositMatchingItems only deposit an item if another one exists in the chest already
 	 */
 	public static void QuickDepositItemsInChest(boolean onlyDepositMatchingItems) {
-		if(!(mc.currentScreen instanceof GuiContainer))
+		if(!(mc.currentScreen instanceof ContainerScreen))
     	{
     		return;
     	}
-    	
+
     	if(!QuickDeposit.Enabled)
     	{
     		return;
     	}
-    	
+
     	try
     	{
-	    	if(mc.currentScreen instanceof GuiBeacon
-	    			|| mc.currentScreen instanceof GuiCrafting
-	    			|| mc.currentScreen instanceof GuiEnchantment
-	    			|| mc.currentScreen instanceof GuiRepair)
+	    	if(mc.currentScreen instanceof BeaconScreen
+	    			|| mc.currentScreen instanceof CraftingScreen
+	    			|| mc.currentScreen instanceof EnchantmentScreen
+	    			|| mc.currentScreen instanceof AnvilScreen)
 	    	{
 	    		//we don't support these
 	    		return;
 	    	}
-	    	else if(mc.currentScreen instanceof GuiMerchant)
+	    	else if(mc.currentScreen instanceof MerchantScreen)
 	    	{
 	    		InventoryUtil.DepositAllMatchingItemsInMerchant();
 	    	}
-	    	else if(mc.currentScreen instanceof GuiFurnace)
+	    	else if(mc.currentScreen instanceof FurnaceScreen)
 	    	{
 	    		InventoryUtil.DepositAllMatchingItemsInFurance();
 	    	}
-	    	else if(mc.currentScreen instanceof GuiBrewingStand)
+	    	else if(mc.currentScreen instanceof BrewingStandScreen)
 	    	{
 	    		InventoryUtil.DepositAllMatchingItemsInBrewingStand();
 	    	}
 	    	else	//single chest, double chest, donkey/mules, hopper, dropper, dispenser
 	    	{
 	    		InventoryUtil.DepositAllMatchingItemsInContainer(onlyDepositMatchingItems, IgnoreItemsInHotbar);
-	        	
+
 	        	if(CloseChestAfterDepositing)
 	        		mc.player.closeScreen();
 	    	}
-	
+
 	    	ZyinHUDSound.PlayButtonPress();
     	}
     	catch (Exception e)
@@ -148,15 +146,17 @@ public class QuickDeposit extends ZyinHUDModBase
 	 */
 	public static boolean IsAllowedToBeDepositedInContainer(ItemStack itemStack)
 	{
-		if(itemStack.isEmpty())
+		if (itemStack.isEmpty()) {
 			return false;
+		}
 		if((BlacklistTorch && itemStack.getItem() == Item.getItemFromBlock(Blocks.TORCH))
-				|| (BlacklistTools && itemStack.getItem() instanceof ItemTool || itemStack.getItem() instanceof ItemHoe || itemStack.getItem() instanceof ItemShears || ModCompatibility.TConstruct.IsTConstructHarvestTool(itemStack.getItem()))
-				|| (BlacklistWeapons && itemStack.getItem() instanceof ItemSword || itemStack.getItem() instanceof ItemBow)
+		   || (BlacklistTools && itemStack.getItem() instanceof ToolItem || itemStack.getItem() instanceof HoeItem || itemStack.getItem() instanceof ShearsItem || ModCompatibility.TConstruct.IsTConstructHarvestTool(
+			itemStack.getItem()))
+				|| (BlacklistWeapons && itemStack.getItem() instanceof SwordItem || itemStack.getItem() instanceof BowItem)
 				|| (BlacklistArrow && itemStack.getItem() == Items.ARROW)
 				|| (BlacklistEnderPearl && itemStack.getItem() == Items.ENDER_PEARL)
 				|| (BlacklistWaterBucket && itemStack.getItem() == Items.WATER_BUCKET)
-				|| (BlacklistFood && (itemStack.getItem() instanceof ItemFood)) // || itemStack.getItem() == Items.CAKE))
+				|| (BlacklistFood && (itemStack.getItem().isFood())) // || itemStack.getItem() == Items.CAKE))
 				|| (BlacklistClockCompass && (itemStack.getItem() == Items.COMPASS || itemStack.getItem() == Items.CLOCK))) {
 			return false;
 		}

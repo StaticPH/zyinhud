@@ -1,21 +1,20 @@
 package com.zyin.zyinhud;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.InventoryEffectRenderer;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureMap;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import org.lwjgl.opengl.GL11;
 
@@ -26,7 +25,7 @@ import com.zyin.zyinhud.mods.DistanceMeasurer;
 import com.zyin.zyinhud.mods.DurabilityInfo;
 import com.zyin.zyinhud.mods.InfoLine;
 import com.zyin.zyinhud.mods.ItemSelector;
-import com.zyin.zyinhud.mods.PotionTimers;
+//import com.zyin.zyinhud.mods.PotionTimers;
 import com.zyin.zyinhud.mods.SafeOverlay;
 
 /**
@@ -38,7 +37,7 @@ public class ZyinHUDRenderer
      * The constant instance.
      */
     public static final ZyinHUDRenderer instance = new ZyinHUDRenderer();
-    private static Minecraft mc = Minecraft.getMinecraft();
+    private static Minecraft mc = Minecraft.getInstance();
 
     /**
      * Event fired at various points during the GUI rendering process.
@@ -54,7 +53,7 @@ public class ZyinHUDRenderer
             InfoLine.RenderOntoHUD();
     		DistanceMeasurer.RenderOntoHUD();
             DurabilityInfo.RenderOntoHUD();
-            PotionTimers.RenderOntoHUD();
+//            PotionTimers.RenderOntoHUD();
             HUDEntityTrackerHelper.RenderEntityInfo(event.getPartialTicks());    //calls other mods that need to render things on the HUD near entities
             ItemSelector.RenderOntoHUD(event.getPartialTicks());
         } else if (event.getType() == RenderGameOverlayEvent.ElementType.DEBUG) {
@@ -63,10 +62,10 @@ public class ZyinHUDRenderer
     	
     	
     	//change how the inventories are rendered (this has to be done on every game tick)
-    	if (mc.currentScreen instanceof InventoryEffectRenderer)
-    	{
-    		PotionTimers.DisableInventoryPotionEffects((InventoryEffectRenderer)mc.currentScreen);
-    	}
+//    	if (mc.currentScreen instanceof DisplayEffectsScreen)
+//    	{
+//            PotionTimers.DisableInventoryPotionEffects((DisplayEffectsScreen)mc.currentScreen);
+//        }
     }
 
 
@@ -101,7 +100,7 @@ public class ZyinHUDRenderer
      */
     public static void RenderFloatingItemIcon(float x, float y, float z, Item item, float partialTickTime)
     {
-    	RenderManager renderManager = mc.getRenderManager();
+    	EntityRendererManager renderManager = mc.getRenderManager();
         
         float playerX = (float) (mc.player.lastTickPosX + (mc.player.posX - mc.player.lastTickPosX) * partialTickTime);
         float playerY = (float) (mc.player.lastTickPosY + (mc.player.posY - mc.player.lastTickPosY) * partialTickTime);
@@ -132,12 +131,12 @@ public class ZyinHUDRenderer
         GL11.glPopMatrix();
     }
 
-    @SubscribeEvent
+   /* @SubscribeEvent
     public void RenderGameOverlay(RenderGameOverlayEvent.Pre event) {
         if (event.getType().equals(RenderGameOverlayEvent.ElementType.POTION_ICONS) && !PotionTimers.ShowVanillaStatusEffectHUD) {
             event.setCanceled(true);
         }
-    }
+    }*/
     
     /**
      * Renders a texture at the specified location
@@ -151,9 +150,11 @@ public class ZyinHUDRenderer
      */
     public static void RenderItemTexture(int x, int y, Item item, int width, int height)
     {
-        IBakedModel iBakedModel = mc.getRenderItem().getItemModelMesher().getItemModel(new ItemStack(item));
-        TextureAtlasSprite textureAtlasSprite = mc.getTextureMapBlocks().getAtlasSprite(iBakedModel.getParticleTexture().getIconName());
-        mc.getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+        // Don't use the deprecated IBakedModel.getParticleTexture method
+//        IBakedModel iBakedModel = mc.getItemRenderer().getItemModelMesher().getItemModel(new ItemStack(item));
+//        TextureAtlasSprite textureAtlasSprite = mc.getTextureMap().getAtlasSprite(iBakedModel.getParticleTexture().getName().toString());
+        TextureAtlasSprite textureAtlasSprite = mc.getItemRenderer().getItemModelMesher().getParticleIcon(new ItemStack(item));
+        mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
         
         RenderTexture(x, y, textureAtlasSprite, width, height, 0);
     }
@@ -199,8 +200,8 @@ public class ZyinHUDRenderer
         if(resourceLocation != null)
         	mc.getTextureManager().bindTexture(resourceLocation);
         
-        mc.ingameGUI.drawTexturedModalRect(x, y, u, v, width, height);
-        
+        mc.ingameGUI.blit(x, y, u, v, width, height);
+
         GL11.glPopMatrix();
     }
 	
@@ -250,7 +251,7 @@ public class ZyinHUDRenderer
      */
     public static void RenderFloatingText(String text, float x, float y, float z, int color, boolean renderBlackBackground, float partialTickTime)
     {
-    	String textArray[] = {text};
+    	String[] textArray = {text};
     	RenderFloatingText(textArray, x, y, z, color, renderBlackBackground, partialTickTime);
     }
 
@@ -270,7 +271,7 @@ public class ZyinHUDRenderer
     	//Thanks to Electric-Expansion mod for the majority of this code
     	//https://github.com/Alex-hawks/Electric-Expansion/blob/master/src/electricexpansion/client/render/RenderFloatingText.java
     	
-    	RenderManager renderManager = mc.getRenderManager();
+    	EntityRendererManager renderManager = mc.getRenderManager();
         
         float playerX = (float) (mc.player.lastTickPosX + (mc.player.posX - mc.player.lastTickPosX) * partialTickTime);
         float playerY = (float) (mc.player.lastTickPosY + (mc.player.posY - mc.player.lastTickPosY) * partialTickTime);
@@ -290,8 +291,8 @@ public class ZyinHUDRenderer
         GL11.glScalef(-scale, -scale, scale);
         GL11.glDisable(GL11.GL_LIGHTING);
         GL11.glDepthMask(false);
-        GlStateManager.disableDepth();
-        GlStateManager.disableTexture2D();
+        GlStateManager.disableDepthTest();
+        GlStateManager.disableTexture();
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -315,7 +316,7 @@ public class ZyinHUDRenderer
             BufferBuilder worldrenderer = tessellator.getBuffer();
 
             //GL11.glDisable(GL11.GL_TEXTURE_2D);
-            GlStateManager.disableTexture2D();
+            GlStateManager.disableTexture();
             
             /* OLD 1.8 rendering code
             //worldrenderer.startDrawingQuads();
@@ -336,7 +337,7 @@ public class ZyinHUDRenderer
             worldrenderer.pos((double) (stringMiddle + 1), (double) -1, 0.0D).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
             tessellator.draw();
             //GL11.glEnable(GL11.GL_TEXTURE_2D);
-            GlStateManager.enableTexture2D();
+            GlStateManager.enableTexture();
         }
         
         int i = 0;
@@ -345,8 +346,8 @@ public class ZyinHUDRenderer
         	mc.fontRenderer.drawString(message, -textWidth / 2, i*lineHeight, color);
         	i++;
         }
-        GlStateManager.enableDepth();
-        GlStateManager.enableTexture2D();
+        GlStateManager.enableDepthTest();
+        GlStateManager.enableTexture();
         GlStateManager.enableLighting();
         GlStateManager.disableBlend();
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

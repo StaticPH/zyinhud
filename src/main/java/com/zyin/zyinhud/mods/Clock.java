@@ -1,7 +1,7 @@
 package com.zyin.zyinhud.mods;
 
 import com.zyin.zyinhud.util.Localization;
-import net.minecraft.init.Items;
+import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
@@ -39,20 +39,20 @@ public class Clock extends ZyinHUDModBase
 		/**
 		 * Standard modes.
 		 */
-		STANDARD(Localization.get("clock.mode.standard")),
+		STANDARD("clock.mode.standard"),
 		/**
 		 * Countdown modes.
 		 */
-		COUNTDOWN(Localization.get("clock.mode.countdown")),
+		COUNTDOWN("clock.mode.countdown"),
 		/**
 		 * Graphic modes.
 		 */
-		GRAPHIC(Localization.get("clock.mode.graphic"));
+		GRAPHIC("clock.mode.graphic");
 
-		private String friendlyName;
+		private String unfriendlyName;
 
-		private Modes(String friendlyName) {
-			this.friendlyName = friendlyName;
+		private Modes(String unfriendlyName) {
+			this.unfriendlyName = unfriendlyName;
 		}
 
 		/**
@@ -97,7 +97,7 @@ public class Clock extends ZyinHUDModBase
 		 * @return the string
 		 */
 		public String GetFriendlyName() {
-			return friendlyName;
+			return Localization.get(unfriendlyName);
         }
     }
 	

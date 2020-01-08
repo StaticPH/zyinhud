@@ -1,16 +1,15 @@
 package com.zyin.zyinhud.mods;
 
-import net.minecraft.client.gui.GuiChat;
-import net.minecraft.init.Items;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Potion;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.math.MathHelper;
 
 import org.lwjgl.opengl.GL11;
 
-import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
+//import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
 import com.zyin.zyinhud.util.Localization;
 
 /**
@@ -87,8 +86,8 @@ public class InfoLine extends ZyinHUDModBase
         //and not looking at a menu
         //and F3 not pressed
         if (InfoLine.Enabled &&
-                (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen != null && (mc.currentScreen instanceof GuiChat || TabIsSelectedInOptionsGui()))) &&
-                !mc.gameSettings.showDebugInfo)
+            (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen != null && (mc.currentScreen instanceof ChatScreen/* || TabIsSelectedInOptionsGui()*/))) &&
+            !mc.gameSettings.showDebugInfo)
         {
         	infoLineMessage = "";
         	
@@ -222,15 +221,15 @@ public class InfoLine extends ZyinHUDModBase
      * Checks to see if the Info Line, Clock, Coordinates, Compass, or FPS tabs are selected in GuiZyinHUDOptions
      * @return
      */
-    private static boolean TabIsSelectedInOptionsGui()
-    {
-    	return mc.currentScreen instanceof GuiZyinHUDOptions &&
-    		(((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("infoline.name")) ||
-			((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("clock.name")) ||
-			((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("coordinates.name")) ||
-			((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("compass.name")) ||
-			((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("fps.name")));
-    }
+//    private static boolean TabIsSelectedInOptionsGui()
+//    {
+//    	return mc.currentScreen instanceof GuiZyinHUDOptions &&
+//    		(((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("infoline.name")) ||
+//			((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("clock.name")) ||
+//			((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("coordinates.name")) ||
+//			((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("compass.name")) ||
+//			((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("fps.name")));
+//    }
 
 
     /**
