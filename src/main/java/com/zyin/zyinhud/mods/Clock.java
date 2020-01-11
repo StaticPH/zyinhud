@@ -11,8 +11,7 @@ import org.lwjgl.opengl.GL11;
  *
  * @See {@link "http://www.minecraftwiki.net/wiki/Day-night_cycle"}
  */
-public class Clock extends ZyinHUDModBase
-{
+public class Clock extends ZyinHUDModBase {
 	/**
 	 * Enables/Disables this Mod
 	 */
@@ -36,17 +35,8 @@ public class Clock extends ZyinHUDModBase
 	 * The enum for the different types of Modes this mod can have
 	 */
 	public static enum Modes {
-		/**
-		 * Standard modes.
-		 */
 		STANDARD("clock.mode.standard"),
-		/**
-		 * Countdown modes.
-		 */
 		COUNTDOWN("clock.mode.countdown"),
-		/**
-		 * Graphic modes.
-		 */
 		GRAPHIC("clock.mode.graphic");
 
 		private String unfriendlyName;
@@ -71,10 +61,12 @@ public class Clock extends ZyinHUDModBase
 		 * @return the modes
 		 */
 		public static Modes ToggleMode(boolean forward) {
-			if (forward)
-        		return Mode = Mode.ordinal() < Modes.values().length - 1 ? Modes.values()[Mode.ordinal() + 1] : Modes.values()[0];
-        	else
-        		return Mode = Mode.ordinal() > 0 ? Modes.values()[Mode.ordinal() - 1] : Modes.values()[Modes.values().length - 1];
+			if (forward) {
+				return Mode = Mode.ordinal() < Modes.values().length - 1 ? Modes.values()[Mode.ordinal() + 1] : Modes.values()[0];
+			}
+			else {
+				return Mode = Mode.ordinal() > 0 ? Modes.values()[Mode.ordinal() - 1] : Modes.values()[Modes.values().length - 1];
+			}
 		}
 
 		/**
@@ -86,7 +78,8 @@ public class Clock extends ZyinHUDModBase
 		public static Modes GetMode(String modeName) {
 			try {
 				return Modes.valueOf(modeName);
-			} catch (IllegalArgumentException e) {
+			}
+			catch (IllegalArgumentException e) {
 				return values()[1];
 			}
 		}
@@ -98,16 +91,16 @@ public class Clock extends ZyinHUDModBase
 		 */
 		public String GetFriendlyName() {
 			return Localization.get(unfriendlyName);
-        }
-    }
-	
+		}
+	}
+
 	private static final long mobSpawningStartTime = 13187;
-	
+
 	//mobs stop spawning at: 22813
 	//mobs start to burn at: 23600
 	private static final long mobSpawningStopTime = 23600;
-	
-	//mc.thePlayer.isDaytime() is not available on client, which is actually used to determine bedtime
+
+	//mc.world.isDaytime() always returns true on client, so it cant be used to determine bedtime
 	private static final long bedTime = 12540;
 
 	/**
@@ -117,78 +110,68 @@ public class Clock extends ZyinHUDModBase
 	 * @return time if the Clock is enabled, otherwise "".
 	 */
 	public static String CalculateMessageForInfoLine(String infoLineMessageUpToThisPoint) {
-		if (Clock.Enabled)
-        {
+		if (Clock.Enabled) {
 			if (Clock.Mode == Modes.STANDARD) {
 				long time = (mc.world.getGameTime()) % 24000;
 
 				//0 game time is 6am, so add 6000
 				long hours = (time + 6000) / 1000;
-				if (hours >= 24) {
-					hours = hours - 24;
-				}
+				if (hours >= 24) { hours = hours - 24;}
 				long seconds = (long) (((time + 6000) % 1000) * (60.0 / 1000.0));
 
 				if (IsNight()) {
 					//night time
-					return TextFormatting.GRAY + String.format("%02d", hours) + ":" + String.format("%02d", seconds);
-				} else
-        		{
-        			//day time
-                    String daytimeClockString = String.format("%02d", hours) + ":" + String.format("%02d", seconds);
-
-					if (time < bedTime)
-						daytimeClockString = TextFormatting.YELLOW + daytimeClockString;
-					else
-						daytimeClockString = TextFormatting.GOLD + daytimeClockString;
-
+					return TextFormatting.GRAY + String.format("%02d:%02d", hours, seconds);
+				}
+				else {
+					//day time
+					String daytimeClockString = (time < bedTime ? TextFormatting.YELLOW : TextFormatting.GOLD) +
+					                            String.format("%02d:%02d", hours, seconds);
 					return daytimeClockString;
-        		}
-        	}
-        	else if(Clock.Mode == Modes.COUNTDOWN)
-        	{
-                long time = (mc.world.getGameTime()) % 24000;
+				}
+			}
+			else if (Clock.Mode == Modes.COUNTDOWN) {
+				long time = (mc.world.getGameTime()) % 24000;
 
-        		if(IsNight())
-        		{
-        			//night time
-        			long secondsTillDay = (mobSpawningStopTime - time) / 20;
-
+				if (IsNight()) {
+					//night time
+					long secondsTillDay = (mobSpawningStopTime - time) / 20;
 					long minutes = secondsTillDay / 60;
 					long seconds = secondsTillDay - minutes * 60;
 
-					String nighttimeCountdownString = TextFormatting.GRAY + String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
+					String nighttimeCountdownString =
+						TextFormatting.GRAY + String.format("%02d:%02d", minutes, seconds);
+					// + ':' + String.format("%02d", seconds);
 					return nighttimeCountdownString;
 				}
-        		else
-        		{
-        			//day time
-        			long secondsTillNight;
-        			if(time > mobSpawningStopTime)
-        				secondsTillNight = (24000 - time + mobSpawningStartTime) / 20;
-	    			else
-	    				secondsTillNight = (mobSpawningStartTime - time) / 20;
-        			
-        			long minutes = secondsTillNight / 60;
-        			long seconds = secondsTillNight - minutes*60;
+				else {
+					//day time
+					long secondsTillNight = time > mobSpawningStopTime
+					                        ? (24000 - time + mobSpawningStartTime) / 20
+					                        : (mobSpawningStartTime - time) / 20;
+					long minutes = secondsTillNight / 60;
+					long seconds = secondsTillNight - minutes * 60;
 
-                    String daytimeCountdownString = String.format("%02d", minutes) + ":" + String.format("%02d", seconds);
-
-					if (time < bedTime)
-						daytimeCountdownString = TextFormatting.YELLOW + daytimeCountdownString;
-					else
-						daytimeCountdownString = TextFormatting.GOLD + daytimeCountdownString;
+					String daytimeCountdownString = (time < bedTime ? TextFormatting.YELLOW : TextFormatting.GOLD) +
+					                                String.format("%02d:%02d", minutes, seconds);
+					// + ':' + String.format("%02d", seconds);
+//					daytimeCountdownString = (time < bedTime ? TextFormatting.YELLOW : TextFormatting.GOLD)
+//					                                           + daytimeCountdownString
+//					if (time < bedTime) { daytimeCountdownString = TextFormatting.YELLOW + daytimeCountdownString; }
+//					else { daytimeCountdownString = TextFormatting.GOLD + daytimeCountdownString; }
 
 					return daytimeCountdownString;
 				}
-        	}
-        	else if(Clock.Mode == Modes.GRAPHIC)
-        	{
-        		int infoLineWidth = mc.fontRenderer.getStringWidth(infoLineMessageUpToThisPoint);
-        		
-        		itemRenderer.renderItemAndEffectIntoGUI(new ItemStack(Items.CLOCK), infoLineWidth + InfoLine.infoLineLocX, InfoLine.infoLineLocY);
-        		
-        		GL11.glDisable(GL11.GL_LIGHTING);	//this is needed because the RenderItem.renderItem() methods enable lighting
+			}
+			else if (Clock.Mode == Modes.GRAPHIC) {
+				int infoLineWidth = mc.fontRenderer.getStringWidth(infoLineMessageUpToThisPoint);
+
+				itemRenderer.renderItemAndEffectIntoGUI(
+					new ItemStack(Items.CLOCK), infoLineWidth + InfoLine.infoLineLocX, InfoLine.infoLineLocY
+				);
+
+				//this is needed because the RenderItem.renderItem() methods enable lighting
+				GL11.glDisable(GL11.GL_LIGHTING);
 
 				return "    ";    //about the length of the clock graphic
 			}
@@ -198,12 +181,10 @@ public class Clock extends ZyinHUDModBase
 	}
 
 	/**
-	 * Is night boolean.
-	 *
-	 * @return the boolean
+	 * @return true if it is currently night in-game, false otherwise
 	 */
 	public static boolean IsNight() {
 		long time = (mc.world.getGameTime()) % 24000;
-    	return time >= mobSpawningStartTime && time < mobSpawningStopTime;
-    }
+		return time >= mobSpawningStartTime && time < mobSpawningStopTime;
+	}
 }

@@ -11,11 +11,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * The type Command fps.
- */
-public class CommandFps
-{
+public class CommandFps {
 	/**
 	 * Registers the command, and calls
 	 * {@link #registerAliases(CommandDispatcher, LiteralCommandNode, List) registerAliases}

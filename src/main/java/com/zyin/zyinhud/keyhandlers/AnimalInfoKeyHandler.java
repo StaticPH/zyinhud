@@ -5,31 +5,14 @@ import com.zyin.zyinhud.mods.AnimalInfo;
 
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
-/**
- * The type Animal info key handler.
- */
-public class AnimalInfoKeyHandler implements ZyinHUDKeyHandlerBase
-{
-    /**
-     * The constant HotkeyDescription.
-     */
-    public static final String HotkeyDescription = "key.zyinhud.animalinfo";
+public class AnimalInfoKeyHandler implements ZyinHUDKeyHandlerBase {
+	public static final String HotkeyDescription = "key.zyinhud.animalinfo";
 
-    /**
-     * Pressed.
-     *
-     * @param event the event
-     */
-    public static void Pressed(KeyInputEvent event) {
-        if (mc.currentScreen != null)
-        {
-            return;    //don't activate if the user is looking at a GUI
-        }
-        
-        if(AnimalInfo.Enabled)
-        {
-        	AnimalInfo.Modes.ToggleMode();
-        	ZyinHUDSound.PlayButtonPress();
-        }
+	public static void Pressed(KeyInputEvent event) {
+		//don't activate if the user is looking at a GUI
+		if (mc.currentScreen == null && AnimalInfo.Enabled) {
+			AnimalInfo.Modes.ToggleMode();
+			ZyinHUDSound.PlayButtonPress();
+		}
 	}
 }

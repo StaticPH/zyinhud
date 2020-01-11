@@ -4,17 +4,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 
-/**
- * The type Mod compatibility.
- */
-public class ModCompatibility
-{
+//TODO: It is very likely that most, if not all of this no longer works as once intended
+public class ModCompatibility {
 
-	/**
-	 * The type T construct.
-	 */
-	public static class TConstruct	//Tinker's Construct
-	{
+	public static class TConstruct {     //Tinker's Construct integration
 		/**
 		 * The constant isLoaded.
 		 */
@@ -38,23 +31,22 @@ public class ModCompatibility
 		public static final String tConstructDualHarvestToolClass = "tconstruct.library.tools.DualHarvestTool";
 
 		/**
-		 * Is t construct harvest tool boolean.
+		 * Is Tinker's Construct harvest tool boolean.
 		 *
 		 * @param item the item
 		 * @return the boolean
 		 */
 		public static boolean IsTConstructHarvestTool(Item item) {
-			if(isLoaded)
-	    	{
-	        	String className = item.getClass().getSuperclass().getName();
-	        	return className.equals(tConstructHarvestToolClass) || className.equals(tConstructDualHarvestToolClass);
+			if (isLoaded) {
+				String className = item.getClass().getSuperclass().getName();
+				return className.equals(tConstructHarvestToolClass) || className.equals(tConstructDualHarvestToolClass);
 			}
 
 			return false;
 		}
 
 		/**
-		 * Is t construct weapon boolean.
+		 * Is Tinker's Construct weapon boolean.
 		 *
 		 * @param item the item
 		 * @return the boolean
@@ -69,7 +61,7 @@ public class ModCompatibility
 		}
 
 		/**
-		 * Is t construct bow boolean.
+		 * Is Tinker's Construct bow boolean.
 		 *
 		 * @param item the item
 		 * @return the boolean
@@ -84,29 +76,28 @@ public class ModCompatibility
 		}
 
 		/**
-		 * Is t construct item boolean.
+		 * Is Tinker's Construct item boolean.
 		 *
 		 * @param item the item
 		 * @return the boolean
 		 */
 		public static boolean IsTConstructItem(Item item) {
-			return IsTConstructHarvestTool(item)
-					|| IsTConstructWeapon(item)
-					|| IsTConstructBow(item);
+			return IsTConstructHarvestTool(item) ||
+			       IsTConstructWeapon(item) ||
+			       IsTConstructBow(item);
 		}
 
 		/**
-		 * Is t construct tool without a right click action boolean.
+		 * Is Tinker's Construct tool without a right click action boolean.
 		 *
 		 * @param item the item
 		 * @return the boolean
 		 */
 		public static boolean IsTConstructToolWithoutARightClickAction(Item item) {
-			if(isLoaded)
-	    	{
-	        	String className = item.getClass().getSuperclass().getName();
-	        	return className.equals(tConstructHarvestToolClass);
-	        		//|| className.equals(tConstructDualHarvestToolClass))	//the only DualHarvestTool is the Mattock which also tills dirt on right click
+			if (isLoaded) {
+				String className = item.getClass().getSuperclass().getName();
+				return className.equals(tConstructHarvestToolClass);
+				//|| className.equals(tConstructDualHarvestToolClass))	//the only DualHarvestTool is the Mattock which also tills dirt on right click
 			}
 
 			return false;
@@ -120,19 +111,15 @@ public class ModCompatibility
 		 */
 		public static Integer GetDamage(ItemStack itemStack) {
 			CompoundNBT tags = itemStack.getTag();
-	        if (tags == null)
-	        {
-	        	return null;
-	        }
-	        else if (tags.contains("Energy"))
-	        {
-				return tags.getInt("Energy");
-	        }
-	        else {
-				if (tags.getCompound("InfiTool").getBoolean("Broken"))
-					return -1;
-				else
-					return tags.getCompound("InfiTool").getInt("Damage");
+			if (tags == null) {
+				return null;
+			}
+//			else if (tags.contains("Energy")) {
+//				return tags.getInt("Energy");
+//			}
+			else {
+				if (tags.getCompound("InfiTool").getBoolean("Broken")) { return -1; }
+				else { return tags.getCompound("InfiTool").getInt("Damage"); }
 			}
 		}
 
@@ -144,21 +131,15 @@ public class ModCompatibility
 		 */
 		public static int GetMaxDamage(ItemStack itemStack) {
 			CompoundNBT tags = itemStack.getTag();
-	        if (tags == null)
-	        {
-	        	return -1;
-	        }
-	        else if (tags.contains("Energy"))
-	        {
-				return 400000;	//is this right??
-	        }
-	        else
-	        {
+			if (tags == null) {
+				return -1;
+			}
+//			else if (tags.contains("Energy")) {
+//				return 400000;    //is this right??
+//			}
+			else {
 				return tags.getCompound("InfiTool").getInt("TotalDurability");
-	        }
-	    }
-		
+			}
+		}
 	}
-	
-	
 }

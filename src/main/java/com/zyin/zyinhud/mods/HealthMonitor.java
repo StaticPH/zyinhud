@@ -14,60 +14,38 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 /**
  * Plays a warning sound when the player is low on health.
  */
-public class HealthMonitor extends ZyinHUDModBase
-{
+public class HealthMonitor extends ZyinHUDModBase {
 	/**
-	 * Enables/Disables this Mod
+	 * Enables/Disables this module
 	 */
 	public static boolean Enabled;
 
 	/**
-	 * Toggles this Mod on or off
+	 * Toggles this module on or off
 	 *
-	 * @return The state the Mod was changed to
+	 * @return The state the module was changed to
 	 */
 	public static boolean ToggleEnabled() {
 		return Enabled = !Enabled;
 	}
 
 	/**
-	 * The current mode for this mod
+	 * The current mode for this module
 	 */
 	public static Modes Mode;
 
 	/**
-	 * The enum for the different types of Modes this mod can have
+	 * The enum for the different types of Modes this module can have
 	 */
 	public static enum Modes {
-		/**
-		 * Oot modes.
-		 */
 		OOT("healthmonitor.mode.oot", "lowhealth_oot"),
-		/**
-		 * Lttp modes.
-		 */
 		LTTP("healthmonitor.mode.lttp", "lowhealth_lttp"),
-		/**
-		 * Oracle modes.
-		 */
 		ORACLE("healthmonitor.mode.oracle", "lowhealth_oracle"),
-		/**
-		 * La modes.
-		 */
 		LA("healthmonitor.mode.la", "lowhealth_la"),
-		/**
-		 * Loz modes.
-		 */
 		LOZ("healthmonitor.mode.loz", "lowhealth_loz"),
-		/**
-		 * Aol modes.
-		 */
 		AOL("healthmonitor.mode.aol", "lowhealth_aol");
 
 		private String unfriendlyName;
-		/**
-		 * The Sound name.
-		 */
 		public String soundName;
 
 		private Modes(String unfriendlyName, String soundName) {
@@ -76,7 +54,7 @@ public class HealthMonitor extends ZyinHUDModBase
 		}
 
 		/**
-		 * Sets the next available mode for this mod
+		 * Sets the next available mode for this module
 		 *
 		 * @return the modes
 		 */
@@ -85,16 +63,18 @@ public class HealthMonitor extends ZyinHUDModBase
 		}
 
 		/**
-		 * Sets the next available mode for this mod if forward=true, or previous mode if false
+		 * Sets the next available mode for this module if forward=true, or previous mode if false
 		 *
 		 * @param forward the forward
 		 * @return the modes
 		 */
 		public static Modes ToggleMode(boolean forward) {
-			if (forward)
-        		return Mode = Mode.ordinal() < Modes.values().length - 1 ? Modes.values()[Mode.ordinal() + 1] : Modes.values()[0];
-        	else
-        		return Mode = Mode.ordinal() > 0 ? Modes.values()[Mode.ordinal() - 1] : Modes.values()[Modes.values().length - 1];
+			if (forward) {
+				return Mode = Mode.ordinal() < Modes.values().length - 1 ? Modes.values()[Mode.ordinal() + 1] : Modes.values()[0];
+			}
+			else {
+				return Mode = Mode.ordinal() > 0 ? Modes.values()[Mode.ordinal() - 1] : Modes.values()[Modes.values().length - 1];
+			}
 		}
 
 		/**
@@ -104,11 +84,8 @@ public class HealthMonitor extends ZyinHUDModBase
 		 * @return modes
 		 */
 		public static Modes GetMode(String modeName) {
-			try {
-				return Modes.valueOf(modeName);
-			} catch (IllegalArgumentException e) {
-				return OOT;
-			}
+			try { return Modes.valueOf(modeName); }
+			catch (IllegalArgumentException e) { return OOT; }
 		}
 
 		/**
@@ -118,33 +95,24 @@ public class HealthMonitor extends ZyinHUDModBase
 		 */
 		public String GetFriendlyName() {
 			return Localization.get(unfriendlyName);
-        }
-    }
-    
+		}
+	}
+
 	private static Timer timer = new Timer();
 
 	private static int LowHealthSoundThreshold;
 	private static float Volume;
-	/**
-	 * The constant PlayFasterNearDeath.
-	 */
 	public static boolean PlayFasterNearDeath;
 
 	private static boolean isPlayingLowHealthSound = false;
 	private static int repeatDelay = 1000;
 
-	/**
-	 * The constant instance.
-	 */
 	public static final HealthMonitor instance = new HealthMonitor();
 
 	/**
 	 * Instantiates a new Health monitor.
 	 */
-	public HealthMonitor()
-	{
-		
-	}
+	public HealthMonitor() {}
 
 	/**
 	 * We use a ClientTickEvent instead of a LivingHurtEvent because a LivingHurtEvent will only
@@ -155,11 +123,9 @@ public class HealthMonitor extends ZyinHUDModBase
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void ClientTickEvent(ClientTickEvent event)
-	{
+	public void ClientTickEvent(ClientTickEvent event) {
 		//only play the sound if it's not playing already
-		if(HealthMonitor.Enabled && !isPlayingLowHealthSound)
-		{
+		if (HealthMonitor.Enabled && !isPlayingLowHealthSound) {
 			PlayLowHealthSoundIfHurt();
 		}
 	}
@@ -169,31 +135,31 @@ public class HealthMonitor extends ZyinHUDModBase
 	 * Checks to see if the player has less health than the set threshold, and will play a
 	 * warning sound on a 1 second loop until they heal up.
 	 */
-	protected static void PlayLowHealthSoundIfHurt()
-	{
-		if(HealthMonitor.Enabled && mc.player != null)
-		{
-			int playerHealth = (int)mc.player.getHealth();
-			if(playerHealth < LowHealthSoundThreshold && playerHealth > 0)
-			{
-				//don't play the sound if the user is looking at a screen or in creative
-				if(!mc.playerController.isInCreativeMode() && !mc.isGamePaused())// && mc.inGameHasFocus)
+	protected static void PlayLowHealthSoundIfHurt() {
+		if (HealthMonitor.Enabled && mc.player != null) {
+			int playerHealth = (int) mc.player.getHealth();
+			if (playerHealth < LowHealthSoundThreshold && playerHealth > 0) {
+				//don't play the sound if the user is looking at a screen or in creative;
+				//_CHECK: realistically shouldnt need to check for creative mode, as player health should never get low enough...
+				if (!mc.playerController.isInCreativeMode() && !mc.isGamePaused() && mc.isGameFocused()) {
 					PlayLowHealthSound();
-				
+				}
+
 				isPlayingLowHealthSound = true;
-				
+
 				int soundDelay = repeatDelay;
-				
-				if(PlayFasterNearDeath)
-					soundDelay = repeatDelay/2 + (int)((float)repeatDelay/2 * ((float)playerHealth / (float)LowHealthSoundThreshold));
-				
+
+				if (PlayFasterNearDeath) {
+					soundDelay = repeatDelay / 2 + (int) ((float) repeatDelay / 2 * ((float) playerHealth / (float) LowHealthSoundThreshold));
+				}
+
 				TimerTask t = new PlayLowHealthSoundTimerTask();
 				timer.schedule(t, soundDelay);
-				
+
 				return;
 			}
 		}
-		
+
 		isPlayingLowHealthSound = false;
 	}
 
@@ -204,8 +170,7 @@ public class HealthMonitor extends ZyinHUDModBase
 	 *
 	 * @return string
 	 */
-	protected static String GetSoundNameFromMode()
-	{
+	protected static String GetSoundNameFromMode() {
 		return Mode.soundName;
 	}
 
@@ -220,9 +185,7 @@ public class HealthMonitor extends ZyinHUDModBase
 		/**
 		 * Instantiates a new Play low health sound timer task.
 		 */
-		PlayLowHealthSoundTimerTask() {
-
-		}
+		PlayLowHealthSoundTimerTask() {}
 
 		@Override
 		public void run() {
@@ -274,5 +237,5 @@ public class HealthMonitor extends ZyinHUDModBase
 	 */
 	public static boolean TogglePlayFasterNearDeath() {
 		return PlayFasterNearDeath = !PlayFasterNearDeath;
-    }
+	}
 }

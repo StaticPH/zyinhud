@@ -4,28 +4,11 @@ import com.zyin.zyinhud.mods.WeaponSwapper;
 
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
-/**
- * The type Weapon swapper key handler.
- */
-public class WeaponSwapperKeyHandler implements ZyinHUDKeyHandlerBase
-{
-    /**
-     * The constant HotkeyDescription.
-     */
-    public static final String HotkeyDescription = "key.zyinhud.weaponswapper";
+public class WeaponSwapperKeyHandler implements ZyinHUDKeyHandlerBase {
+	public static final String HotkeyDescription = "key.zyinhud.weaponswapper";
 
-    /**
-     * Pressed.
-     *
-     * @param event the event
-     */
-    public static void Pressed(KeyInputEvent event) {
-        if (mc.currentScreen != null)
-        {
-            return;    //don't activate if the user is looking at a GUI
-        }
-
-        if (WeaponSwapper.Enabled)
-            WeaponSwapper.SwapWeapons();
+	public static void Pressed(KeyInputEvent event) {
+		//don't activate if the user is looking at a GUI
+		if (mc.currentScreen == null && WeaponSwapper.Enabled) { WeaponSwapper.SwapWeapons(); }
 	}
 }

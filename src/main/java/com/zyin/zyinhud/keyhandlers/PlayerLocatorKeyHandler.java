@@ -5,31 +5,14 @@ import com.zyin.zyinhud.mods.PlayerLocator;
 
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
-/**
- * The type Player locator key handler.
- */
-public class PlayerLocatorKeyHandler implements ZyinHUDKeyHandlerBase
-{
-    /**
-     * The constant HotkeyDescription.
-     */
-    public static final String HotkeyDescription = "key.zyinhud.playerlocator";
+public class PlayerLocatorKeyHandler implements ZyinHUDKeyHandlerBase {
+	public static final String HotkeyDescription = "key.zyinhud.playerlocator";
 
-    /**
-     * Pressed.
-     *
-     * @param event the event
-     */
-    public static void Pressed(KeyInputEvent event) {
-        if (mc.currentScreen != null)
-        {
-            return;    //don't activate if the user is looking at a GUI
-        }
-
-        if(PlayerLocator.Enabled)
-        {
-        	PlayerLocator.Modes.ToggleMode();
-        	ZyinHUDSound.PlayButtonPress();
-        }
+	public static void Pressed(KeyInputEvent event) {
+		//don't activate if the user is looking at a GUI
+		if (mc.currentScreen == null && PlayerLocator.Enabled) {
+			PlayerLocator.Modes.ToggleMode();
+			ZyinHUDSound.PlayButtonPress();
+		}
 	}
 }
