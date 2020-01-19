@@ -3,13 +3,16 @@ package com.zyin.zyinhud;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.client.util.InputMappings;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.client.event.InputEvent.MouseInputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.event.TickEvent.ClientTickEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 
 import com.zyin.zyinhud.keyhandlers.AnimalInfoKeyHandler;
@@ -24,15 +27,14 @@ import com.zyin.zyinhud.keyhandlers.QuickDepositKeyHandler;
 import com.zyin.zyinhud.keyhandlers.SafeOverlayKeyHandler;
 import com.zyin.zyinhud.keyhandlers.WeaponSwapperKeyHandler;
 import com.zyin.zyinhud.keyhandlers.ZyinHUDOptionsKeyHandler;
-import com.zyin.zyinhud.mods.TorchAid;
+import com.zyin.zyinhud.modules.TorchAid;
 
-import static com.zyin.zyinhud.util.ZyinHUDUtil.mapKey;
+import javax.annotation.Nonnull;
 
 public class ZyinHUDKeyHandlers {
 	private final static Minecraft mc = Minecraft.getInstance();
 	private static final MouseHelper mouseHelper = new MouseHelper(mc);
-
-	public static final ZyinHUDKeyHandlers instance = new ZyinHUDKeyHandlers();
+	public static final Logger logger = LogManager.getLogger(ZyinHUDKeyHandlers.class);
 
 	/**
 	 * An array of all of Zyin's HUD custom key bindings. Don't reorder them since they are referenced by their position in the array.<br><ul>
@@ -57,17 +59,14 @@ public class ZyinHUDKeyHandlers {
 		),    //[0]
 		new KeyBinding(
 			CoordinatesKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
-			mapKey(GLFW.GLFW_KEY_F1), ZyinHUD.MODNAME
+			mapKey(GLFW.GLFW_KEY_F4), ZyinHUD.MODNAME
 		),    //[1]
 		new KeyBinding(
 			DistanceMeasurerKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_K), ZyinHUD.MODNAME
 		),    //[2]
-//		new KeyBinding(
-//			EatingAidKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
-//			mapKey(GLFW.GLFW_KEY_G),        ZyinHUD.MODNAME
-//		),    //[3]
 		new KeyBinding(
+//			EatingAidKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
 			"WIP: Eating Aid", KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_G), ZyinHUD.MODNAME
 		),    //[3]PLACEHOLDER
@@ -104,6 +103,10 @@ public class ZyinHUDKeyHandlers {
 			mapKey(GLFW.GLFW_KEY_LEFT_ALT), ZyinHUD.MODNAME
 		),    //[11]
 	};
+
+	//	This NEEDS to be AFTER the declaration and initialization of KEY_BINDINGS @formatter:off
+	public static final ZyinHUDKeyHandlers instance = new ZyinHUDKeyHandlers();
+	//   @formatter:on
 
 	/**
 	 * Instantiates a new Zyin hud key handlers.
@@ -186,17 +189,20 @@ public class ZyinHUDKeyHandlers {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void ClientTickEvent(ClientTickEvent event) {
-		//This tick handler is to overcome the Screen + KeyInputEvent limitation
-		//for Coordinates and QuickDeposit
-//FIXME: Yeah, i have no idea
+	public void ClientTickEvent(TickEvent.ClientTickEvent event) {
+		if (event.phase == TickEvent.Phase.END && (mc.currentScreen == null || mc.currentScreen.passEvents)) {
+			//This tick handler is to overcome the Screen + KeyInputEvent limitation
+			//for Coordinates and QuickDeposit
+
+//FIXME: Yeah, i have no idea; now, if I could get an InputEvent here, then I might know what to do
 //		if (Keyboard.getEventKey() == KEY_BINDINGS[1].getKey().getKeyCode())
 //	    	CoordinatesKeyHandler.ClientTickEvent(event);
 //		else if(Keyboard.getEventKey() == KEY_BINDINGS[7].getKey().getKeyCode())
 //			QuickDepositKeyHandler.ClientTickEvent(event);
 
-		//since this method is in the ClientTickEvent, it'll overcome the Screen limitation of not handling mouse clicks
-//		FireUseBlockEvents();
+			//since this method is in the ClientTickEvent, it'll overcome the Screen limitation of not handling mouse clicks
+			FireUseBlockEvents();
+		}
 	}
 
 
@@ -204,24 +210,21 @@ public class ZyinHUDKeyHandlers {
 
 	private static void FireUseBlockEvents() {
 		//.keyBindUseItem		isButtonDown()
-		//keyboard key = postive
-		//forward click = -96	4
-		//backward click = -97	3
-		//middle click = -98	2
-		//right click = -99		1
-		//left click = -100		0
 
 		boolean useBlockButtonDown;
 
 		//For now, we're just going to assume that nobody uses anything other than the default left and right click bindings
+		// for attacking and using items
+		// that way, I can just use reflection to get Minecraft.rightClickMouse(), and not bother with other scenarios.
 //    	if(mc.gameSettings.keyBindUseItem.getKey().getKeyCode() < 0)	//the Use Block hotkey is bound to the mouse
 //    	{
 //            useBlockButtonDown = Mouse.isButtonDown(100 + mc.gameSettings.keyBindUseItem.getKey().getKeyCode());
-		useBlockButtonDown = mouseHelper.isRightDown();
+//		useBlockButtonDown = mouseHelper.isRightDown();
 //    	}
 //    	else	//the Use Block hotkey is bound to the keyboard
 //    	{
 //            useBlockButtonDown = InputMappings.isKeyDown(mc.gameSettings.keyBindUseItem.getKey().getKeyCode());
+		useBlockButtonDown = mc.gameSettings.keyBindUseItem.isKeyDown();
 //    	}
 		if (useBlockButtonDown & !useBlockButtonPreviouslyDown) { OnUseBlockPressed(); }
 		else if (!useBlockButtonDown & useBlockButtonPreviouslyDown) { OnUseBlockReleased(); }
@@ -235,5 +238,10 @@ public class ZyinHUDKeyHandlers {
 
 	private static void OnUseBlockReleased() {
 		TorchAid.instance.Released();
+	}
+
+	@Nonnull
+	public static InputMappings.Input mapKey(int key) {
+		return InputMappings.Type.KEYSYM.getOrMakeInput(key);
 	}
 }

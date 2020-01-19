@@ -1,5 +1,6 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
+import com.zyin.zyinhud.ZyinHUDConfig;
 import net.minecraft.util.text.TextFormatting;
 
 import com.zyin.zyinhud.util.Localization;
@@ -7,11 +8,11 @@ import com.zyin.zyinhud.util.Localization;
 /**
  * The Compass determines what direction the player is facing.
  */
-public class Compass extends ZyinHUDModBase {
+public class Compass extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnableCompass.get();
 
 	/**
 	 * Toggles this module on or off
@@ -85,8 +86,9 @@ public class Compass extends ZyinHUDModBase {
 //            	}
 
 				mc.fontRenderer.drawStringWithShadow(
-					TextFormatting.RED + compassDirection, InfoLine.infoLineLocX + x + x_padding,
-					InfoLine.infoLineLocY, 0xffffff
+					TextFormatting.RED + compassDirection,
+					InfoLine.GetHorizontalLocation() + x + x_padding,
+					InfoLine.GetVerticalLocation(), 0xffffff
 				);
 
 				return TextFormatting.GRAY + brackets;

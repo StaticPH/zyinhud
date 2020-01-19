@@ -1,6 +1,8 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
+import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes.LocatorOptions;
 import com.zyin.zyinhud.util.Localization;
 import net.minecraft.client.entity.player.RemoteClientPlayerEntity;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -33,11 +35,11 @@ import java.util.Objects;
 /**
  * The Player Locator checks for nearby players and displays their name on screen wherever they are.
  */
-public class PlayerLocator extends ZyinHUDModBase {
+public class PlayerLocator extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnablePlayerLocator.get();
 
 	/**
 	 * Toggles this module on or off
@@ -51,69 +53,16 @@ public class PlayerLocator extends ZyinHUDModBase {
 	/**
 	 * The current mode for this module
 	 */
-	public static Modes Mode;
-
-	/**
-	 * The enum for the different types of Modes this module can have
-	 */
-	public static enum Modes {
-		/**
-		 * Off modes.
-		 */
-		OFF("playerlocator.mode.off"),
-		/**
-		 * On modes.
-		 */
-		ON("playerlocator.mode.on");
-
-		private String unfriendlyName;
-
-		private Modes(String unfriendlyName) {
-			this.unfriendlyName = unfriendlyName;
-		}
-
-		/**
-		 * Sets the next availble mode for this module
-		 *
-		 * @return the modes
-		 */
-		public static Modes ToggleMode() {
-			return Mode = Mode.ordinal() < Modes.values().length - 1 ? Modes.values()[Mode.ordinal() + 1] : Modes.values()[0];
-		}
-
-		/**
-		 * Gets the mode based on its internal name as written in the enum declaration
-		 *
-		 * @param modeName the mode name
-		 * @return modes
-		 */
-		public static Modes GetMode(String modeName) {
-			try {
-				return Modes.valueOf(modeName);
-			}
-			catch (IllegalArgumentException e) {
-				return values()[0];
-			}
-		}
-
-		/**
-		 * Get friendly name string.
-		 *
-		 * @return the string
-		 */
-		public String GetFriendlyName() {
-			return Localization.get(unfriendlyName);
-		}
-	}
+	public static LocatorOptions.LocatorModes Mode = ZyinHUDConfig.PlayerLocatorMode.get();
 
 	/**
 	 * Shows how far you are from other players next to their name
 	 */
-	public static boolean ShowDistanceToPlayers;
-	public static boolean ShowPlayerHealth;
-	public static boolean ShowWitherSkeletons;
-	public static boolean ShowWolves;
-	public static boolean UseWolfColors;
+	public static boolean ShowDistanceToPlayers = ZyinHUDConfig.ShowDistanceToPlayers.get() ;
+	public static boolean ShowPlayerHealth = ZyinHUDConfig.ShowPlayerHealth.get();
+	public static boolean ShowWitherSkeletons = ZyinHUDConfig.ShowWitherSkeletons.get();
+	public static boolean ShowWolves = ZyinHUDConfig.ShowWolves.get();
+	public static boolean UseWolfColors = ZyinHUDConfig.UseWolfColors.get();
 
 	private static final ResourceLocation iconsResourceLocation = new ResourceLocation("textures/gui/icons.png");
 
@@ -126,9 +75,9 @@ public class PlayerLocator extends ZyinHUDModBase {
 	/**
 	 * Don't render players that are closer than this
 	 */
-	public static int viewDistanceCutoff = 0;
-	public static final int minViewDistanceCutoff = 0;
-	public static final int maxViewDistanceCutoff = 130;    //realistic max distance the game will render entities: up to ~115 blocks away
+	public static int viewDistanceCutoff = ZyinHUDConfig.PlayerLocatorMinViewDistance.get();
+	public static final int minViewDistanceCutoff = LocatorOptions.minViewDistanceCutoff;
+	public static final int maxViewDistanceCutoff = LocatorOptions.maxViewDistanceCutoff;    //realistic max distance the game will render entities: up to ~115 blocks away
 
 	public static int numOverlaysRendered;
 	public static final int maxNumberOfOverlays = 50;    //render only the first nearest 50 players
@@ -176,7 +125,7 @@ public class PlayerLocator extends ZyinHUDModBase {
 		//if the player is in the world
 		//and not looking at a menu
 		//and F3 not pressed
-		if (PlayerLocator.Enabled && Mode == Modes.ON &&
+		if (PlayerLocator.Enabled && Mode == LocatorOptions.LocatorModes.ON &&
 		    (mc.mouseHelper.isMouseGrabbed() || mc.currentScreen == null || mc.currentScreen instanceof ChatScreen) &&
 		    !mc.gameSettings.showDebugInfo) {
 
@@ -248,9 +197,9 @@ public class PlayerLocator extends ZyinHUDModBase {
 			x = Math.max(x, 0);
 			y = (y > height - 10 && !ShowPlayerHealth) ? height - 10 : y;
 			y = (y > height - 20 && ShowPlayerHealth) ? height - 20 : y;
-			if (y < 10 && InfoLine.infoLineLocY <= 1 &&
-			    (x > InfoLine.infoLineLocX + mc.fontRenderer.getStringWidth(InfoLine.infoLineMessage) ||
-			     x < InfoLine.infoLineLocX - overlayMessageWidth)) {
+			if (y < 10 && InfoLine.GetVerticalLocation() <= 1 &&
+			    (x > InfoLine.GetHorizontalLocation() + mc.fontRenderer.getStringWidth(InfoLine.getInfoLineMessage()) ||
+			     x < InfoLine.GetHorizontalLocation() - overlayMessageWidth)) {
 				//if the text is to the right or left of the info line then allow it to render in that open space
 				y = Math.max(y, 0);
 			}
@@ -449,8 +398,8 @@ public class PlayerLocator extends ZyinHUDModBase {
 	 * @return the string "players" if the Player Locator is enabled, otherwise "".
 	 */
 	public static String CalculateMessageForInfoLine() {
-		if (Mode == Modes.OFF || !PlayerLocator.Enabled) { return ""; }
-		else if (Mode == Modes.ON) {
+		if (Mode == LocatorOptions.LocatorModes.OFF || !PlayerLocator.Enabled) { return ""; }
+		else if (Mode == LocatorOptions.LocatorModes.ON) {
 			return TextFormatting.WHITE + Localization.get("playerlocator.infoline");
 		}
 		else { return TextFormatting.WHITE + "???"; }

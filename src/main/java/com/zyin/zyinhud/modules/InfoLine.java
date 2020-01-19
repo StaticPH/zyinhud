@@ -1,5 +1,6 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
+import com.zyin.zyinhud.ZyinHUDConfig;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
@@ -10,18 +11,18 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 //import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
-import com.zyin.zyinhud.util.Localization;
+
 
 /**
  * The Info Line consists of everything that gets displayed in the top-left portion
  * of the screen. It's job is to gather information about other classes and render
  * their message into the Info Line.
  */
-public class InfoLine extends ZyinHUDModBase {
+public class InfoLine extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnableInfoLine.get();
 	private static long time = 0;
 	private static int lastPing = 0;
 	private static TextFormatting pingColor;
@@ -35,30 +36,31 @@ public class InfoLine extends ZyinHUDModBase {
 		return Enabled = !Enabled;
 	}
 
-	public static boolean ShowBiome;
-	public static boolean ShowCanSnow;
-	public static boolean ShowPing;
+	public static boolean ShowBiome = ZyinHUDConfig.ShowBiome.get();
+	public static boolean ShowCanSnow = ZyinHUDConfig.ShowCanSnow.get();
+	public static boolean ShowPing = ZyinHUDConfig.ShowPing.get();
 
 	/**
 	 * The padding string that is inserted between different elements of the Info Line
 	 */
-	public static final String SPACER = " ";
-	public static int infoLineLocX = 1;
-	public static int infoLineLocY = 1;
+	private static final String SPACER = " ";
+	public static int infoLineLocX = ZyinHUDConfig.InfoLineLocationHorizontal.get();
+	public static int infoLineLocY = ZyinHUDConfig.InfoLineLocationVertical.get();
 
-    /*private static final int notificationDuration = 1200;	//measured in milliseconds
-    private static long notificationTimer = 0;				//timer that goes from notificationDuration to 0
-    private static long notificationStartTime;*/
-
-	/**
-	 * The notification string currently being rendered
-	 */
-	public static String notificationMessage = "";
+//  UNUSED
+//    /*private static final int notificationDuration = 1200;	//measured in milliseconds
+//    private static long notificationTimer = 0;				//timer that goes from notificationDuration to 0
+//    private static long notificationStartTime;*/
+//
+//	/**
+//	 * The notification string currently being rendered
+//	 */
+//	public static String notificationMessage = "";
 
 	/**
 	 * The info line string currently being rendered
 	 */
-	public static String infoLineMessage;
+	private static String infoLineMessage;
 
 
 	/**
@@ -66,53 +68,43 @@ public class InfoLine extends ZyinHUDModBase {
 	 * including coordinates and the state of things that can be activated
 	 */
 	public static void RenderOntoHUD() {
-		//if the player is in the world
-		//and not looking at a menu
-		//and F3 not pressed
+		//if the player is in the world (which can be inferred if the mouse is currently grabbed)
+		//and not looking at a menu (or is looking at either chat or the custom options gui)
+		//and debug info not shown
 		if (InfoLine.Enabled && !mc.gameSettings.showDebugInfo &&
-		    (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen != null && (mc.currentScreen instanceof ChatScreen/* || TabIsSelectedInOptionsGui()*/)))
+		    (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen instanceof ChatScreen/* || TabIsSelectedInOptionsGui()*/))
 		) {
 			infoLineMessage = "";
 
 			String clock = Clock.CalculateMessageForInfoLine(infoLineMessage);
-			if (clock.length() > 0) { clock += SPACER; }
-			infoLineMessage += clock;
+			infoLineMessage += clock.length() > 0 ? (clock + SPACER) : clock;
 
 			String ping = CalculatePingForInfoLine();
-			if (ping.length() > 0) { ping += SPACER; }
-			infoLineMessage += ping;
+			infoLineMessage += ping.length() > 0 ? (ping + SPACER) : ping;
 
 			String coordinates = Coordinates.CalculateMessageForInfoLine();
-			if (coordinates.length() > 0) { coordinates += SPACER; }
-			infoLineMessage = infoLineMessage + coordinates;
+			infoLineMessage += coordinates.length() > 0 ? (coordinates + SPACER) : coordinates;
 
 			String compass = Compass.CalculateMessageForInfoLine(infoLineMessage);
-			if (compass.length() > 0) { compass += SPACER; }
-			infoLineMessage += compass;
+			infoLineMessage += compass.length() > 0 ? (compass + SPACER) : compass;
 
 			String fps = Fps.CalculateMessageForInfoLine();
-			if (fps.length() > 0) { fps += SPACER; }
-			infoLineMessage += fps;
+			infoLineMessage += fps.length() > 0 ? (fps + SPACER) : fps;
 
 			String snow = ShowCanSnow ? CalculateCanSnowForInfoLine(infoLineMessage) : "";
-			if (snow.length() > 0) { snow += SPACER; }
-			infoLineMessage += snow;
+			infoLineMessage += snow.length() > 0 ? (snow + SPACER) : snow;
 
 			String biome = ShowBiome ? CalculateBiomeForInfoLine() : "";
-			if (biome.length() > 0) { biome += SPACER; }
-			infoLineMessage += biome;
+			infoLineMessage += biome.length() > 0 ? (biome + SPACER) : biome;
 
 			String safe = SafeOverlay.CalculateMessageForInfoLine();
-			if (safe.length() > 0) { safe += SPACER; }
-			infoLineMessage += safe;
+			infoLineMessage += safe.length() > 0 ? (safe + SPACER) : safe;
 
 			String players = PlayerLocator.CalculateMessageForInfoLine();
-			if (players.length() > 0) { players += SPACER; }
-			infoLineMessage += players;
+			infoLineMessage += players.length() > 0 ? (players + SPACER) : players;
 
 			String animals = AnimalInfo.CalculateMessageForInfoLine();
-			if (animals.length() > 0) { animals += SPACER; }
-			infoLineMessage += animals;
+			infoLineMessage += animals.length() > 0 ? (animals + SPACER) : animals;
 
 			mc.fontRenderer.drawStringWithShadow(infoLineMessage, infoLineLocX, infoLineLocY, 0xffffff);
 		}
@@ -258,4 +250,9 @@ public class InfoLine extends ZyinHUDModBase {
 		infoLineLocY = MathHelper.clamp(y, 0, mc.mainWindow.getHeight());
 		return infoLineLocY;
 	}
+
+	public static String getInfoLineMessage() {
+		return infoLineMessage;
+	}
+
 }

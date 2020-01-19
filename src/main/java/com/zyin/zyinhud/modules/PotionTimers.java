@@ -1,4 +1,4 @@
-//package com.zyin.zyinhud.mods;
+//package com.zyin.zyinhud.modules;
 //
 //import com.zyin.zyinhud.ZyinHUDRenderer;
 ////import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
@@ -23,7 +23,7 @@
 // * Potion Timers displays the remaining time left on any potion effects the user has.
 // */
 //@SuppressWarnings("RedundantCast")
-//public class PotionTimers extends ZyinHUDModBase {
+//public class PotionTimers extends ZyinHUDModuleBase {
 //    /**
 //     * Enables/Disables this Mod
 //     */
@@ -41,12 +41,12 @@
 //    /**
 //     * The current mode for this mod
 //     */
-//    public static TextModes TextMode;
+//    public static PotionTimerTextModes TextMode;
 //
 //    /**
 //     * The enum for the different types of Modes this mod can have
 //     */
-//    public static enum TextModes {
+//    public static enum PotionTimerTextModes {
 //        /**
 //         * White text modes.
 //         */
@@ -62,30 +62,30 @@
 //
 //        private String unfriendlyName;
 //
-//        private TextModes(String unfriendlyName) {
+//        private PotionTimerTextModes(String unfriendlyName) {
 //            this.unfriendlyName = unfriendlyName;
 //        }
 //
 //        /**
-//         * Sets the next availble mode for this mod
+//         * Sets the next available mode for this mod
 //         *
 //         * @return the text modes
 //         */
-//        public static TextModes ToggleMode() {
+//        public static PotionTimerTextModes ToggleMode() {
 //            return ToggleMode(true);
 //        }
 //
 //        /**
-//         * Sets the next availble mode for this mod if forward=true, or previous mode if false
+//         * Sets the next available mode for this mod if forward=true, or previous mode if false
 //         *
 //         * @param forward the forward
 //         * @return the text modes
 //         */
-//        public static TextModes ToggleMode(boolean forward) {
+//        public static PotionTimerTextModes ToggleMode(boolean forward) {
 //            if (forward)
-//                return TextMode = TextMode.ordinal() < TextModes.values().length - 1 ? TextModes.values()[TextMode.ordinal() + 1] : TextModes.values()[0];
+//                return TextMode = TextMode.ordinal() < PotionTimerTextModes.values().length - 1 ? PotionTimerTextModes.values()[TextMode.ordinal() + 1] : PotionTimerTextModes.values()[0];
 //            else
-//                return TextMode = TextMode.ordinal() > 0 ? TextModes.values()[TextMode.ordinal() - 1] : TextModes.values()[TextModes.values().length - 1];
+//                return TextMode = TextMode.ordinal() > 0 ? PotionTimerTextModes.values()[TextMode.ordinal() - 1] : PotionTimerTextModes.values()[PotionTimerTextModes.values().length - 1];
 //        }
 //
 //        /**
@@ -94,9 +94,9 @@
 //         * @param modeName the mode name
 //         * @return text modes
 //         */
-//        public static TextModes GetMode(String modeName) {
+//        public static PotionTimerTextModes GetMode(String modeName) {
 //            try {
-//                return TextModes.valueOf(modeName);
+//                return PotionTimerTextModes.valueOf(modeName);
 //            } catch (IllegalArgumentException e) {
 //                return values()[1];
 //            }
@@ -201,10 +201,10 @@
 //                    if (ShowPotionIcons) {
 //                        DrawPotionIcon(x, y, potion);
 //
-//                        if (TextMode != TextModes.NONE)
+//                        if (TextMode != PotionTimerTextModes.NONE)
 //                            DrawPotionText(x + 10, y, potion, potionEffect);
 //                    } else {
-//                        if (TextMode != TextModes.NONE)
+//                        if (TextMode != PotionTimerTextModes.NONE)
 //                            DrawPotionText(x, y, potion, potionEffect);
 //                    }
 //
@@ -236,9 +236,9 @@
 //        }
 //        int potionDuration = potionEffect.getDuration();    //goes down by 20 ticks per second
 //        int colorInt;
-//        if (TextMode == TextModes.COLORED)
+//        if (TextMode == PotionTimerTextModes.COLORED)
 //            colorInt = potion.getLiquidColor();
-//        else if (TextMode == TextModes.WHITE)
+//        else if (TextMode == PotionTimerTextModes.WHITE)
 //            colorInt = 0xFFFFFF;
 //        else
 //            colorInt = 0xFFFFFF;

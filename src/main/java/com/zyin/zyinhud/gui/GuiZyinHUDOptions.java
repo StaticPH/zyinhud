@@ -31,26 +31,26 @@
 //import com.zyin.zyinhud.keyhandlers.QuickDepositKeyHandler;
 //import com.zyin.zyinhud.keyhandlers.SafeOverlayKeyHandler;
 //import com.zyin.zyinhud.keyhandlers.WeaponSwapperKeyHandler;
-//import com.zyin.zyinhud.mods.AnimalInfo;
-//import com.zyin.zyinhud.mods.Clock;
-//import com.zyin.zyinhud.mods.Compass;
-//import com.zyin.zyinhud.mods.Coordinates;
-//import com.zyin.zyinhud.mods.DistanceMeasurer;
-//import com.zyin.zyinhud.mods.DurabilityInfo;
-////import com.zyin.zyinhud.mods.EatingAid;
-//import com.zyin.zyinhud.mods.EnderPearlAid;
-//import com.zyin.zyinhud.mods.Fps;
-//import com.zyin.zyinhud.mods.HealthMonitor;
-//import com.zyin.zyinhud.mods.InfoLine;
-//import com.zyin.zyinhud.mods.ItemSelector;
-//import com.zyin.zyinhud.mods.Miscellaneous;
-//import com.zyin.zyinhud.mods.PlayerLocator;
-//import com.zyin.zyinhud.mods.PotionAid;
-//import com.zyin.zyinhud.mods.PotionTimers;
-//import com.zyin.zyinhud.mods.QuickDeposit;
-//import com.zyin.zyinhud.mods.SafeOverlay;
-//import com.zyin.zyinhud.mods.TorchAid;
-//import com.zyin.zyinhud.mods.WeaponSwapper;
+//import com.zyin.zyinhud.modules.AnimalInfo;
+//import com.zyin.zyinhud.modules.Clock;
+//import com.zyin.zyinhud.modules.Compass;
+//import com.zyin.zyinhud.modules.Coordinates;
+//import com.zyin.zyinhud.modules.DistanceMeasurer;
+//import com.zyin.zyinhud.modules.DurabilityInfo;
+////import com.zyin.zyinhud.modules.EatingAid;
+//import com.zyin.zyinhud.modules.EnderPearlAid;
+//import com.zyin.zyinhud.modules.Fps;
+//import com.zyin.zyinhud.modules.HealthMonitor;
+//import com.zyin.zyinhud.modules.InfoLine;
+//import com.zyin.zyinhud.modules.ItemSelector;
+//import com.zyin.zyinhud.modules.Miscellaneous;
+//import com.zyin.zyinhud.modules.PlayerLocator;
+//import com.zyin.zyinhud.modules.PotionAid;
+//import com.zyin.zyinhud.modules.PotionTimers;
+//import com.zyin.zyinhud.modules.QuickDeposit;
+//import com.zyin.zyinhud.modules.SafeOverlay;
+//import com.zyin.zyinhud.modules.TorchAid;
+//import com.zyin.zyinhud.modules.WeaponSwapper;
 //import com.zyin.zyinhud.util.Localization;
 //
 //import javax.annotation.Nullable;
@@ -60,7 +60,7 @@
 ///**
 // * This is the options GUI which is used to change any configurable setting while in game.
 // * <p>
-// * The tabs on the left side represent the various mods and more can be added using the
+// * The tabs on the left side represent the various modules and more can be added using the
 // * tabbedButtonNames and tabbedButtonIDs variables, then adding functionality to the actionPerformed()
 // * method to draw additional buttons specific to the mod.
 // * <p>
@@ -942,7 +942,7 @@
 //                    break;
 //
 //                /////////////////////////////////////////////////////////////////////////
-//                // Horse Info
+//                // Animal(Mainly Horse) Info
 //                /////////////////////////////////////////////////////////////////////////
 //
 //                case 900:

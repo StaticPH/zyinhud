@@ -1,6 +1,7 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.util.Localization;
+import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes.ClockOptions;
 import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
@@ -11,88 +12,25 @@ import org.lwjgl.opengl.GL11;
  *
  * @See {@link "http://www.minecraftwiki.net/wiki/Day-night_cycle"}
  */
-public class Clock extends ZyinHUDModBase {
+public class Clock extends ZyinHUDModuleBase {
 	/**
-	 * Enables/Disables this Mod
+	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnableClock.get();
 
 	/**
-	 * Toggles this Mod on or off
+	 * Toggles this module on or off
 	 *
-	 * @return The state the Mod was changed to
+	 * @return The state the module was changed to
 	 */
 	public static boolean ToggleEnabled() {
 		return Enabled = !Enabled;
 	}
 
 	/**
-	 * The current mode for this mod
+	 * The current mode for this module
 	 */
-	public static Modes Mode;
-
-	/**
-	 * The enum for the different types of Modes this mod can have
-	 */
-	public static enum Modes {
-		STANDARD("clock.mode.standard"),
-		COUNTDOWN("clock.mode.countdown"),
-		GRAPHIC("clock.mode.graphic");
-
-		private String unfriendlyName;
-
-		private Modes(String unfriendlyName) {
-			this.unfriendlyName = unfriendlyName;
-		}
-
-		/**
-		 * Sets the next availble mode for this mod
-		 *
-		 * @return the modes
-		 */
-		public static Modes ToggleMode() {
-			return ToggleMode(true);
-		}
-
-		/**
-		 * Sets the next availble mode for this mod if forward=true, or previous mode if false
-		 *
-		 * @param forward the forward
-		 * @return the modes
-		 */
-		public static Modes ToggleMode(boolean forward) {
-			if (forward) {
-				return Mode = Mode.ordinal() < Modes.values().length - 1 ? Modes.values()[Mode.ordinal() + 1] : Modes.values()[0];
-			}
-			else {
-				return Mode = Mode.ordinal() > 0 ? Modes.values()[Mode.ordinal() - 1] : Modes.values()[Modes.values().length - 1];
-			}
-		}
-
-		/**
-		 * Gets the mode based on its internal name as written in the enum declaration
-		 *
-		 * @param modeName the mode name
-		 * @return modes
-		 */
-		public static Modes GetMode(String modeName) {
-			try {
-				return Modes.valueOf(modeName);
-			}
-			catch (IllegalArgumentException e) {
-				return values()[1];
-			}
-		}
-
-		/**
-		 * Get friendly name string.
-		 *
-		 * @return the string
-		 */
-		public String GetFriendlyName() {
-			return Localization.get(unfriendlyName);
-		}
-	}
+	public static ClockOptions.ClockModes Mode = ZyinHUDConfig.ClockMode.get();
 
 	private static final long mobSpawningStartTime = 13187;
 
@@ -111,7 +49,7 @@ public class Clock extends ZyinHUDModBase {
 	 */
 	public static String CalculateMessageForInfoLine(String infoLineMessageUpToThisPoint) {
 		if (Clock.Enabled) {
-			if (Clock.Mode == Modes.STANDARD) {
+			if (Clock.Mode == ClockOptions.ClockModes.STANDARD) {
 				long time = (mc.world.getGameTime()) % 24000;
 
 				//0 game time is 6am, so add 6000
@@ -130,7 +68,7 @@ public class Clock extends ZyinHUDModBase {
 					return daytimeClockString;
 				}
 			}
-			else if (Clock.Mode == Modes.COUNTDOWN) {
+			else if (Clock.Mode == ClockOptions.ClockModes.COUNTDOWN) {
 				long time = (mc.world.getGameTime()) % 24000;
 
 				if (IsNight()) {
@@ -163,11 +101,13 @@ public class Clock extends ZyinHUDModBase {
 					return daytimeCountdownString;
 				}
 			}
-			else if (Clock.Mode == Modes.GRAPHIC) {
+			else if (Clock.Mode == ClockOptions.ClockModes.GRAPHIC) {
 				int infoLineWidth = mc.fontRenderer.getStringWidth(infoLineMessageUpToThisPoint);
 
 				itemRenderer.renderItemAndEffectIntoGUI(
-					new ItemStack(Items.CLOCK), infoLineWidth + InfoLine.infoLineLocX, InfoLine.infoLineLocY
+					new ItemStack(Items.CLOCK),
+					infoLineWidth + InfoLine.GetHorizontalLocation(),
+					InfoLine.GetVerticalLocation()
 				);
 
 				//this is needed because the RenderItem.renderItem() methods enable lighting

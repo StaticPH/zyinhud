@@ -1,6 +1,6 @@
 //package com.zyin.zyinhud.keyhandlers;
 //
-//import com.zyin.zyinhud.mods.EatingAid;
+//import com.zyin.zyinhud.modules.EatingAid;
 //
 //import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 //

@@ -1,6 +1,8 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes.SafeOverlayOptions;
 import com.zyin.zyinhud.util.Localization;
 import net.minecraft.block.AirBlock;
 import net.minecraft.block.Block;
@@ -30,11 +32,11 @@ import java.util.List;
  * The Safe Overlay renders an overlay onto the game world showing which areas
  * mobs can spawn on.
  */
-public class SafeOverlay extends ZyinHUDModBase {
+public class SafeOverlay extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnableSafeOverlay.get();
 
 	/**
 	 * Toggles this module on or off
@@ -50,50 +52,7 @@ public class SafeOverlay extends ZyinHUDModBase {
 	/**
 	 * The current mode for this module
 	 */
-	public static Modes Mode;
-
-	/**
-	 * The enum for the different types of Modes this module can have
-	 */
-	public static enum Modes {
-		OFF("safeoverlay.mode.off"),
-		ON("safeoverlay.mode.on");
-
-		private String unfriendlyName;
-
-		private Modes(String unfriendlyName) {
-			this.unfriendlyName = unfriendlyName;
-		}
-
-		/**
-		 * Sets the next availble mode for this module
-		 *
-		 * @return the modes
-		 */
-		public static Modes ToggleMode() {
-			return Mode = Mode.ordinal() < Modes.values().length - 1 ? Modes.values()[Mode.ordinal() + 1] : Modes.values()[0];
-		}
-
-		/**
-		 * Gets the mode based on its internal name as written in the enum declaration
-		 *
-		 * @param modeName the mode name
-		 * @return modes
-		 */
-		public static Modes GetMode(String modeName) {
-			try { return Modes.valueOf(modeName); }
-			catch (IllegalArgumentException e) { return values()[0]; }
-		}
-
-		/**
-		 * Get friendly name string.
-		 *
-		 * @return the string
-		 */
-		public String GetFriendlyName() {
-			return Localization.get(unfriendlyName);
-		}
-	}
+	public static SafeOverlayOptions.SafeOverlayModes Mode = ZyinHUDConfig.SafeOverlayMode.get();
 
 	/**
 	 * USE THE Getter/Setter METHODS FOR THIS!!
@@ -110,20 +69,20 @@ public class SafeOverlay extends ZyinHUDModBase {
 	 * <br>
 	 * drawDistance = 175 = 42,875,000 blocks (max)
 	 */
-	protected int drawDistance = 20;
-	public static final int defaultDrawDistance = 20;
-	public static final int minDrawDistance = 2;    //can't go lower than 2. setting this to 1 displays nothing
-	public static final int maxDrawDistance = 175;    //175 is the edge of the visible map on far
+	protected static int drawDistance = ZyinHUDConfig.SafeOverlayDrawDistance.get();
+	public static final int defaultDrawDistance = SafeOverlayOptions.defaultDrawDistance;
+	public static final int minDrawDistance = SafeOverlayOptions.minDrawDistance;
+	public static final int maxDrawDistance = SafeOverlayOptions.maxDrawDistance;
 
 	/**
 	 * The transprancy of the "X" marks when rendered, between (0.1 and 1]
 	 */
-	private float unsafeOverlayTransparency;
-	private float unsafeOverlayMinTransparency = 0.11f;
-	private float unsafeOverlayMaxTransparency = 1f;
+	private static float unsafeOverlayTransparency = ZyinHUDConfig.SafeOverlayTransparency.get().floatValue();
+	private static float minUnsafeOverlayTransparency = SafeOverlayOptions.minUnsafeOverlayTransparency;
+	private static float maxUnsafeOverlayTransparency = SafeOverlayOptions.maxUnsafeOverlayTransparency;
 
-	private static boolean displayInNether = false;
-	private boolean renderUnsafePositionsThroughWalls = false;
+	private static boolean displayInNether = ZyinHUDConfig.SafeOverlayDisplayInNether.get();
+	private static boolean renderUnsafePositionsThroughWalls = ZyinHUDConfig.SafeOverlaySeeThroughWalls.get();
 
 	private BlockPos playerPosition;
 
@@ -260,7 +219,7 @@ public class SafeOverlay extends ZyinHUDModBase {
 	 * @param partialTickTime the partial tick time
 	 */
 	public void RenderAllUnsafePositionsMultithreaded(float partialTickTime) {
-		if (!SafeOverlay.Enabled || Mode == Modes.OFF) { return; }
+		if (!SafeOverlay.Enabled || Mode == SafeOverlayOptions.SafeOverlayModes.OFF) { return; }
 
 		//turn off in the nether, mobs can spawn no matter what
 		if (!displayInNether && mc.player.dimension == DimensionType.THE_NETHER) { return; }
@@ -384,8 +343,10 @@ public class SafeOverlay extends ZyinHUDModBase {
 	 * @return the string "safe" if the Safe Overlay is enabled, otherwise "".
 	 */
 	public static String CalculateMessageForInfoLine() {
-		if (Mode == Modes.OFF || !SafeOverlay.Enabled) { return ""; }
-		else if (Mode == Modes.ON) { return TextFormatting.WHITE + Localization.get("safeoverlay.infoline"); }
+		if (Mode == SafeOverlayOptions.SafeOverlayModes.OFF || !SafeOverlay.Enabled) { return ""; }
+		else if (Mode == SafeOverlayOptions.SafeOverlayModes.ON) {
+			return TextFormatting.WHITE + Localization.get("safeoverlay.infoline");
+		}
 		else { return TextFormatting.WHITE + "???"; }
 	}
 
@@ -456,33 +417,33 @@ public class SafeOverlay extends ZyinHUDModBase {
 		return renderUnsafePositionsThroughWalls;
 	}
 
-	/**
-	 * Sets seeing unsafe areas in the Nether
-	 *
-	 * @param displayInUnsafeAreasInNether true or false
-	 * @return the updated see Nether viewing mode
-	 */
-	public boolean SetDisplayInNether(Boolean displayInUnsafeAreasInNether) {
-		return displayInNether = displayInUnsafeAreasInNether;
-	}
-
-	/**
-	 * Gets if you can see unsafe areas in the Nether
-	 *
-	 * @return the Nether viewing mode
-	 */
-	public boolean GetDisplayInNether() {
-		return displayInNether;
-	}
-
-	/**
-	 * Toggles the current display in Nether mode
-	 *
-	 * @return the updated see display in Nether mode
-	 */
-	public boolean ToggleDisplayInNether() {
-		return SetDisplayInNether(!displayInNether);
-	}
+//	/**
+//	 * Sets seeing unsafe areas in the Nether
+//	 *
+//	 * @param displayInUnsafeAreasInNether true or false
+//	 * @return the updated see Nether viewing mode
+//	 */
+//	public boolean SetDisplayInNether(Boolean displayInUnsafeAreasInNether) {
+//		return displayInNether = displayInUnsafeAreasInNether;
+//	}
+//
+//	/**
+//	 * Gets if you can see unsafe areas in the Nether
+//	 *
+//	 * @return the Nether viewing mode
+//	 */
+//	public boolean GetDisplayInNether() {
+//		return displayInNether;
+//	}
+//
+//	/**
+//	 * Toggles the current display in Nether mode
+//	 *
+//	 * @return the updated see display in Nether mode
+//	 */
+//	public boolean ToggleDisplayInNether() {
+//		return SetDisplayInNether(!displayInNether);
+//	}
 
 	/**
 	 * Sets the see through wall mode
@@ -503,42 +464,42 @@ public class SafeOverlay extends ZyinHUDModBase {
 		return SetSeeUnsafePositionsThroughWalls(!renderUnsafePositionsThroughWalls);
 	}
 
-	/**
-	 * Sets the alpha value of the unsafe marks
-	 *
-	 * @param alpha the alpha value of the unsafe marks, must be between (0.101, 1]
-	 * @return the updated alpha value
-	 */
-	public float SetUnsafeOverlayTransparency(float alpha) {
-		return unsafeOverlayTransparency = MathHelper.clamp(
-			alpha, unsafeOverlayMinTransparency, unsafeOverlayMaxTransparency
-		);
-	}
-
-	/**
-	 * gets the alpha value of the unsafe marks
-	 *
-	 * @return the alpha value
-	 */
-	public float GetUnsafeOverlayTransparency() {
-		return unsafeOverlayTransparency;
-	}
-
-	/**
-	 * gets the smallest allowed alpha value of the unsafe marks
-	 *
-	 * @return the alpha value
-	 */
-	public float GetUnsafeOverlayMinTransparency() {
-		return unsafeOverlayMinTransparency;
-	}
-
-	/**
-	 * gets the largest allowed alpha value of the unsafe marks
-	 *
-	 * @return the alpha value
-	 */
-	public float GetUnsafeOverlayMaxTransparency() {
-		return unsafeOverlayMaxTransparency;
-	}
+//	/**
+//	 * Sets the alpha value of the unsafe marks
+//	 *
+//	 * @param alpha the alpha value of the unsafe marks, must be between (0.101, 1]
+//	 * @return the updated alpha value
+//	 */
+//	public float SetUnsafeOverlayTransparency(float alpha) {
+//		return unsafeOverlayTransparency = MathHelper.clamp(
+//			alpha, minUnsafeOverlayTransparency, maxUnsafeOverlayTransparency
+//		);
+//	}
+//
+//	/**
+//	 * gets the alpha value of the unsafe marks
+//	 *
+//	 * @return the alpha value
+//	 */
+//	public float GetUnsafeOverlayTransparency() {
+//		return unsafeOverlayTransparency;
+//	}
+//
+//	/**
+//	 * gets the smallest allowed alpha value of the unsafe marks
+//	 *
+//	 * @return the alpha value
+//	 */
+//	public float GetminUnsafeOverlayTransparency() {
+//		return minUnsafeOverlayTransparency;
+//	}
+//
+//	/**
+//	 * gets the largest allowed alpha value of the unsafe marks
+//	 *
+//	 * @return the alpha value
+//	 */
+//	public float GetmaxUnsafeOverlayTransparency() {
+//		return maxUnsafeOverlayTransparency;
+//	}
 }

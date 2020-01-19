@@ -1,4 +1,4 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
 import java.awt.AWTException;
 import java.awt.Robot;
@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.zyin.zyinhud.ZyinHUDConfig;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.Item;
 import net.minecraft.item.PotionItem;
@@ -24,39 +25,25 @@ import com.zyin.zyinhud.util.ZyinHUDUtil;
 /**
  * Potion Aid allows the player to drink potions in their inventory by calling its Drink() method.
  */
-public class PotionAid extends ZyinHUDModBase {
+public class PotionAid extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
-
+	public static boolean Enabled = ZyinHUDConfig.EnablePotionAid.get();
 	/**
-	 * Toggles this module on or off
-	 *
-	 * @return The state the module was changed to
+	 * Use this instance for all instance method calls.
 	 */
-	public static boolean ToggleEnabled() {
-		return Enabled = !Enabled;
-	}
-
+	public static PotionAid instance = new PotionAid();
+	private static int potionDrinkDuration = 2000;
 	private Timer timer = new Timer();
 	private TimerTask swapTimerTask;
 	private TimerTask drinkTimerTask;
-
 	private Robot r = null;
 	private boolean isCurrentlyDrinking;
 	private boolean previousDrinkFromHotbar;
-
 	private int potionItemIndex;
 	private int currentItemInventoryIndex;
 	private int currentItemHotbarIndex;
-
-	private static int potionDrinkDuration = 2000;
-
-	/**
-	 * Use this instance for all method calls.
-	 */
-	public static PotionAid instance = new PotionAid();
 
 	private PotionAid() {
 		try {
@@ -68,6 +55,15 @@ public class PotionAid extends ZyinHUDModBase {
 
 		isCurrentlyDrinking = false;
 		previousDrinkFromHotbar = false;
+	}
+
+	/**
+	 * Toggles this module on or off
+	 *
+	 * @return The state the module was changed to
+	 */
+	public static boolean ToggleEnabled() {
+		return Enabled = !Enabled;
 	}
 
 	/**
@@ -180,22 +176,20 @@ public class PotionAid extends ZyinHUDModBase {
 		return isCurrentlyDrinking;
 	}
 
-    /**
-     * Determines the most appropriate potion to use given the players current situation.
-     * It uses the following drinkable potions (not splash potions):
-     * <p>
-     * Potion of Fire Resistance<br>
-     * Potion of Health<br>
-     * Potion of Regeneration<br>
-     * Potion of Swiftness<br>
-     * Potion of Strength<br>
-     * Potion of Invisibility<br>
-     *
-     * @return the index in your inventory that has the most appropriate potion to drink (9-34), or -1 if no appropriate potions found.
-     */
-    public int GetMostAppropriatePotionItemIndexFromInventory()
-    {
-//        List inventorySlots = mc.player.container.inventorySlots;
+	/**
+	 * Determines the most appropriate potion to use given the players current situation.
+	 * It uses the following drinkable potions (not splash potions):
+	 * <p>
+	 * Potion of Fire Resistance<br>
+	 * Potion of Health<br>
+	 * Potion of Regeneration<br>
+	 * Potion of Swiftness<br>
+	 * Potion of Strength<br>
+	 * Potion of Invisibility<br>
+	 *
+	 * @return the index in your inventory that has the most appropriate potion to drink (9-34), or -1 if no appropriate potions found.
+	 */
+	public int GetMostAppropriatePotionItemIndexFromInventory() {//_CHECK that i dont actually want to use container.inventorySlots instead
 		List inventorySlots = mc.player.inventory.mainInventory;
 
 		//indexes of potions in the player's inventory

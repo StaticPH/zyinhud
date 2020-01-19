@@ -1,6 +1,8 @@
 package com.zyin.zyinhud.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.stream.Stream;
@@ -21,9 +23,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
-import net.minecraft.client.util.InputMappings;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,6 +38,8 @@ public class ZyinHUDUtil {
 	protected static Minecraft mc = Minecraft.getInstance();
 	protected static final ItemRenderer itemRenderer = mc.getItemRenderer();
 	protected static final TextureManager textureManager = mc.getTextureManager();
+	private static final Method itemUseMethod =
+		ObfuscationReflectionHelper.findMethod(Minecraft.class, "func_147121_ag"); // the private method: rightClickMouse()
 
 	/***
 	 * Determines if something will happen if you right click on the block the
@@ -194,9 +199,16 @@ public class ZyinHUDUtil {
 		else { return null; }
 	}
 
-	@Nonnull
-	public static InputMappings.Input mapKey(int key) {
-		return InputMappings.Type.KEYSYM.getOrMakeInput(key);
+	public static String bindingToKeyName(KeyBinding key) {
+		String s = key.getTranslationKey();
+		return s.substring(1 + s.lastIndexOf('.')).toUpperCase();
+	}
+
+	public static void useItem(){
+		try { itemUseMethod.invoke(mc); }
+		catch (IllegalAccessException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
 	}
 
 	// Because lwjgl3 doesnt provide glu anymore, we're just going to have to provide the function we needed ourselves

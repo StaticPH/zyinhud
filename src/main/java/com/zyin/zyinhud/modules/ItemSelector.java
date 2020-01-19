@@ -1,9 +1,11 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
 
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes.ItemSelectorOptions;
 import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.Localization;
 import net.minecraft.client.renderer.RenderHelper;
@@ -20,11 +22,11 @@ import org.lwjgl.opengl.GL12;
  * Item Selector allows the player to conveniently swap their currently selected
  * hotbar item with something in their inventory.
  */
-public class ItemSelector extends ZyinHUDModBase {
+public class ItemSelector extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnableItemSelector.get();
 
 	/**
 	 * Toggles this module on or off
@@ -38,80 +40,21 @@ public class ItemSelector extends ZyinHUDModBase {
 	/**
 	 * The current mode for this module
 	 */
-	public static Modes Mode;
-
-	/**
-	 * The enum for the different types of Modes this module can have
-	 */
-	public static enum Modes {
-		ALL("itemselector.mode.all"),
-		SAME_COLUMN("itemselector.mode.column");
-
-		private String unfriendlyName;
-
-		private Modes(String unfriendlyName) {
-			this.unfriendlyName = unfriendlyName;
-		}
-
-		/**
-		 * Sets the next available mode for this module
-		 *
-		 * @return the modes
-		 */
-		public static Modes ToggleMode() {
-			return ToggleMode(true);
-		}
-
-		/**
-		 * Sets the next available mode for this module if forward=true, or previous mode if false
-		 *
-		 * @param forward the forward
-		 * @return the modes
-		 */
-		public static Modes ToggleMode(boolean forward) {
-			if (forward) {
-				return Mode = Mode.ordinal() < Modes.values().length - 1 ? Modes.values()[Mode.ordinal() + 1] : Modes.values()[0];
-			}
-			else {
-				return Mode = Mode.ordinal() > 0 ? Modes.values()[Mode.ordinal() - 1] : Modes.values()[Modes.values().length - 1];
-			}
-		}
-
-		/**
-		 * Gets the mode based on its internal name as written in the enum declaration
-		 *
-		 * @param modeName the mode name
-		 * @return modes
-		 */
-		public static Modes GetMode(String modeName) {
-			try { return Modes.valueOf(modeName); }
-			catch (IllegalArgumentException e) { return values()[0]; }
-		}
-
-		/**
-		 * Get friendly name string.
-		 *
-		 * @return the string
-		 */
-		public String GetFriendlyName() {
-			return Localization.get(unfriendlyName);
-		}
-	}
+	public static ItemSelectorOptions.ItemSelectorModes Mode = ZyinHUDConfig.ItemSelectorMode.get();
 
 	/**
 	 * Determines if the side buttons of supported mice can be used for item selection
 	 */
-	public static boolean UseMouseSideButtons;
+	protected static boolean UseMouseSideButtons = ZyinHUDConfig.ItemSelectorSideButtons.get();
 
 	protected static final ResourceLocation widgetTexture = new ResourceLocation("textures/gui/widgets.png");
 
 	public static final int WHEEL_UP = -1;
 	public static final int WHEEL_DOWN = 1;
 
-	protected static int timeout;
-	public static final int defaultTimeout = 200;
-	public static final int minTimeout = 50;
-	public static final int maxTimeout = 500;
+	protected static int timeout = ZyinHUDConfig.ItemSelectorTimeout.get();
+	protected static final int minTimeout = 50;
+	protected static final int maxTimeout = 500;
 
 	private static int[] slotMemory = new int[PlayerInventory.getHotbarSize()];
 
@@ -188,7 +131,7 @@ public class ItemSelector extends ZyinHUDModBase {
 
 			previousDir = direction;
 
-			if ((Mode == Modes.SAME_COLUMN && memory % 9 != currentHotbarSlot) ||
+			if ((Mode == ItemSelectorOptions.ItemSelectorModes.SAME_COLUMN && memory % 9 != currentHotbarSlot) ||
 			    (currentInventory.get(memory).isEmpty()) ||
 			    (!mc.isSingleplayer() && currentInventory.get(memory).isEnchanted())) {
 				continue;
@@ -261,7 +204,7 @@ public class ItemSelector extends ZyinHUDModBase {
 		int idx = 0;
 		for (int z = 0; z < 3; z++) { // 3 rows of the inventory
 			for (int x = 0; x < 9; x++) { // 9 cols of the inventory
-				if (Mode == Modes.SAME_COLUMN && x != currentHotbarSlot) {
+				if (Mode == ItemSelectorOptions.ItemSelectorModes.SAME_COLUMN && x != currentHotbarSlot) {
 					// don't draw items that we will never be able to select if Same Column mode is active
 					idx++;
 					continue;
@@ -373,8 +316,12 @@ public class ItemSelector extends ZyinHUDModBase {
 	 *
 	 * @param value the value
 	 */
-	public static void SetTimeout(int value) {
-		timeout = MathHelper.clamp(value, minTimeout, maxTimeout);
+	public static void SetTimeout(int value) {//TODO: this sort of thing would need to pass the update to the config :/
+		timeout = MathHelper.clamp(value, ItemSelectorOptions.minTimeout, ItemSelectorOptions.maxTimeout);
+	}
+
+	public static boolean shouldUseMouseSideButtons() {
+		return UseMouseSideButtons;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 package com.zyin.zyinhud.keyhandlers;
 
 import com.zyin.zyinhud.ZyinHUDKeyHandlers;
-import com.zyin.zyinhud.mods.Coordinates;
+import com.zyin.zyinhud.modules.Coordinates;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;

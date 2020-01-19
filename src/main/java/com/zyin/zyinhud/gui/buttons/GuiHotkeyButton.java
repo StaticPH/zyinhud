@@ -159,7 +159,7 @@
 //
 //
 //	/**
-//	 * Sets the mods hotkey
+//	 * Sets the modules hotkey
 //	 *
 //	 * @param hotkey the new hotkey to use
 //	 */
@@ -169,7 +169,7 @@
 //	}
 //
 //	/**
-//	 * Gets the description for the mods hotkey
+//	 * Gets the description for the modules hotkey
 //	 *
 //	 * @return string
 //	 */

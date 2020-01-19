@@ -1,31 +1,28 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUD;
+import com.zyin.zyinhud.ZyinHUDConfig;
 import net.minecraft.client.gui.screen.inventory.AnvilScreen;
 import net.minecraft.client.gui.screen.EditSignScreen;
 import net.minecraft.inventory.container.RepairContainer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.ZyinHUDUtil;
 
 /**
  * The Miscellaneous module has other functionality not relating to anything specific.
  */
-public class Miscellaneous extends ZyinHUDModBase {
+public class Miscellaneous extends ZyinHUDModuleBase {
 	public static final Miscellaneous instance = new Miscellaneous();
 
-	public static boolean UseQuickPlaceSign;
-	public static boolean UseUnlimitedSprinting;
-	public static boolean ShowAnvilRepairs;
+	public static boolean UseQuickPlaceSign = ZyinHUDConfig.UseQuickPlaceSign.get();
+	public static boolean UseUnlimitedSprintingSP = ZyinHUDConfig.UseUnlimitedSprintingSP.get();
+	public static boolean ShowAnvilRepairs = ZyinHUDConfig.ShowAnvilRepairs.get();
 
 	private static final int maxRepairTimes = 6;
 
@@ -54,8 +51,12 @@ public class Miscellaneous extends ZyinHUDModBase {
 		IInventory inputSlots = ZyinHUDUtil.GetFieldByReflection(
 			RepairContainer.class, anvil, "inputSlots", "field_82853_g");
 
-    	int xSize = guiRepair.getXSize();
-    	int ySize = guiRepair.getYSize();
+		//_CHECK: verify that reflection is not in fact needed for the RepairContainer
+//		RepairContainer anvil = ZyinHUDUtil.GetFieldByReflection(AnvilScreen.class, guiRepair, "anvil", "field_147002_h"); // WAS field_147092_v in ContainerScreen.class
+//    	IInventory inputSlots = ZyinHUDUtil.GetFieldByReflection(RepairContainer.class, anvil, "inputSlots", "field_82853_g");
+
+		int xSize = guiRepair.getXSize();
+		int ySize = guiRepair.getYSize();
 
 		int guiRepairXOrigin = guiRepair.width / 2 - xSize / 2;
 		int guiRepairYOrigin = guiRepair.height / 2 - ySize / 2;
@@ -127,6 +128,7 @@ public class Miscellaneous extends ZyinHUDModBase {
 	 * @param base
 	 * @return log[base](x)
 	 */
+	@SuppressWarnings("SameParameterValue")
 	private static int log(int x, int base) {
 		return (int) (Math.log(x) / Math.log(base));
 	}
@@ -136,9 +138,9 @@ public class Miscellaneous extends ZyinHUDModBase {
 	 *
 	 * @param event the event
 	 */
-	@SubscribeEvent
+	@SubscribeEvent()
 	public void ClientTickEvent(ClientTickEvent event) {
-		if (UseUnlimitedSprinting) {
+		if (mc.isSingleplayer() && UseUnlimitedSprintingSP) {
 			MakeSprintingUnlimited();
 		}
 	}
@@ -147,7 +149,7 @@ public class Miscellaneous extends ZyinHUDModBase {
 	/**
 	 * Lets the player sprint longer than 30 seconds at a time. Needs to be called on every game tick to be effective.
 	 */
-	public static void MakeSprintingUnlimited() { //_CHECK: something tells me this wont work anymore with a client-side only mod
+	public static void MakeSprintingUnlimited() {
 		if (mc.player == null) { return; }
 
 		//sprintingTicksLeft is set to 600 when EntityPlayerSP.setSprinting() is called
@@ -170,7 +172,7 @@ public class Miscellaneous extends ZyinHUDModBase {
 	 * @return boolean
 	 */
 	public static boolean ToggleUseUnlimitedSprinting() {
-		return UseUnlimitedSprinting = !UseUnlimitedSprinting;
+		return UseUnlimitedSprintingSP = !UseUnlimitedSprintingSP;
 	}
 
 	/**

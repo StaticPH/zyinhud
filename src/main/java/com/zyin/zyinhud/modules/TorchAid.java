@@ -1,6 +1,7 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
 
+import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.ModCompatibility;
 import net.minecraft.block.Blocks;
@@ -8,18 +9,18 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ToolItem;
 import net.minecraft.util.math.RayTraceResult;
 
-import java.awt.*;
+import static com.zyin.zyinhud.util.ZyinHUDUtil.useItem;
 
 /**
  * TorchAid Aid allows the player to easily use a torch without having it selected. It does this by
  * selecting a torch before the Use Block key is pressed, then unselecting the torch after the Use Block
  * key is released.
  */
-public class TorchAid extends ZyinHUDModBase {
+public class TorchAid extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnableTorchAid.get();
 
 	/**
 	 * Toggles this module on or off
@@ -27,18 +28,17 @@ public class TorchAid extends ZyinHUDModBase {
 	 * @return The state the module was changed to
 	 */
 	public static boolean ToggleEnabled() {
+		ZyinHUDConfig.EnableTorchAid.set(!Enabled);
+		ZyinHUDConfig.EnableTorchAid.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
 		return Enabled = !Enabled;
 	}
 
 	/**
-	 * Use this instance for all method calls.
+	 * Use this instance for all instance method calls.
 	 */
 	public static TorchAid instance = new TorchAid();
 
-	private TorchAid() {
-		try { Robot r = new Robot(); } // TODO: Try to move away from using AWT
-		catch (AWTException e) { e.printStackTrace(); }
-	}
+	private TorchAid() {}
 
 	/**
 	 * After the <code>EquipTorchIfToolIsEquipped()</code> function fires, this is set to the index of where the torch was in the inventory,
@@ -80,6 +80,8 @@ public class TorchAid extends ZyinHUDModBase {
 //            EatingAid.instance.StopEating();    //it's not good if we have a torch selected and hold right click down...
 //        }
 
+//TODO: support additional torches via Tags for both "torches" and "torchplacers"
+// see https://github.com/HenryLoenwind/middletorch/blob/master/1132/src/main/java/info/loenwind/middletorch/KeyInputHandler.java
 		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.BLOCK) {
 			int torchHotbarIndex = InventoryUtil.GetItemIndexFromHotbar(Blocks.TORCH);
 
@@ -99,6 +101,8 @@ public class TorchAid extends ZyinHUDModBase {
 					InventoryUtil.TranslateHotbarIndexToInventoryIndex(mc.player.inventory.currentItem);
 				EquipItemFromHotbar(torchHotbarIndex);
 			}
+			useItem();
+
 		}
 	}
 

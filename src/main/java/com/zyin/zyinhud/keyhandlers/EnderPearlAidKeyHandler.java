@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.keyhandlers;
 
-import com.zyin.zyinhud.mods.EnderPearlAid;
+import com.zyin.zyinhud.modules.EnderPearlAid;
 
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 

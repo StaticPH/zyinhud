@@ -6,8 +6,8 @@
  *
  * This code is all open source and you are free to, and encouraged to, do whatever you want with it.
  *
- * Adding your own functionality is (relatively) simple. First make a class in com.zyin.zyinhud.mods
- * which contains all of your mods logic. Then you need a way to interact with your mod. You can
+ * Adding your own functionality is (relatively) simple. First make a class in com.zyin.zyinhud.modules
+ * which contains all of your module's logic. Then you need a way to interact with your mod. You can
  * do this with a Tick Handler (already setup for you in ZyinHUDRenderer.java), a Hotkey (follow the
  * examples in ZyinHUDKeyHandlers.java), or a single-player only command (see com.zyin.zyinhud.command).
  *
@@ -26,22 +26,19 @@ package com.zyin.zyinhud;
 
 import com.zyin.zyinhud.command.CommandFps;
 //import com.zyin.zyinhud.command.CommandZyinHUDOptions;
-import com.zyin.zyinhud.mods.HealthMonitor;
-import com.zyin.zyinhud.mods.Miscellaneous;
+import com.zyin.zyinhud.modules.HealthMonitor;
+import com.zyin.zyinhud.modules.Miscellaneous;
 import com.zyin.zyinhud.util.ModCompatibility;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ExtensionPoint;
-import net.minecraftforge.fml.InterModComms;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -89,6 +86,7 @@ public class ZyinHUD {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
 //        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
 //        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::postLoad);
 	}
 
 	private void setupCommon(final FMLCommonSetupEvent event) {
@@ -131,6 +129,11 @@ public class ZyinHUD {
 		CommandFps.register(event.getCommandDispatcher());
 
 //        CommandZyinHUDOptions.register(event.getCommandDispatcher());
+	}
+
+	@SubscribeEvent
+	public void postLoad(FMLLoadCompleteEvent event){
+
 	}
 
 	/**

@@ -1,9 +1,11 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
 import com.zyin.zyinhud.ZyinHUD;
+import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.ZyinHUDSound;
 //import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes.DurabilityInfoOptions;
 import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.Localization;
 import com.zyin.zyinhud.util.ModCompatibility;
@@ -21,11 +23,11 @@ import java.util.ArrayList;
  * Durability Info checks to see if any equipment (items in the hotbar, and armor) is damaged
  * and then displays info about them onto the HUD.
  */
-public class DurabilityInfo extends ZyinHUDModBase {
+public class DurabilityInfo extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnableDurabilityInfo.get();
 
 	/**
 	 * Toggles this module on or off
@@ -39,103 +41,47 @@ public class DurabilityInfo extends ZyinHUDModBase {
 	/**
 	 * The current mode for this module
 	 */
-	public static TextModes TextMode;
-
-	/**
-	 * The enum for the different types of Modes this module can have
-	 */
-	public static enum TextModes {
-		NONE("durabilityinfo.textmode.none"),
-		TEXT("durabilityinfo.textmode.text"),
-		PERCENTAGE("durabilityinfo.textmode.percentage");
-
-		private String unfriendlyName;
-
-		private TextModes(String unfriendlyName) {
-			this.unfriendlyName = unfriendlyName;
-		}
-
-		/**
-		 * Sets the next availble mode for text display
-		 *
-		 * @return the text modes
-		 */
-		public static TextModes ToggleMode() {
-			return ToggleMode(true);
-		}
-
-		/**
-		 * Sets the next availble mode for text display if forward=true, or previous mode if false
-		 *
-		 * @param forward the forward
-		 * @return the text modes
-		 */
-		public static TextModes ToggleMode(boolean forward) {
-			if (forward) {
-				return TextMode = TextMode.ordinal() < TextModes.values().length - 1 ? TextModes.values()[TextMode.ordinal() + 1] : TextModes.values()[0];
-			}
-			else {
-				return TextMode = TextMode.ordinal() > 0 ? TextModes.values()[TextMode.ordinal() - 1] : TextModes.values()[TextModes.values().length - 1];
-			}
-		}
-
-		/**
-		 * Gets the mode based on its internal name as written in the enum declaration
-		 *
-		 * @param modeName the mode name
-		 * @return text modes
-		 */
-		public static TextModes GetMode(String modeName) {
-			try {return TextModes.valueOf(modeName);}
-			catch (IllegalArgumentException e) {return values()[1];}
-		}
-
-		/**
-		 * Get friendly name string.
-		 *
-		 * @return the string
-		 */
-		public String GetFriendlyName() {
-			return Localization.get(unfriendlyName);
-		}
-	}
+	protected static DurabilityInfoOptions.DurabilityInfoTextModes Mode = ZyinHUDConfig.DurabilityInfoTextMode.get();
 
 	protected static final ResourceLocation durabilityIconsResourceLocation =
 		new ResourceLocation("zyinhud:textures/durability_icons.png");
 
-	public static boolean ShowArmorDurability;
-	public static boolean ShowItemDurability;
-	public static boolean ShowIndividualArmorIcons;
-	//	public static boolean ShowDamageAsPercentage;
-	public static boolean AutoUnequipArmor;
-	public static boolean AutoUnequipTools;
-	public static boolean UseColoredNumbers;
-	public static float DurabilityScale = 1f;
-	public static boolean HideDurabilityInfoInChat;
+	private static boolean AutoUnequipArmor = ZyinHUDConfig.AutoUnequipArmor.get();
+	private static boolean AutoUnequipTools = ZyinHUDConfig.AutoUnequipTools.get();
+	private static boolean ShowArmorDurability = ZyinHUDConfig.ShowArmorDurability.get();
+	//	public static boolean ShowDamageAsPercentage; //_Consider: implement this?
+	private static boolean ShowItemDurability = ZyinHUDConfig.ShowItemDurability.get();
+	private static boolean ShowIndividualArmorIcons = ZyinHUDConfig.ShowIndividualArmorIcons.get();
+	private static boolean UseColoredNumbers = ZyinHUDConfig.UseColoredNumbers.get();
+
+	private static float DurabilityIconScale = ZyinHUDConfig.DurabilityScale.get().floatValue();
+	public static boolean HideDurabilityInfoInChat; //TODO: make configurable
 	public static final int durabilityUpdateFrequency = 600;
 
-	//U and V is the top left part of the image
-	//X and Y is the width and height of the image
 	protected static float armorDurabilityScaler = 0.2f;
+	/** X coordinate of the texture inside of the image */
 	protected static int armorDurabilityIconU = 0;
+	/** Y coordinate of the texture inside of the image */
 	protected static int armorDurabilityIconV = 0;
-	protected static int armorDurabilityIconX = (int) (5 * 16 * armorDurabilityScaler);
-	protected static int armorDurabilityIconY = (int) (7.5 * 16 * armorDurabilityScaler);
+	/** Width of the image */
+	protected static int armorDurabilityIconWidth = (int) (5 * 16 * armorDurabilityScaler);
+	/** Height of the image */
+	protected static int armorDurabilityIconHeight = (int) (7.5 * 16 * armorDurabilityScaler);
 
 	//the height/width of the tools being rendered
-	public static int toolX = 16; // 16 horizontal
-	public static int toolY = 16; // 16 vertical
+	public static int toolIconWidth = DurabilityInfoOptions.toolIconWidth;
+	public static int toolIconHeight = DurabilityInfoOptions.toolIconHeight;
 
-	//where the armor icon is rendered (these values replaced by the config settings)
-	public static int durabalityLocX = 30;
-	public static int durabalityLocY = 20;
+	//where the armor icon is rendered
+	private static int durabalityLocX = ZyinHUDConfig.DurabilityLocationHorizontal.get();
+	private static int durabalityLocY = ZyinHUDConfig.DurabilityLocationVertical.get();
 
-	//where the tool icons are rendered (these values replaced by the config settings)
-	protected static int equipmentLocX = 20 + armorDurabilityIconX;
-	protected static int equipmentLocY = 20;
+	//where the tool icons are rendered; SEEMS TO BE UNUTILIZED
+//	protected static int equipmentLocX = 20 + armorDurabilityIconWidth;
+//	protected static int equipmentLocY = 20;
 
-	private static float durabilityDisplayThresholdForArmor;
-	private static float durabilityDisplayThresholdForItem;
+	private static float durabilityDisplayThresholdForArmor = ZyinHUDConfig.DurabilityDisplayThresholdForArmor.get().floatValue();
+	private static float durabilityDisplayThresholdForItem = ZyinHUDConfig.DurabilityDisplayThresholdForItem.get().floatValue();
 
 	//used to push items into the list of broken equipment to render
 	private static ArrayList<ItemStack> damagedItemsList = new ArrayList<ItemStack>(13);
@@ -150,17 +96,19 @@ public class DurabilityInfo extends ZyinHUDModBase {
 	 * Renders the main durability icon and any damaged tools onto the screen.
 	 */
 	public static void RenderOntoHUD() {
-		//if the player is in the world
-		//and not in a menu (except for chat and the custom Options menu)
+		//if the player is in the world (which can be assumed if the mouse is grabbed or chat is shown)
+		//and not in a menu, other than the custom Options menu or chat (when HideDurabilityInfoInChat == false)
 		//and F3 not shown
-		if (DurabilityInfo.Enabled &&
-		    (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen != null && ((mc.currentScreen instanceof ChatScreen && !HideDurabilityInfoInChat)/* || TabIsSelectedInOptionsGui()*/))) &&
-		    !mc.gameSettings.showDebugInfo) {
+		if (
+			DurabilityInfo.Enabled &&
+			(mc.mouseHelper.isMouseGrabbed() || ((mc.currentScreen instanceof ChatScreen && !HideDurabilityInfoInChat)/* || TabIsSelectedInOptionsGui()*/)) &&
+			!mc.gameSettings.showDebugInfo
+		) {
 			//don't waste time recalculating things every tick
 			if (System.currentTimeMillis() - lastGenerate > durabilityUpdateFrequency) {
 				CalculateDurabilityIcons();
 			}
-
+			//TODO: compact this?
 			boolean armorExists = false;
 
 			for (ItemStack itemStack : damagedItemsList) {
@@ -173,49 +121,39 @@ public class DurabilityInfo extends ZyinHUDModBase {
 			int numArmors = 0;
 
 			for (ItemStack itemStack : damagedItemsList) {
-				Item tool = itemStack.getItem();
+				Item equipment = itemStack.getItem();
+				int xPos = (int) Math.floor(durabalityLocX / DurabilityIconScale);
+				int yPos = (int) Math.floor(durabalityLocY / DurabilityIconScale);
 
-
-				//if this tool is an armor
-				if (tool instanceof ArmorItem || tool instanceof ElytraItem) {
+				//if this equipment is an armor
+				if (equipment instanceof ArmorItem || equipment instanceof ElytraItem) {
 					if (ShowArmorDurability) {
-						GL11.glScalef(DurabilityScale, DurabilityScale, DurabilityScale);
+						GL11.glScalef(DurabilityIconScale, DurabilityIconScale, DurabilityIconScale);
 
 						if (ShowIndividualArmorIcons) {
-							RenderItemIcon(
-								itemStack,
-								(int) Math.floor(durabalityLocX / DurabilityScale), //x
-								(int) Math.floor(durabalityLocY / DurabilityScale) + (numArmors * toolY) //y
-							);
-
+							RenderItemIcon(itemStack, xPos, (yPos + (numArmors * toolIconHeight)));
 							numArmors++;
 						}
 						else {
-							DrawBrokenArmorTexture(
-								(int) Math.floor(durabalityLocX / DurabilityScale), //x
-								(int) Math.floor(durabalityLocY / DurabilityScale)  //y
-							);
+							DrawBrokenArmorTexture(xPos, yPos);
 						}
 
-						GL11.glScalef(1f / DurabilityScale, 1f / DurabilityScale, 1f / DurabilityScale);
+						GL11.glScalef(1f / DurabilityIconScale, 1f / DurabilityIconScale, 1f / DurabilityIconScale);
 					}
 				}
 				else {
-					//if this tool is an equipment/tool
+					//if this equipment is an equipment/equipment
 					if (ShowItemDurability) {
-						int x = (int) Math.floor(durabalityLocX / DurabilityScale);
-						int y = (int) Math.floor(durabalityLocY / DurabilityScale) + (numTools * toolY);
+						GL11.glScalef(DurabilityIconScale, DurabilityIconScale, DurabilityIconScale);
 
-						if (armorExists && ShowArmorDurability) { x += toolX; }
-						//{ x = (int) Math.floor(equipmentLocX / DurabilityScale); }    //if armor is being rendered then push this to the right
+						//Render the item icon, pushing it to the right if armor is also being rendered
+						RenderItemIcon(
+							itemStack,
+							(armorExists && ShowArmorDurability) ? xPos : (xPos + toolIconWidth),
+							(yPos + (numTools * toolIconHeight))
+						);
 
-						//x /= DurabilityScale;
-						//y /= DurabilityScale;
-						GL11.glScalef(DurabilityScale, DurabilityScale, DurabilityScale);
-
-						RenderItemIcon(itemStack, x, y);
-
-						GL11.glScalef(1f / DurabilityScale, 1f / DurabilityScale, 1f / DurabilityScale);
+						GL11.glScalef(1f / DurabilityIconScale, 1f / DurabilityIconScale, 1f / DurabilityIconScale);
 
 						numTools++;
 					}
@@ -243,7 +181,7 @@ public class DurabilityInfo extends ZyinHUDModBase {
 		GL11.glDisable(GL11.GL_LIGHTING);    //the itemRenderer.renderItem() method enables lighting
 
 		//render the number of durability it has left
-		if (TextMode != TextModes.NONE && itemStack.getDamage() != 0) {
+		if (Mode != DurabilityInfoOptions.DurabilityInfoTextModes.NONE && itemStack.getDamage() != 0) {
 // _CHECK: I can only assume that unicode is somehow supported by default, because I can't seem to find anything dealing with it.
 //				boolean unicodeFlag = mc.fontRenderer.getUnicodeFlag();
 //				mc.fontRenderer.setUnicodeFlag(true);
@@ -252,10 +190,10 @@ public class DurabilityInfo extends ZyinHUDModBase {
 			int itemDamage = itemStack.getDamage();
 			int itemMaxDamage = itemStack.getMaxDamage();
 
-			if (TextMode == TextModes.PERCENTAGE) {
+			if (Mode == DurabilityInfoOptions.DurabilityInfoTextModes.PERCENTAGE) {
 				damageStringText = 100 - (int) ((double) itemDamage / itemMaxDamage * 100) + "%";
 			}
-			else if (TextMode == TextModes.TEXT) {
+			else if (Mode == DurabilityInfoOptions.DurabilityInfoTextModes.TEXT) {
 				if (ModCompatibility.TConstruct.IsTConstructItem(itemStack.getItem())) {
 					Integer temp = ModCompatibility.TConstruct.GetDamage(itemStack);
 					if (temp != null) {
@@ -270,8 +208,8 @@ public class DurabilityInfo extends ZyinHUDModBase {
 			}
 			else { damageStringText = ""; }
 
-			int damageStringX = x + toolX - mc.fontRenderer.getStringWidth(damageStringText);
-			int damageStringY = y + toolY - mc.fontRenderer.FONT_HEIGHT - 2;
+			int damageStringX = x + toolIconWidth - mc.fontRenderer.getStringWidth(damageStringText);
+			int damageStringY = y + toolIconHeight - mc.fontRenderer.FONT_HEIGHT - 2;
 			int damageStringColor = 0xffffff;
 
 			if (UseColoredNumbers) {
@@ -315,8 +253,8 @@ public class DurabilityInfo extends ZyinHUDModBase {
 		ZyinHUDRenderer.RenderCustomTexture(
 			x, y,
 			armorDurabilityIconU, armorDurabilityIconV,
-			(int) (armorDurabilityIconX / armorDurabilityScaler),
-			(int) (armorDurabilityIconY / armorDurabilityScaler),
+			(int) (armorDurabilityIconWidth / armorDurabilityScaler),
+			(int) (armorDurabilityIconHeight / armorDurabilityScaler),
 			durabilityIconsResourceLocation, armorDurabilityScaler
 		);
 
@@ -384,8 +322,7 @@ public class DurabilityInfo extends ZyinHUDModBase {
 				int itemDamage = armorStack.getDamage();
 				int maxDamage = armorStack.getMaxDamage();
 
-				if (maxDamage != 0 &&
-				    (1 - (double) itemDamage / maxDamage) <= durabilityDisplayThresholdForArmor) {
+				if (maxDamage != 0 && (1 - (double) itemDamage / maxDamage) <= durabilityDisplayThresholdForArmor) {
 					damagedItemsList.add(armorStack);
 				}
 			}
@@ -551,7 +488,7 @@ public class DurabilityInfo extends ZyinHUDModBase {
 	 */
 	public static int SetHorizontalLocation(int x) {
 		durabalityLocX = MathHelper.clamp(x, 0, mc.mainWindow.getWidth());
-		equipmentLocX = durabalityLocX + armorDurabilityIconX;
+//		equipmentLocX = durabalityLocX + armorDurabilityIconWidth;
 		return durabalityLocX;
 	}
 
@@ -572,7 +509,7 @@ public class DurabilityInfo extends ZyinHUDModBase {
 	 */
 	public static int SetVerticalLocation(int y) {
 		durabalityLocY = MathHelper.clamp(y, 0, mc.mainWindow.getHeight());
-		equipmentLocY = durabalityLocY;
+//		equipmentLocY = durabalityLocY;
 		return durabalityLocY;
 	}
 

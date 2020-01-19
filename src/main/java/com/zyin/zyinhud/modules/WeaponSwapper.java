@@ -1,6 +1,7 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
 import com.google.common.collect.Multimap;
+import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.Localization;
@@ -24,12 +25,13 @@ import java.util.List;
 /**
  * Weapon Swap allows the player to quickly equip their sword and bow.
  */
-public class WeaponSwapper extends ZyinHUDModBase {
+public class WeaponSwapper extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnableWeaponSwap.get();
 
+	//TODO
 	/**
 	 * Toggles this module on or off
 	 *

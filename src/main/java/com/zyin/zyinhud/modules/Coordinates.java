@@ -1,20 +1,21 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
+import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes.CoordinateOptions;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.util.text.TextFormatting;
 
-import com.zyin.zyinhud.util.Localization;
 import com.zyin.zyinhud.util.ZyinHUDUtil;
 
 /**
  * The Coordinates calculates the player's position.
  */
-public class Coordinates extends ZyinHUDModBase {
+public class Coordinates extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnableCoordinates.get();
 
 	/**
 	 * Toggles this module on or off
@@ -28,80 +29,19 @@ public class Coordinates extends ZyinHUDModBase {
 	/**
 	 * The current mode for this module
 	 */
-	public static Modes Mode;
+	public static CoordinateOptions.CoordinateModes Mode = ZyinHUDConfig.CoordinatesMode.get();
 
-	/**
-	 * The enum for the different types of Modes this module can have
-	 */
-	public static enum Modes {
-		XZY("coordinates.mode.xzy"),
-		XYZ("coordinates.mode.xyz");
-
-		private String unfriendlyName;
-
-		private Modes(String unfriendlyName) {
-			this.unfriendlyName = unfriendlyName;
-		}
-
-		/**
-		 * Sets the next availble mode for this module
-		 *
-		 * @return the modes
-		 */
-		public static Modes ToggleMode() {
-			return ToggleMode(true);
-		}
-
-		/**
-		 * Sets the next availble mode for this module if forward=true, or previous mode if false
-		 *
-		 * @param forward the forward
-		 * @return the modes
-		 */
-		public static Modes ToggleMode(boolean forward) {
-			if (forward) {
-				return Mode = Mode.ordinal() < Modes.values().length - 1 ? Modes.values()[Mode.ordinal() + 1] : Modes.values()[0];
-			}
-			else {
-				return Mode = Mode.ordinal() > 0 ? Modes.values()[Mode.ordinal() - 1] : Modes.values()[Modes.values().length - 1];
-			}
-		}
-
-		/**
-		 * Gets the mode based on its internal name as written in the enum declaration
-		 *
-		 * @param modeName the mode name
-		 * @return modes
-		 */
-		public static Modes GetMode(String modeName) {
-			try {return Modes.valueOf(modeName);}
-			catch (IllegalArgumentException e) {return XZY;}
-		}
-
-		/**
-		 * Get friendly name string.
-		 *
-		 * @return the string
-		 */
-		public String GetFriendlyName() {
-			return Localization.get(unfriendlyName);
-		}
-	}
-
-	/**
-	 * The default chat format String which replaces "{x}", "{y}", and "{z}" with coordinates
-	 */
-	public static String DefaultChatStringFormat = "[{x}, {y}, {z}]";
 	/**
 	 * A String which replaces "{x}", "{y}", and "{z}" with coordinates
 	 */
-	public static String ChatStringFormat;
+	public static String ChatStringFormat = ZyinHUDConfig.CoordinatesChatStringFormat.get();
 
+	private static boolean ShowChunkCoordinates = ZyinHUDConfig.ShowChunkCoordinates.get();
 	/**
 	 * Use colors to show what ores spawn at the elevation level
 	 */
-	public static boolean UseYCoordinateColors;
-	public static boolean ShowChunkCoordinates;
+	private static boolean UseYCoordinateColors = ZyinHUDConfig.UseYCoordinateColors.get();
+
 
 	private static final int[] oreBoundaries = {
 		5,    //nothing below 5
@@ -140,7 +80,7 @@ public class Coordinates extends ZyinHUDModBase {
 			}
 
 			String coordinatesString = "";
-			if (Mode == Modes.XZY) {
+			if (Mode == CoordinateOptions.CoordinateModes.XZY) {
 				coordinatesString += TextFormatting.WHITE + "[" + coordX + ", " + coordZ +
 				                     ", " + yColor + coordY + TextFormatting.WHITE + ']';
 
@@ -150,7 +90,7 @@ public class Coordinates extends ZyinHUDModBase {
 					                     ", " + (GetYCoordinate() & 15) + TextFormatting.ITALIC + ']';
 				}
 			}
-			else if (Mode == Modes.XYZ) {
+			else if (Mode == CoordinateOptions.CoordinateModes.XYZ) {
 				coordinatesString += TextFormatting.WHITE + "[" + coordX + ", " + yColor +
 				                     coordY + TextFormatting.WHITE + ", " + coordZ + ']';
 

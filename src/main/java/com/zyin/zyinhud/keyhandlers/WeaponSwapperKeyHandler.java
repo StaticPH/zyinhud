@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.keyhandlers;
 
-import com.zyin.zyinhud.mods.WeaponSwapper;
+import com.zyin.zyinhud.modules.WeaponSwapper;
 
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 

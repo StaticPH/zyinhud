@@ -3,6 +3,7 @@ package com.zyin.zyinhud.helper;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes;
 import com.zyin.zyinhud.util.ZyinHUDUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.MainWindow;
@@ -19,7 +20,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-import com.zyin.zyinhud.mods.PlayerLocator;
+import com.zyin.zyinhud.modules.PlayerLocator;
 
 /**
  * The EntityTrackerHUDHelper calculates the (x,y) position on the HUD for
@@ -43,10 +44,10 @@ public class HUDEntityTrackerHelper {
 	}
 
 	/**
-	 * Send information about the positions of entities to mods that need this
+	 * Send information about the positions of entities to modules that need this
 	 * information.
 	 * <p>
-	 * Place new rendering methods for mods in this function.
+	 * Place new rendering methods for modules in this function.
 	 *
 	 * @param entity
 	 * @param x      location on the HUD
@@ -65,7 +66,7 @@ public class HUDEntityTrackerHelper {
 	public static void RenderEntityInfo(float partialTickTime) {
 		PlayerLocator.numOverlaysRendered = 0;
 
-		if (PlayerLocator.Enabled && PlayerLocator.Mode == PlayerLocator.Modes.ON && mc.isGameFocused()) {
+		if (PlayerLocator.Enabled && PlayerLocator.Mode == ZyinHUDModuleModes.LocatorOptions.LocatorModes.ON && mc.isGameFocused()) {
 			PlayerEntity me = mc.player;
 
 			double meX = me.lastTickPosX + (me.posX - me.lastTickPosX) * partialTickTime;

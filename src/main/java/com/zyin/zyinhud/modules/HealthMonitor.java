@@ -1,24 +1,25 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes.HealthMonitorOptions;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 
 import com.zyin.zyinhud.ZyinHUDSound;
-import com.zyin.zyinhud.util.Localization;
 
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 /**
  * Plays a warning sound when the player is low on health.
  */
-public class HealthMonitor extends ZyinHUDModBase {
+public class HealthMonitor extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnableHealthMonitor.get();
 
 	/**
 	 * Toggles this module on or off
@@ -32,80 +33,16 @@ public class HealthMonitor extends ZyinHUDModBase {
 	/**
 	 * The current mode for this module
 	 */
-	public static Modes Mode;
-
-	/**
-	 * The enum for the different types of Modes this module can have
-	 */
-	public static enum Modes {
-		OOT("healthmonitor.mode.oot", "lowhealth_oot"),
-		LTTP("healthmonitor.mode.lttp", "lowhealth_lttp"),
-		ORACLE("healthmonitor.mode.oracle", "lowhealth_oracle"),
-		LA("healthmonitor.mode.la", "lowhealth_la"),
-		LOZ("healthmonitor.mode.loz", "lowhealth_loz"),
-		AOL("healthmonitor.mode.aol", "lowhealth_aol");
-
-		private String unfriendlyName;
-		public String soundName;
-
-		private Modes(String unfriendlyName, String soundName) {
-			this.unfriendlyName = unfriendlyName;
-			this.soundName = soundName;
-		}
-
-		/**
-		 * Sets the next available mode for this module
-		 *
-		 * @return the modes
-		 */
-		public static Modes ToggleMode() {
-			return ToggleMode(true);
-		}
-
-		/**
-		 * Sets the next available mode for this module if forward=true, or previous mode if false
-		 *
-		 * @param forward the forward
-		 * @return the modes
-		 */
-		public static Modes ToggleMode(boolean forward) {
-			if (forward) {
-				return Mode = Mode.ordinal() < Modes.values().length - 1 ? Modes.values()[Mode.ordinal() + 1] : Modes.values()[0];
-			}
-			else {
-				return Mode = Mode.ordinal() > 0 ? Modes.values()[Mode.ordinal() - 1] : Modes.values()[Modes.values().length - 1];
-			}
-		}
-
-		/**
-		 * Gets the mode based on its internal name as written in the enum declaration
-		 *
-		 * @param modeName the mode name
-		 * @return modes
-		 */
-		public static Modes GetMode(String modeName) {
-			try { return Modes.valueOf(modeName); }
-			catch (IllegalArgumentException e) { return OOT; }
-		}
-
-		/**
-		 * Get friendly name string.
-		 *
-		 * @return the string
-		 */
-		public String GetFriendlyName() {
-			return Localization.get(unfriendlyName);
-		}
-	}
+	public static HealthMonitorOptions.HealthMonitorModes Mode = ZyinHUDConfig.HealthMonitorMode.get();
 
 	private static Timer timer = new Timer();
 
-	private static int LowHealthSoundThreshold;
-	private static float Volume;
-	public static boolean PlayFasterNearDeath;
+	private static int LowHealthSoundThreshold = ZyinHUDConfig.LowHealthSoundThreshold.get();
+	private static float Volume = ZyinHUDConfig.HealthMonitorVolume.get().floatValue();
+	public static boolean PlayFasterNearDeath = ZyinHUDConfig.PlayFasterNearDeath.get();
 
 	private static boolean isPlayingLowHealthSound = false;
-	private static int repeatDelay = 1000;
+	private static final int repeatDelay = 1000;
 
 	public static final HealthMonitor instance = new HealthMonitor();
 
@@ -136,12 +73,12 @@ public class HealthMonitor extends ZyinHUDModBase {
 	 * warning sound on a 1 second loop until they heal up.
 	 */
 	protected static void PlayLowHealthSoundIfHurt() {
-		if (HealthMonitor.Enabled && mc.player != null) {
+		//Don't play any sounds or do anything with any timers while in creative mode
+		if (HealthMonitor.Enabled && mc.player != null && !mc.playerController.isInCreativeMode()) {
 			int playerHealth = (int) mc.player.getHealth();
 			if (playerHealth < LowHealthSoundThreshold && playerHealth > 0) {
-				//don't play the sound if the user is looking at a screen or in creative;
-				//_CHECK: realistically shouldnt need to check for creative mode, as player health should never get low enough...
-				if (!mc.playerController.isInCreativeMode() && !mc.isGamePaused() && mc.isGameFocused()) {
+				//don't play the sound if the user is looking at a screen
+				if (!mc.isGamePaused() && mc.isGameFocused()) {
 					PlayLowHealthSound();
 				}
 

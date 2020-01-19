@@ -1,4 +1,4 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.ItemRenderer;
 /**
  * The type Zyin hud mod base.
  */
-public abstract class ZyinHUDModBase {
+public abstract class ZyinHUDModuleBase {
 	protected static final Minecraft mc = Minecraft.getInstance();
 	static final ItemRenderer itemRenderer = mc.getItemRenderer();
 

@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.util;
 
-import com.zyin.zyinhud.mods.QuickDeposit;
+import com.zyin.zyinhud.modules.QuickDeposit;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
@@ -22,6 +22,8 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static net.minecraftforge.items.ItemHandlerHelper.canItemStacksStack;
 
 /**
  * Utility class to help with inventory management.
@@ -290,15 +292,8 @@ public class InventoryUtil {
 	 */
 	@SuppressWarnings("ConstantConditions")
 	public static boolean Swap(int srcIndex, int destIndex) {
-        if (srcIndex == destIndex
-            || srcIndex < 0
-            || destIndex < 0) { return false; }
-		//???:This may or may not work; its unclear if PlayerInventory has access to the player's 2x2 crafting grid
-		//_CHECK
-//        List inventorySlots = mc.player.container.inventorySlots;
-
-		List inventorySlots = mc.player.inventory.mainInventory;
-
+        if (srcIndex == destIndex || srcIndex < 0 || destIndex < 0) { return false; }
+        List inventorySlots = mc.player.container.inventorySlots;
 		ItemStack srcStack = ((Slot) inventorySlots.get(srcIndex)).getStack();
 		ItemStack destStack = ((Slot) inventorySlots.get(destIndex)).getStack();
 
@@ -1334,5 +1329,46 @@ public class InventoryUtil {
 		public void run() {
 			Swap(srcIndex, destIndex);
 		}
+	}
+
+	/**
+	 * @param A An ItemStack
+	 * @param B Another ItemStack
+	 * @return true if the ItemStacks can be stacked together, false otherwise.
+	 */
+	public static boolean canItemsBeStacked(ItemStack A, ItemStack B) {
+		if (A.isEmpty() ^ B.isEmpty()) {
+			//A XOR B; if only one of the two ItemStacks is empty, the non-empty stack can just replace the empty stack
+			//Note: this logic contradicts the logic used in by canItemStacksStack and canItemStacksStackRelaxed in ItemHandlerHelper
+			return true;
+		}
+		else if (A.isEmpty() || (!A.isStackable() || !B.isStackable())) {
+			//1. In order to reach here, A and B are either both empty or both not empty, so if one is empty, the other must also be
+			//2. If neither ItemStack is empty, and one of them has a maximum stack size of 1,
+			// they definitely cannot be stacked together
+			return false;
+		}
+		else {
+			return canItemStacksStack(A, B);
+		}
+	}
+
+	/**
+	 * @param A An Item
+	 * @param B Another Item
+	 * @return true if the Items can be stacked together, false otherwise.
+	 */
+	public static boolean canItemsBeStacked(Item A, Item B) {
+		return canItemsBeStacked(new ItemStack(A), new ItemStack(B));
+	}
+
+	/**
+	 * Get the item id of the <tt>Item</tt> corresponding to the <tt>ItemStack</tt> parameter
+	 *
+	 * @param itemStack
+	 * @return the item id of the <tt>Item</tt> in parameter <tt>itemStack</tt>, or -1 if <tt>itemStack.isEmpty()</tt>
+	 */
+	public static int getItemID(ItemStack itemStack) {
+		return itemStack.isEmpty() ? -1 : Item.getIdFromItem(itemStack.getItem());
 	}
 }

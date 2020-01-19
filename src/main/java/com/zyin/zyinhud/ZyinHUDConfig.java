@@ -1,11 +1,11 @@
 package com.zyin.zyinhud;
 
 import com.electronwill.nightconfig.core.EnumGetMethod;
-import com.zyin.zyinhud.mods.*;
-import net.minecraft.client.settings.KeyBinding;
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes.*;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig.Type;
 
 import static net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import static net.minecraftforge.common.ForgeConfigSpec.Builder;
@@ -24,6 +24,7 @@ public class ZyinHUDConfig {
 	public static ForgeConfigSpec SPEC_OVERRIDE;
 	public static Builder BUILDER_OVERRIDE;
 
+	public static final String CATEGORY_ANIMALINFO = "animalinfo";
 	public static final String CATEGORY_CLOCK = "clock";
 	public static final String CATEGORY_COMPASS = "compass";
 	public static final String CATEGORY_COORDINATES = "coordinates";
@@ -33,7 +34,6 @@ public class ZyinHUDConfig {
 	public static final String CATEGORY_ENDERPEARLAID = "enderpearlaid";
 	public static final String CATEGORY_FPS = "fps";
 	public static final String CATEGORY_HEALTHMONITOR = "healthmonitor";
-	public static final String CATEGORY_ANIMALINFO = "horseinfo";
 	public static final String CATEGORY_INFOLINE = "infoline";
 	public static final String CATEGORY_ITEMSELECTOR = "itemselector";
 	public static final String CATEGORY_MISCELLANEOUS = "miscellaneous";
@@ -46,12 +46,32 @@ public class ZyinHUDConfig {
 	public static final String CATEGORY_WEAPONSWAP = "weaponswap";
 
 	// ######################################################################
+	// Animal(Mainly Horse) Info Module
+	// ######################################################################
+	// Enable/Disable Animal Info
+	public static BooleanValue EnableAnimalInfo;
+	// How far away animal info will be rendered on the screen (distance measured in blocks). Range [1, 64]
+	public static IntValue AnimalInfoMaxViewDistance;
+	// Sets the Animal Info mode. Valid modes are ON and OFF
+	public static EnumValue<AnimalInfoOptions.AnimalInfoModes> AnimalInfoMode;
+	// How many decimal places will be used when displaying horse stats
+	public static IntValue AnimalInfoNumberOfDecimalsDisplayed;
+	// Enable/Disable showing an icon if the animal is ready to breed
+	public static BooleanValue ShowBreedingIcons;
+	// Enable/Disable showing the stats of the horse you're riding on the F3 screen
+	public static BooleanValue ShowHorseStatsOnF3Menu;
+	// Enable/Disable showing the stats of horses on screen
+	public static BooleanValue ShowHorseStatsOverlay;
+	// Enable/Disable showing a black background behind text
+	public static BooleanValue ShowTextBackgrounds;
+
+	// ######################################################################
 	// Clock Module
 	// ######################################################################
-	// Sets the clock mode. Valid modes are STANDARD, COUNTDOWN, and GRAPHIC
-	public static EnumValue<Clock.Modes> ClockMode;
 	// Enable/Disable showing the clock
 	public static BooleanValue EnableClock;
+	// Sets the clock mode. Valid modes are STANDARD, COUNTDOWN, and GRAPHIC
+	public static EnumValue<ClockOptions.ClockModes> ClockMode;
 
 	// ######################################################################
 	//Compass Module
@@ -62,13 +82,13 @@ public class ZyinHUDConfig {
 	// ######################################################################
 	// Coordinates Module
 	// ######################################################################
+	// Enable/Disable showing your coordinates
+	public static BooleanValue EnableCoordinates;
 	// The format used when sending your coordinates in a chat message by pressing the keybind
 	// {x}{y}{z} are replaced with actual coordinates
 	public static ConfigValue<String> CoordinatesChatStringFormat;
 	// Sets the coordinates mode. Valid modes are XYZ and XZY
-	public static EnumValue<Coordinates.Modes> CoordinatesMode;
-	// Enable/Disable showing your coordinates
-	public static BooleanValue EnableCoordinates;
+	public static EnumValue<CoordinateOptions.CoordinateModes> CoordinatesMode;
 	// Shows how far into the 16x16 chunk you're in
 	public static BooleanValue ShowChunkCoordinates;
 	// Color code the Y (height) coordinate based on what ores can spawn at that level
@@ -77,14 +97,16 @@ public class ZyinHUDConfig {
 	// ######################################################################
 	// Distance Measurer Module
 	// ######################################################################
-	// Sets the Distance Measurer mode. Valid modes are OFF, SIMPLE, and COORDINATE
-	public static EnumValue<DistanceMeasurer.Modes> DistanceMeasurerMode;
 	// Enable/Disable the distance measurer
 	public static BooleanValue EnableDistanceMeasurer;
+	// Sets the Distance Measurer mode. Valid modes are OFF, SIMPLE, and COORDINATE
+	public static EnumValue<DistanceMeasurerOptions.DistanceMeasurerModes> DistanceMeasurerMode;
 
 	// ######################################################################
 	// Durability Info Module
 	// ######################################################################
+	// Enable/Disable showing all durability info
+	public static BooleanValue EnableDurabilityInfo;
 	// Enable/Disable automatically unequipping armor before it breaks.
 	public static BooleanValue AutoUnequipArmor;
 	// Enable/Disable automatically unequipping tools before they breaks
@@ -94,15 +116,13 @@ public class ZyinHUDConfig {
 	// Display when an item gets damaged less than this fraction of its durability
 	public static DoubleValue DurabilityDisplayThresholdForItem;
 	// Sets Durability Info's number display mode. Valid modes are NONE, TEXT, and PERCENTAGE
-	public static EnumValue<DurabilityInfo.TextModes> DurabilityInfoTextMode;
+	public static EnumValue<DurabilityInfoOptions.DurabilityInfoTextModes> DurabilityInfoTextMode;
 	// The horizontal position of the durability icons. 0 is left, 400 is far right
 	public static IntValue DurabilityLocationHorizontal;
 	// The vertical position of the durability icons. 0 is top, 200 is very bottom
 	public static IntValue DurabilityLocationVertical;
 	// How large the durability icons are rendered, 1.0 being the normal size
 	public static DoubleValue DurabilityScale;
-	// Enable/Disable showing all durability info
-	public static BooleanValue EnableDurabilityInfo;
 	// Enable/Disable showing breaking armor
 	public static BooleanValue ShowArmorDurability;
 	// Enable/Disable showing armor peices instead of the big broken armor icon
@@ -117,14 +137,14 @@ public class ZyinHUDConfig {
 	// ######################################################################
 	// Eating Aid Module
 	// ######################################################################
+	// Enables pressing the eating aid keybind to eat food even if it is  in your inventory and not your hotbar
+//	public static BooleanValue EnableEatingAid;
 	// Enable/Disable using golden apples and golden carrots as food
 //	public static BooleanValue EatGoldenFood;
 	// Enable/Disable eating raw chicken, beef, and porkchops
 //	public static BooleanValue EatRawFood;
 	// Sets the Eating Aid mode. Valid modes are BASIC and INTELLIGENT
-//	public static EnumValue<EatingAid.Modes> EatingAidMode;
-	// Enables pressing the eating aid keybind to eat food even if it is  in your inventory and not your hotbar
-//	public static BooleanValue EnableEatingAid;
+//	public static EnumValue<EatingAid.DistanceMeasurerModes> EatingAidMode;
 	// Use food that is in your hotbar before looking for food in your main inventory
 //	public static BooleanValue PrioritizeFoodInHotbar;
 	// If you are connected to a Bukkit server that uses PvP Soup or Fast Soup (mushroom stew) with this enabled,
@@ -149,34 +169,14 @@ public class ZyinHUDConfig {
 	// ######################################################################
 	// Enable/Disable using the Health Monitor.
 	public static BooleanValue EnableHealthMonitor;
-	// Sets the Health Monitor mode. Valid modes are OOT, LTTP, ORACLE, LA, LOZ, and AOL
-	public static EnumValue<HealthMonitor.Modes> HealthMonitorMode;
+	// Sets the Health Monitor sound mode. Valid modes are OOT, LTTP, ORACLE, LA, LOZ, and AOL
+	public static EnumValue<HealthMonitorOptions.HealthMonitorModes> HealthMonitorMode;
 	// Set the volume of the beeps. Range [0.0, 1.0]
 	public static DoubleValue HealthMonitorVolume;
 	// A sound will start playing when you have less than this much health left
 	public static IntValue LowHealthSoundThreshold;
 	// Play the warning sounds quicker the closer you get to dieing
 	public static BooleanValue PlayFasterNearDeath;
-
-	// ######################################################################
-	// Horse Info Module
-	// ######################################################################
-	// How far away animal info will be rendered on the screen (distance measured in blocks). Range [1, 64]
-	public static IntValue AnimalInfoMaxViewDistance;
-	// Sets the Animal Info mode. Valid modes are ON and OFF
-	public static EnumValue<AnimalInfo.Modes> AnimalInfoMode;
-	// Enable/Disable Animal Info
-	public static BooleanValue EnableAnimalInfo;
-	// How many decimal places will be used when displaying horse stats
-	public static IntValue HorseInfoNumberOfDecimalsDisplayed;
-	// Enable/Disable showing an icon if the animal is ready to breed
-	public static BooleanValue ShowBreedingIcons;
-	// Enable/Disable showing the stats of the horse you're riding on the F3 screen
-	public static BooleanValue ShowHorseStatsOnF3Menu;
-	// Enable/Disable showing the stats of horses on screen
-	public static BooleanValue ShowHorseStatsOverlay;
-	// Enable/Disable showing a black background behind text
-	public static BooleanValue ShowTextBackgrounds;
 
 	// ######################################################################
 	// Info Line Module
@@ -192,8 +192,8 @@ public class ZyinHUDConfig {
 	public static BooleanValue ShowBiome;
 	// Enable/Disable showing if it can snow at the player's feet on the Info Line
 	public static BooleanValue ShowCanSnow;
-
-	//ShowPing, boolean, default true
+	// Enable/Disable showing the player's ping while on a multiplayer server
+	public static BooleanValue ShowPing;
 
 	// ######################################################################
 	// Item Selector Module
@@ -202,7 +202,7 @@ public class ZyinHUDConfig {
 	// Item Selector hotkey to swap the selected item with an inventory item
 	public static BooleanValue EnableItemSelector;
 	// Sets the Item Selector mode. Valid modes are ALL and SAME_COLUMN
-	public static EnumValue<ItemSelector.Modes> ItemSelectorMode;
+	public static EnumValue<ItemSelectorOptions.ItemSelectorModes> ItemSelectorMode;
 	// Enable/disable use of side buttons for item selection
 	public static BooleanValue ItemSelectorSideButtons;
 	// Specifies how many ticks until the item selector confirms your choice and performs the item swap
@@ -216,7 +216,7 @@ public class ZyinHUDConfig {
 	// Enable/Disable being able to place a sign with no text by sneaking while placing a sign
 	public static BooleanValue UseQuickPlaceSign;
 	// Enable/Disable overriding the default sprint behavior and run forever
-	public static BooleanValue UseUnlimitedSprinting;
+	public static BooleanValue UseUnlimitedSprintingSP;
 
 	// ######################################################################
 	// Player Locator Module
@@ -226,7 +226,7 @@ public class ZyinHUDConfig {
 	// Stop showing player names when they are this close (distance measured in blocks).
 	public static IntValue PlayerLocatorMinViewDistance;
 	// Sets the Player Locator mode. Valid modes are OFF and ON
-	public static EnumValue<PlayerLocator.Modes> PlayerLocatorMode;
+	public static EnumValue<LocatorOptions.LocatorModes> PlayerLocatorMode;
 	// Show how far away you are from the other players next to their name.
 	public static BooleanValue ShowDistanceToPlayers;
 	// Show how much health players have by their name.
@@ -248,10 +248,10 @@ public class ZyinHUDConfig {
 	// ######################################################################
 	// Potion Timers Module
 	// ######################################################################
-	// Sets Potion Timer's text display mode. Valid modes are WHITE, COLORED, and NONE
-//    public static EnumValue<PotionTimers.TextModes> DurabilityInfoTextMode;
 	// Enable/Disable showing the time remaining on potions.
 //    public static BooleanValue EnablePotionTimers;
+	// Sets Potion Timer's text display mode. Valid modes are WHITE, COLORED, and NONE
+//    public static EnumValue<PotionTimers.PotionTimerTextModes> PotionTimerTextMode;
 	// Enable/Disable hiding the default potion effects when you open your inventory.
 //    public static BooleanValue HidePotionEffectsInInventory;
 	// How large the potion timers are rendered, 1.0 being the normal size. Range [0.25, 5.0]
@@ -271,8 +271,12 @@ public class ZyinHUDConfig {
 	// ######################################################################
 	// Quick Deposit Module
 	// ######################################################################
+	// Enables Quick Deposit.
+	public static BooleanValue EnableQuickDeposit;
 	// Stop Quick Deposit from putting arrows in chests?
 	public static BooleanValue BlacklistArrow;
+	// Stop Quick Deposit from putting clocks and compasses in chests?
+	public static BooleanValue BlacklistClockCompass;
 	// Stop Quick Deposit from putting ender pearls in chests?
 	public static BooleanValue BlacklistEnderPearl;
 	// Stop Quick Deposit from putting food in chests?
@@ -288,8 +292,6 @@ public class ZyinHUDConfig {
 	// Closes the chest GUI after you deposit your items in it. 
 	// Allows quick and easy depositing of all your items into multiple chests.
 	public static BooleanValue CloseChestAfterDepositing;
-	// Enables Quick Deposit.
-	public static BooleanValue EnableQuickDeposit;
 	// Determines if items in your hotbar will be deposited into chests when 
 	// the Quick Deposit hotkey is pressed.
 	public static BooleanValue IgnoreItemsInHotbar;
@@ -305,7 +307,7 @@ public class ZyinHUDConfig {
 	// This can be changed in game with - + <hotkey> and + + <hotkey>.
 	public static IntValue SafeOverlayDrawDistance;
 	// Sets the Safe Overlay mode. Valid modes are OFF and On
-	public static EnumValue<SafeOverlay.Modes> SafeOverlayMode;
+	public static EnumValue<SafeOverlayOptions.SafeOverlayModes> SafeOverlayMode;
 	// Enable/Disable showing unsafe areas through walls. Toggle in game with Ctrl + <hotkey>.
 	public static BooleanValue SafeOverlaySeeThroughWalls;
 	// The transparency of the unsafe marks. Range [0.11, 1.0].
@@ -332,7 +334,50 @@ public class ZyinHUDConfig {
 		SPEC_OVERRIDE = BUILDER_OVERRIDE.build();
 	}
 
+	//TODO: custom implementation of some .define* methods that allow for placement of a comment
+	// after ranges/accepted values, but before the configuration option itself.
+
 	private static void configure(Builder builder, Builder builder_override) {
+		// ######################################################################
+		// Animal(Mainly Horse) Info Module
+		// ######################################################################
+		builder.comment(
+			"Animal Info gives you information about horse(also mule, donkey, and llama) stats, such as speed and jump height."
+		).push(CATEGORY_ANIMALINFO);
+		{
+			EnableAnimalInfo = builder
+				.comment("Enable/Disable Animal Info")
+				.define("EnableAnimalInfo", AnimalInfoOptions.defaultEnabled);
+			AnimalInfoMaxViewDistance = builder
+				.comment("How far away animal info will be rendered on the screen (distance measured in blocks).")
+				.defineInRange(
+					"AnimalInfoMaxViewDistance", AnimalInfoOptions.defaultViewDistanceCutoff,
+					AnimalInfoOptions.minViewDistanceCutoff, AnimalInfoOptions.maxViewDistanceCutoff
+				);
+			AnimalInfoMode = builder
+				.comment("Sets the Animal Info mode.")
+				.defineEnum("AnimalInfoMode", AnimalInfoOptions.AnimalInfoModes.OFF, EnumGetMethod.NAME_IGNORECASE);
+			AnimalInfoNumberOfDecimalsDisplayed = builder
+				.comment("How many decimal places will be used when displaying horse stats.")
+				.defineInRange(
+					"AnimalInfoNumberOfDecimalsDisplayed", AnimalInfoOptions.defautNumberOfDecimalsDisplayed,
+					AnimalInfoOptions.minDecimalsDisplayed, AnimalInfoOptions.maxDecimalsDisplayed
+				);
+			ShowBreedingIcons = builder
+				.comment("Enable/Disable showing an icon if the animal is ready to breed")
+				.define("ShowBreedingIcons", AnimalInfoOptions.defaultShowBreedingIcons);
+			ShowHorseStatsOnF3Menu = builder
+				.comment("Enable/Disable showing the stats of the horse you're riding on the F3 screen")
+				.define("ShowHorseStatsOnF3Menu", AnimalInfoOptions.defaultShowHorseStatsOnF3Menu);
+			ShowHorseStatsOverlay = builder
+				.comment("Enable/Disable showing the stats of horses on screen")
+				.define("ShowHorseStatsOverlay", AnimalInfoOptions.defaultShowHorseStatsOverlay);
+			ShowTextBackgrounds = builder
+				.comment("Enable/Disable showing a black background behind text")
+				.define("ShowTextBackgrounds", AnimalInfoOptions.defaultShowTextBackgrounds);
+		}
+		builder.pop();
+
 		// ######################################################################
 		// Clock Module
 		// ######################################################################
@@ -340,12 +385,12 @@ public class ZyinHUDConfig {
 			"Clock shows you time relevant to Minecraft time."
 		).push(CATEGORY_CLOCK);
 		{
-			ClockMode = builder
-				.comment("Sets the clock mode. Valid modes are STANDARD, COUNTDOWN, and GRAPHIC")
-				.defineEnum("ClockMode", Clock.Modes.STANDARD, EnumGetMethod.NAME_IGNORECASE);
 			EnableClock = builder
 				.comment("Enable/Disable showing the clock")
-				.define("EnableClock", true);
+				.define("EnableClock", ClockOptions.defaultEnabled);
+			ClockMode = builder
+				.comment("Sets the clock mode.")
+				.defineEnum("ClockMode", ClockOptions.ClockModes.STANDARD, EnumGetMethod.NAME_IGNORECASE);
 		}
 		builder.pop();
 
@@ -358,7 +403,7 @@ public class ZyinHUDConfig {
 		{
 			EnableCompass = builder
 				.comment("Enable/Disable showing the compass")
-				.define("EnableCompass", true);
+				.define("EnableCompass", CompassOptions.defaultEnabled);
 		}
 		builder.pop();
 
@@ -369,25 +414,25 @@ public class ZyinHUDConfig {
 			"Coordinates displays your coordinates. Nuff said."
 		).push(CATEGORY_COORDINATES);
 		{
-			CoordinatesChatStringFormat = builder
-				.comment(
-					"The format used when sending your coordinates in a chat message by pressing '" +
-					bindingToKeyName(ZyinHUDKeyHandlers.KEY_BINDINGS[1]) + "'. " +
-					"{x}{y}{z} are replaced with actual coordinates"
-				)
-				.define("CoordinatesChatStringFormat", "X={x}, Y={y}, Z={z}");
-			CoordinatesMode = builder
-				.comment("Sets the coordinates mode. Valid modes are XYZ and XZY")
-				.defineEnum("CoordinatesMode", Coordinates.Modes.XYZ, EnumGetMethod.NAME_IGNORECASE);
 			EnableCoordinates = builder
 				.comment("Enable/Disable showing your coordinates")
-				.define("EnableCoordinates", true);
+				.define("EnableCoordinates", CoordinateOptions.defaultEnabled);
+			CoordinatesChatStringFormat = builder
+				.comment(
+					"The format used when sending your coordinates in a chat message by pressing the " +
+					CATEGORY_COORDINATES + " keybind (default: 'F4')."
+				)
+				.comment("{x}{y}{z} are replaced with actual coordinates")
+				.define("CoordinatesChatStringFormat", CoordinateOptions.defaultChatStringFormat);
+			CoordinatesMode = builder
+				.comment("Sets the coordinates mode.")
+				.defineEnum("CoordinatesMode", CoordinateOptions.CoordinateModes.XYZ, EnumGetMethod.NAME_IGNORECASE);
 			ShowChunkCoordinates = builder
 				.comment("Shows how far into the 16x16 chunk you're in")
-				.define("ShowChunkCoordinates", false);
+				.define("ShowChunkCoordinates", CoordinateOptions.defaultShowChunkCoordinates);
 			UseYCoordinateColors = builder
 				.comment("Color code the Y (height) coordinate based on what ores can spawn at that level")
-				.define("UseYCoordinateColors", true);
+				.define("UseYCoordinateColors", CoordinateOptions.defaultUseYCoordinateColors);
 		}
 		builder.pop();
 
@@ -398,12 +443,16 @@ public class ZyinHUDConfig {
 			"Distance Measurer can calculate distances between you and blocks that you aim at."
 		).push(CATEGORY_DISTANCEMEASURER);
 		{
-			DistanceMeasurerMode = builder
-				.comment("Sets the Distance Measurer mode. Valid modes are OFF, SIMPLE, and COORDINATE")
-				.defineEnum("DistanceMeasurerMode", DistanceMeasurer.Modes.OFF, EnumGetMethod.NAME_IGNORECASE);
 			EnableDistanceMeasurer = builder
 				.comment("Enable/Disable the distance measurer")
-				.define("EnableDistanceMeasurer", true);
+				.define("EnableDistanceMeasurer", DistanceMeasurerOptions.defaultEnabled);
+			DistanceMeasurerMode = builder
+				.comment("Sets the Distance Measurer mode.")
+				.defineEnum(
+					"DistanceMeasurerMode",
+					DistanceMeasurerOptions.DistanceMeasurerModes.OFF,
+					EnumGetMethod.NAME_IGNORECASE
+				);
 		}
 		builder.pop();
 
@@ -414,45 +463,75 @@ public class ZyinHUDConfig {
 			"Durability Info will display your breaking armor and equipment."
 		).push(CATEGORY_DURABILITYINFO);
 		{
-			AutoUnequipArmor = builder
-				.comment("Enable/Disable automatically unequipping armor before it breaks")
-				.define("AutoUneqipArmor", false);
-			AutoUnequipTools = builder
-				.comment("Enable/Disable automatically unequipping tools before they breaks")
-				.define("AutoUnequipTools", false);
-			DurabilityDisplayThresholdForArmor = builder
-				.comment("Display when armor gets damaged less than this fraction of its durability")
-				.defineInRange("DurabilityDisplayThresholdForArmor", 0.1d, 0.0d, 1.0d);
-			DurabilityDisplayThresholdForItem = builder
-				.comment("Display when an item gets damaged less than this fraction of its durability")
-				.defineInRange("DurabilityDisplayThresholdForItem", 0.1d, 0.0d, 1.0d);
-			DurabilityInfoTextMode = builder
-				.comment("Sets Durability Info's number display mode. Valid modes are NONE, TEXT, and PERCENTAGE")
-				.defineEnum("DurabilityInfoTextMode", DurabilityInfo.TextModes.NONE, EnumGetMethod.NAME_IGNORECASE);
-			DurabilityLocationHorizontal = builder
-				.comment("The horizontal position of the durability icons. 0 is left, 400 is far right")
-				.defineInRange("DurabilityLocationHorizontal", 30, 0, 400);
-			DurabilityLocationVertical = builder
-				.comment("The vertical position of the durability icons. 0 is top, 200 is very bottom")
-				.defineInRange("DurabilityLocationVertical", 20, 0, 200);
-			DurabilityScale = builder
-				.comment("How large the durability icons are rendered, 1.0 being the normal size")
-				.defineInRange("DurabilityScale", 1.0d, 0.25d, 5.0d);
 			EnableDurabilityInfo = builder
 				.comment("Enable/Disable showing all durability info")
-				.define("EnableDurabilityInfo", true);
+				.define("EnableDurabilityInfo", DurabilityInfoOptions.defaultEnabled);
+			AutoUnequipArmor = builder
+				.comment("Enable/Disable automatically unequipping armor before it breaks")
+				.define("AutoUneqipArmor", DurabilityInfoOptions.defaultAutoUnequipArmor);
+			AutoUnequipTools = builder
+				.comment("Enable/Disable automatically unequipping tools before they breaks")
+				.define("AutoUnequipTools", DurabilityInfoOptions.defaultAutoUnequipTools);
+			DurabilityDisplayThresholdForArmor = builder
+				.comment("Display when armor has less than this fraction of its durability")
+				.defineInRange(
+					"DurabilityDisplayThresholdForArmor",
+					DurabilityInfoOptions.defaultDurabilityDisplayThreshold,
+					DurabilityInfoOptions.minDurabilityDisplayThreshold,
+					DurabilityInfoOptions.maxDurabilityDisplayThreshold
+				);
+			DurabilityDisplayThresholdForItem = builder
+				.comment("Display when an item has less than this fraction of its durability")
+				.defineInRange(
+					"DurabilityDisplayThresholdForItem",
+					DurabilityInfoOptions.defaultDurabilityDisplayThreshold,
+					DurabilityInfoOptions.minDurabilityDisplayThreshold,
+					DurabilityInfoOptions.maxDurabilityDisplayThreshold
+				);
+			DurabilityInfoTextMode = builder
+				.comment("Sets Durability Info's number display mode.")
+				.defineEnum(
+					"DurabilityInfoTextMode", DurabilityInfoOptions.DurabilityInfoTextModes.NONE,
+					EnumGetMethod.NAME_IGNORECASE
+				);
+			DurabilityLocationHorizontal = builder
+				.comment(
+					"The horizontal position of the durability icons. The far left is at " +
+					DurabilityInfoOptions.minArmorPosXY + ", and " +
+					DurabilityInfoOptions.maxArmorIconPosX + " is the far right."
+				)
+				.defineInRange(
+					"DurabilityLocationHorizontal", DurabilityInfoOptions.defaultArmorIconPosX,
+					DurabilityInfoOptions.minArmorPosXY, DurabilityInfoOptions.maxArmorIconPosX
+				);
+			DurabilityLocationVertical = builder
+				.comment(
+					"The vertical position of the durability icons. The top is at " +
+					DurabilityInfoOptions.minArmorPosXY + ", and " +
+					DurabilityInfoOptions.maxArmorIconPosY + " is the very bottom."
+				)
+				.defineInRange(
+					"DurabilityLocationVertical", DurabilityInfoOptions.defaultArmorIconPosY,
+					DurabilityInfoOptions.minArmorPosXY, DurabilityInfoOptions.maxArmorIconPosY
+				);
+			DurabilityScale = builder
+				.comment("How large the durability icons are rendered, 1.0 being the normal size")
+				.defineInRange(
+					"DurabilityScale", DurabilityInfoOptions.defaultDurabilityIconScale,
+					DurabilityInfoOptions.minIconScale, DurabilityInfoOptions.maxIconScale
+				);
 			ShowArmorDurability = builder
 				.comment("Enable/Disable showing breaking armor")
-				.define("ShowArmorDurability", true);
+				.define("ShowArmorDurability", DurabilityInfoOptions.defaultShowArmorDurability);
 			ShowIndividualArmorIcons = builder
 				.comment("Enable/Disable showing armor peices instead of the big broken armor icon")
-				.define("ShowIndividualArmorIcons", true);
+				.define("ShowIndividualArmorIcons", DurabilityInfoOptions.defaultShowIndividualArmorIcons);
 			ShowItemDurability = builder
 				.comment("Enable/Disable showing breaking items")
-				.define("ShowItemDurability", true);
+				.define("ShowItemDurability", DurabilityInfoOptions.defaultShowItemDurability);
 			UseColoredNumbers = builder
 				.comment("Toggle using colored numbering")
-				.define("UseColoredNumbers", true);
+				.define("UseColoredNumbers", DurabilityInfoOptions.defaultUseColoredNumbers);
 		}
 		builder.pop();
 
@@ -463,6 +542,12 @@ public class ZyinHUDConfig {
 //			"Eating Aid makes eating food quick and easy."
 //		).push(CATEGORY_EATINGAID);
 //		{
+//			EnableEatingAid = builder
+//				.comment(
+//					"Enables pressing the " CATEGORY_EATINGAID + " keybind (default: 'G')" +
+//					" to eat food even if it is in your main inventory and not your hotbar"
+//				)
+//				.define("EnableEatingAid", true);
 //			EatGoldenFood = builder
 //				.comment("Enable/Disable using golden apples and golden carrots as food")
 //				.define("EatGoldenFood", false);
@@ -470,15 +555,8 @@ public class ZyinHUDConfig {
 //				.comment("Enable/Disable eating raw chicken, beef, and porkchops")
 //				.define("EatRawFood", false);
 //			EatingAidMode = builder
-//				.comment("Sets the Eating Aid mode. Valid modes are BASIC and INTELLIGENT")
+//				.comment("Sets the Eating Aid mode.")
 //				.defineEnum("EatingAidMode", EatingAid.Modes.INTELLIGENT, EnumGetMethod.NAME_IGNORECASE);
-//			EnableEatingAid = builder
-//				.comment(
-//					"Enables pressing " +
-//					bindingToKeyName(ZyinHUDKeyHandlers.KEY_BINDINGS[3]) +
-//					" to eat food even if it is in your inventory and not your hotbar"
-//				)
-//				.define("EnableEatingAid", true);
 //			PrioritizeFoodInHotbar = builder
 //				.comment("Use food that is in your hotbar before looking for food in your main inventory")
 //				.define("PrioritizeFoodInHotbar", false);
@@ -500,11 +578,10 @@ public class ZyinHUDConfig {
 		{
 			EnableEnderPearlAid = builder
 				.comment(
-					"Enables pressing " +
-					bindingToKeyName(ZyinHUDKeyHandlers.KEY_BINDINGS[4]) +
+					"Enables pressing the " + CATEGORY_ENDERPEARLAID + " keybind (default: 'C')" +
 					" to use an enderpearl even if it is in your main inventory and not your hotbar"
 				)
-				.define("EnableEnderPearlAid", true);
+				.define("EnableEnderPearlAid", EnderPearlAidOptions.defaultEnabled);
 		}
 		builder.pop();
 
@@ -517,7 +594,7 @@ public class ZyinHUDConfig {
 		{
 			EnableFPS = builder
 				.comment("Enable/Disable showing your FPS at the end of the Info Line")
-				.define("EnableFPS", false);
+				.define("EnableFPS", FpsOptions.defaultEnabled);
 		}
 		builder.pop();
 
@@ -530,53 +607,31 @@ public class ZyinHUDConfig {
 		{
 			EnableHealthMonitor = builder
 				.comment("Enable/Disable using the Health Monitor")
-				.define("EnableHealthMonitor", false);
+				.define("EnableHealthMonitor", HealthMonitorOptions.defaultEnabled);
 			HealthMonitorMode = builder
-				.comment("Sets the Health Monitor mode. Valid modes are OOT, LTTP, ORACLE, LA, LOZ, and AOL")
-				.defineEnum("HealthMonitorMode", HealthMonitor.Modes.OOT, EnumGetMethod.NAME_IGNORECASE);
+				.comment("Sets the Health Monitor sound.")
+				.defineEnum(
+					"HealthMonitorMode", HealthMonitorOptions.HealthMonitorModes.OOT,
+					EnumGetMethod.NAME_IGNORECASE
+				);
 			HealthMonitorVolume = builder
 				.comment("Set the volume of the beeps")
-				.defineInRange("HealthMonitorVolume", 1.0d, 0.0d, 1.0d);
+				.defineInRange(
+					"HealthMonitorVolume", (float) HealthMonitorOptions.defaultSoundVolume,
+					HealthMonitorOptions.minSoundVolume, HealthMonitorOptions.maxSoundVolume
+				);
 			LowHealthSoundThreshold = builder
 				.comment("A sound will start playing when you have less than this much health left")
-				.defineInRange("LowHealthSoundThreshold", 6, 1, 10);
+				// Apparently the max number of regular (non-absorption) hearts is 1024. Don't know why you'd ever want to
+				// be warned when your health is 1 less than max, but I'll allow it
+				// 4 health (2 hearts) is when the health bar starts to shake
+				.defineInRange(
+					"LowHealthSoundThreshold", HealthMonitorOptions.defaultLowHealthSoundThreshold,
+					HealthMonitorOptions.minLowHealthSoundThreshold, HealthMonitorOptions.maxLowHealthSoundThreshold
+				);
 			PlayFasterNearDeath = builder
 				.comment("Play the warning sounds quicker the closer you get to dieing")
-				.define("PlayFasterNearDeath", false);
-		}
-		builder.pop();
-
-		// ######################################################################
-		// Horse Info Module
-		// ######################################################################
-		builder.comment(
-			"Animal Info gives you information about horse stats, such as speed and jump height."
-		).push(CATEGORY_ANIMALINFO);
-		{
-			AnimalInfoMaxViewDistance = builder
-				.comment("How far away animal info will be rendered on the screen (distance measured in blocks).")
-				.defineInRange("AnimalInfoMaxViewDistance", 8, 1, 64);
-			AnimalInfoMode = builder
-				.comment("Sets the Animal Info mode. Valid modes are ON and OFF")
-				.defineEnum("AnimalInfoMode", AnimalInfo.Modes.OFF, EnumGetMethod.NAME_IGNORECASE);
-			EnableAnimalInfo = builder
-				.comment("Enable/Disable Animal Info")
-				.define("EnableAnimalInfo", true);
-			HorseInfoNumberOfDecimalsDisplayed = builder
-				.comment("How many decimal places will be used when displaying horse stats.")
-				.defineInRange("HorseInfoNumberOfDecimalsDisplayed", 1, 0, 6);
-			ShowBreedingIcons = builder
-				.comment("Enable/Disable showing an icon if the animal is ready to breed")
-				.define("ShowBreedingIcons", true);
-			ShowHorseStatsOnF3Menu = builder
-				.comment("Enable/Disable showing the stats of the horse you're riding on the F3 screen")
-				.define("ShowHorseStatsOnF3Menu", true);
-			ShowHorseStatsOverlay = builder
-				.comment("Enable/Disable showing the stats of horses on screen")
-				.define("ShowHorseStatsOverlay", true);
-			ShowTextBackgrounds = builder
-				.comment("Enable/Disable showing a black background behind text")
-				.define("ShowTextBackgrounds", true);
+				.define("PlayFasterNearDeath", HealthMonitorOptions.defaultPlayFasterNearDeath);
 		}
 		builder.pop();
 
@@ -592,19 +647,34 @@ public class ZyinHUDConfig {
 					"Enable/Disable the entire info line in the top left part of the screen. " +
 					"This includes the clock, coordinates, compass, mod status, etc"
 				)
-				.define("EnableInfoLine", true);
+				.define("EnableInfoLine", InfoLineOptions.defaultEnabled);
 			InfoLineLocationHorizontal = builder
-				.comment("The horizontal position of the info line. 1 is left, 400 is far right")
-				.defineInRange("InfoLineLocationHorizontal", 1, 1, 400);
+				.comment(
+					"The horizontal position of the info line. The far left is at " +
+					InfoLineOptions.minLeftOffset + ", and " + InfoLineOptions.maxLeftOffset + " is the far right"
+				)
+				.defineInRange(
+					"InfoLineLocationHorizontal", InfoLineOptions.defaultLeftOffset,
+					InfoLineOptions.minLeftOffset, InfoLineOptions.maxLeftOffset
+				);
 			InfoLineLocationVertical = builder
-				.comment("The vertical position of the info line. 1 is top, 200 is very bottom")
-				.defineInRange("InfoLineLocationVertical", 1, 1, 200);
+				.comment(
+					"The vertical position of the info line. The top is at " +
+					InfoLineOptions.minTopOffset + ", and the bottom is at " + InfoLineOptions.maxTopOffset
+				)
+				.defineInRange(
+					"InfoLineLocationVertical", InfoLineOptions.defaultTopOffset,
+					InfoLineOptions.minTopOffset, InfoLineOptions.maxTopOffset
+				);
 			ShowBiome = builder
 				.comment("Enable/Disable showing what biome you are in on the Info Line")
-				.define("ShowBiome", false);
+				.define("ShowBiome", InfoLineOptions.defaultShowBiome);
 			ShowCanSnow = builder
 				.comment("Enable/Disable showing if it can snow at the player's feet on the Info Line")
-				.define("ShowCanSnow", false);
+				.define("ShowCanSnow", InfoLineOptions.defaultShowCanSnow);
+			ShowPing = builder
+				.comment("Enable/Disable showing the player's ping while on a multiplayer server")
+				.define("ShowPing", InfoLineOptions.defaultShowPing);
 		}
 		builder.pop();
 
@@ -617,23 +687,25 @@ public class ZyinHUDConfig {
 		{
 			EnableItemSelector = builder
 				.comment(
-					"Enables/Disable using mouse wheel scrolling whilst holding " +
-					bindingToKeyName(ZyinHUDKeyHandlers.KEY_BINDINGS[11]) +
-					" to swap the selected item with an inventory item"
+					"Enables/Disable using mouse wheel scrolling whilst holding the " + CATEGORY_ITEMSELECTOR +
+					" keybind (default: Left Alt) to swap the selected item with an inventory item"
 				)
-				.define("EnableItemSelector", true);
+				.define("EnableItemSelector", ItemSelectorOptions.defaultEnabled);
 			ItemSelectorMode = builder
-				.comment("Sets the Item Selector mode. Valid modes are ALL and SAME_COLUMN")
-				.defineEnum("ItemSelectorMode", ItemSelector.Modes.ALL, EnumGetMethod.NAME_IGNORECASE);
+				.comment("Sets the Item Selector mode.")
+				.defineEnum(
+					"ItemSelectorMode", ItemSelectorOptions.ItemSelectorModes.ALL, EnumGetMethod.NAME_IGNORECASE
+				);
 			ItemSelectorSideButtons = builder
 				.comment("Enable/disable use of side buttons for item selection")
-				.define("ItemSelectorSideButtons", false);
+				.define("ItemSelectorSideButtons", ItemSelectorOptions.defaultUseMouseSideButtons);
 			ItemSelectorTimeout = builder
 				.comment(
-					"Specifies how many ticks until the item selector confirms your choice and performs the item swap")
+					"Specifies how many ticks until the item selector confirms your choice and performs the item swap"
+				)
 				.defineInRange(
-					"ItemSelectorTimeout", ItemSelector.defaultTimeout, ItemSelector.minTimeout,
-					ItemSelector.maxTimeout
+					"ItemSelectorTimeout", ItemSelectorOptions.defaultTimeout,
+					ItemSelectorOptions.minTimeout, ItemSelectorOptions.maxTimeout
 				);
 		}
 		builder.pop();
@@ -647,13 +719,13 @@ public class ZyinHUDConfig {
 		{
 			ShowAnvilRepairs = builder
 				.comment("Enable/Disable showing the repair count on items while using the anvil")
-				.define("ShowAnvilRepairs", true);
+				.define("ShowAnvilRepairs", MiscOptions.ShowAnvilRepairs);
 			UseQuickPlaceSign = builder
 				.comment("Enable/Disable being able to place a sign with no text by sneaking while placing a sign")
-				.define("UseQuickPlaceSign", false);
-			UseUnlimitedSprinting = builder
-				.comment("Enable/Disable overriding the default sprint behavior and run forever")
-				.define("UseUnlimitedSprinting", false);
+				.define("UseQuickPlaceSign", MiscOptions.UseQuickPlaceSign);
+			UseUnlimitedSprintingSP = builder
+				.comment("Enable/Disable overriding the default sprint behavior and run forever. SINGLEPLAYER ONLY.")
+				.define("UseUnlimitedSprintingSP", MiscOptions.UseUnlimitedSprintingSP);
 		}
 		builder.pop();
 
@@ -666,31 +738,33 @@ public class ZyinHUDConfig {
 		{
 			EnablePlayerLocator = builder
 				.comment("Enable/Disable the Player Locator")
-				.define("EnablePlayerLocator", true);
+				.define("EnablePlayerLocator", LocatorOptions.defaultEnabled);
 			PlayerLocatorMinViewDistance = builder
 				.comment("Stop showing player names when they are this close (distance measured in blocks)")
 				.defineInRange(
-					"PlayerLocatorMinViewDistance", 0, PlayerLocator.minViewDistanceCutoff,
-					PlayerLocator.maxViewDistanceCutoff
+					"PlayerLocatorMinViewDistance", LocatorOptions.defaultViewDistanceCutoff,
+					LocatorOptions.minViewDistanceCutoff, LocatorOptions.maxViewDistanceCutoff
 				);
 			PlayerLocatorMode = builder
-				.comment("Sets the Player Locator mode. Valid modes are OFF and ON")
-				.defineEnum("PlayerLocatorMode", PlayerLocator.Modes.OFF, EnumGetMethod.NAME_IGNORECASE);
+				.comment("Sets the Player Locator mode.")
+				.defineEnum(
+					"PlayerLocatorMode", LocatorOptions.LocatorModes.OFF, EnumGetMethod.NAME_IGNORECASE
+				);
 			ShowDistanceToPlayers = builder
 				.comment("Show how far away you are from the other players next to their name")
-				.define("ShowDistanceToPlayers", false);
+				.define("ShowDistanceToPlayers", LocatorOptions.defaultShowDistanceToPlayers);
 			ShowPlayerHealth = builder
 				.comment("Show how much health players have by their name")
-				.define("ShowPlayerHealth", false);
+				.define("ShowPlayerHealth", LocatorOptions.defaultShowPlayerHealth);
 			ShowWitherSkeletons = builder
 				.comment("Show your tamed wolves in addition to other players")
-				.define("ShowWitherSkeletons", false);
+				.define("ShowWitherSkeletons", LocatorOptions.defaultShowWitherSkeletons);
 			ShowWolves = builder
 				.comment("Show your tamed wolves in addition to other players")
-				.define("ShowWolves", true);
+				.define("ShowWolves", LocatorOptions.defaultShowWolves);
 			UseWolfColors = builder
 				.comment("Use the color of your wolf's collar to colorize their name")
-				.define("UseWolfColors", true);
+				.define("UseWolfColors", LocatorOptions.defaultUseWolfColors);
 		}
 		builder.pop();
 
@@ -703,11 +777,10 @@ public class ZyinHUDConfig {
 		{
 			EnablePotionAid = builder
 				.comment(
-					"Enables pressing " +
-					bindingToKeyName(ZyinHUDKeyHandlers.KEY_BINDINGS[6]) +
+					"Enables pressing " + CATEGORY_POTIONAID + " keybind (default: 'V')" +
 					" to drink a potion even if it is in your main inventory and not your hotbar"
 				)
-				.define("EnablePotionAid", true);
+				.define("EnablePotionAid", PotionAidOptions.defaultEnabled);
 		}
 		builder.pop();
 
@@ -718,12 +791,12 @@ public class ZyinHUDConfig {
 //			"Potion Timers shows the duration remaining on potions that you drink."
 //		).push(CATEGORY_POTIONTIMERS);
 //		{
-//			DurabilityInfoTextMode = builder
-//				.comment("Sets Potion Timer's text display mode. Valid modes are WHITE, COLORED, and NONE")
-//				.defineEnum("DurabilityInfoTextMode", PotionTimers.TextModes.COLORED, EnumGetMethod.NAME_IGNORECASE);
 //			EnablePotionTimers = builder
 //				.comment("Enable/Disable showing the time remaining on potions")
 //				.define("EnablePotionTimers", true);
+//			PotionTimerTextMode = builder
+//				.comment("Sets Potion Timer's text display mode.")
+//				.defineEnum("PotionTimerTextMode", PotionTimers.PotionTimerTextModes.COLORED, EnumGetMethod.NAME_IGNORECASE);
 //			HidePotionEffectsInInventory = builder
 //				.comment("Enable/Disable hiding the default potion effects when you open your inventory")
 //				.define("HidePotionEffectsInInventory", false);
@@ -749,42 +822,45 @@ public class ZyinHUDConfig {
 			"Quick Stack allows you to intelligently deposit every item in your inventory quickly into a chest."
 		).push(CATEGORY_QUICKDEPOSIT);
 		{
+			EnableQuickDeposit = builder
+				.comment("Enables Quick Deposit.")
+				.define("EnableQuickDeposit", QuickDepositOptions.defaultEnabled);
 			BlacklistArrow = builder
 				.comment("Stop Quick Deposit from putting arrows in chests?")
-				.define("BlacklistArrows", false);
+				.define("BlacklistArrows", QuickDepositOptions.BlacklistArrow);
+			BlacklistClockCompass = builder
+				.comment("Stop Quick Deposit from putting clocks and compasses in chests?")
+				.define("BlacklistClockCompass", QuickDepositOptions.BlacklistClockCompass);
 			BlacklistEnderPearl = builder
 				.comment("Stop Quick Deposit from putting ender pearls in chests?")
-				.define("BlacklistEnderPearl", false);
+				.define("BlacklistEnderPearl", QuickDepositOptions.BlacklistEnderPearl);
 			BlacklistFood = builder
 				.comment("Stop Quick Deposit from putting food in chests?")
-				.define("BlacklistFood", false);
+				.define("BlacklistFood", QuickDepositOptions.BlacklistFood);
 			BlacklistTools = builder
 				.comment("Stop Quick Deposit from putting tools (picks, axes, shovels, shears) in chests?")
-				.define("BlacklistTools", true);
+				.define("BlacklistTools", QuickDepositOptions.BlacklistTools);
 			BlacklistTorch = builder
 				.comment("Stop Quick Deposit from putting torches in chests?")
-				.define("BlacklistTorches", false);
+				.define("BlacklistTorches", QuickDepositOptions.BlacklistTorch);
 			BlacklistWaterBucket = builder
 				.comment("Stop Quick Deposit from putting water buckets in chests?")
-				.define("BlacklistWaterBucket", false);
+				.define("BlacklistWaterBucket", QuickDepositOptions.BlacklistWaterBucket);
 			BlacklistWeapons = builder
 				.comment("Stop Quick Deposit from putting swords and bows in chests?")
-				.define("BlacklistWeapons", true);
+				.define("BlacklistWeapons", QuickDepositOptions.BlacklistWeapons);
 			CloseChestAfterDepositing = builder
 				.comment(
 					"Closes the chest GUI after you deposit your items in it. " +
 					"Allows quick and easy depositing of all your items into multiple chests"
 				)
-				.define("CloseChestAfterDepositing", false);
-			EnableQuickDeposit = builder
-				.comment("Enables Quick Deposit.")
-				.define("EnableQuickDeposit", true);
+				.define("CloseChestAfterDepositing", QuickDepositOptions.CloseChestAfterDepositing);
 			IgnoreItemsInHotbar = builder
 				.comment(
-					"Determines if items in your hotbar will be deposited into chests when " +
-					bindingToKeyName(ZyinHUDKeyHandlers.KEY_BINDINGS[7]) + " is pressed"
+					"Determines if items in your hotbar will be deposited into chests when the " +
+					CATEGORY_QUICKDEPOSIT + " keybind (default: 'X') is pressed"
 				)
-				.define("IgnoreItemsInHotbar", false);
+				.define("IgnoreItemsInHotbar", QuickDepositOptions.IgnoreItemsInHotbar);
 		}
 		builder.pop();
 
@@ -797,33 +873,39 @@ public class ZyinHUDConfig {
 		{
 			EnableSafeOverlay = builder
 				.comment("Enable/Disable the Safe Overlay")
-				.define("EnableSafeOverlay", true);
+				.define("EnableSafeOverlay", SafeOverlayOptions.defaultEnabled);
 			SafeOverlayDisplayInNether = builder
 				.comment("Enable/Disable showing unsafe areas in the Nether")
-				.define("SafeOverlayDisplayInNether", false);
+				.define("SafeOverlayDisplayInNether", SafeOverlayOptions.defaultDisplayInNether);
 			SafeOverlayDrawDistance = builder
 				.comment(
 					"How far away unsafe spots should be rendered around the player measured in blocks. " +
-					"This can be changed in game with '-' + " +
-					bindingToKeyName(ZyinHUDKeyHandlers.KEY_BINDINGS[8]) + " and '+' + " +
-					bindingToKeyName(ZyinHUDKeyHandlers.KEY_BINDINGS[8])
+					"This can be changed in game by pressing the " + CATEGORY_SAFEOVERLAY + " keybind (default: 'L') " +
+					"in combination with the '-' and '+' keys"
 				)
 				.defineInRange(
-					"SafeOverlayDrawDistance", SafeOverlay.defaultDrawDistance, SafeOverlay.minDrawDistance,
-					SafeOverlay.maxDrawDistance
+					"SafeOverlayDrawDistance", SafeOverlayOptions.defaultDrawDistance,
+					SafeOverlayOptions.minDrawDistance, SafeOverlayOptions.maxDrawDistance
 				);
 			SafeOverlayMode = builder
-				.comment("Sets the Safe Overlay mode. Valid modes are OFF and ON")
-				.defineEnum("SafeOverlayMode", SafeOverlay.Modes.OFF, EnumGetMethod.NAME_IGNORECASE);
+				.comment("Sets the Safe Overlay mode.")
+				.defineEnum(
+					"SafeOverlayMode", SafeOverlayOptions.SafeOverlayModes.OFF,
+					EnumGetMethod.NAME_IGNORECASE
+				);
 			SafeOverlaySeeThroughWalls = builder
 				.comment(
-					"Enable/Disable showing unsafe areas through walls. Toggle in game with Ctrl + " +
-					bindingToKeyName(ZyinHUDKeyHandlers.KEY_BINDINGS[8])
+					"Enable/Disable showing unsafe areas through walls. Toggle in game with 'Ctrl' + the " +
+					CATEGORY_SAFEOVERLAY + " keybind (default: 'L')"
 				)
-				.define("SafeOverlaySeeThroughWalls", false);
+				.define("SafeOverlaySeeThroughWalls", SafeOverlayOptions.defaultRenderThroughWalls);
 			SafeOverlayTransparency = builder
 				.comment("The transparency of the unsafe marks")
-				.defineInRange("SafeOverlayTransparency", 0.3d, 0.11d, 1.0d);
+				.defineInRange(
+					"SafeOverlayTransparency", SafeOverlayOptions.defaultUnsafeOverlayTransparency,
+					SafeOverlayOptions.minUnsafeOverlayTransparency,
+					SafeOverlayOptions.maxUnsafeOverlayTransparency
+				);
 		}
 		builder.pop();
 
@@ -836,7 +918,7 @@ public class ZyinHUDConfig {
 		{
 			EnableTorchAid = builder
 				.comment("Enable/Disable using Torch Aid to help you place torches more easily")
-				.define("EnableTorchAid", false);
+				.define("EnableTorchAid", TorchAidOptions.defaultEnabled);
 		}
 		builder.pop();
 
@@ -850,18 +932,11 @@ public class ZyinHUDConfig {
 		{
 			EnableWeaponSwap = builder
 				.comment(
-					"Enables pressing " +
-					bindingToKeyName(ZyinHUDKeyHandlers.KEY_BINDINGS[9]) +
-					" to swap between your sword and bow"
+					"Enables pressing the " + CATEGORY_WEAPONSWAP + " keybind (default: 'F') to swap between your sword and bow"
 				)
-				.define("EnableWeaponSwap", true);
+				.define("EnableWeaponSwap", WeaponSwapOptions.defaultEnabled);
 		}
 		builder.pop();
-	}
-
-	private static String bindingToKeyName(KeyBinding key) {
-		String s = key.getTranslationKey();
-		return s.substring(1 + s.lastIndexOf('.')).toUpperCase();
 	}
 
 	@SubscribeEvent
@@ -875,5 +950,11 @@ public class ZyinHUDConfig {
 		ZyinHUD.ZyinLogger.fatal("Zyin's HUD config just got changed on the file system!");
 	}
 
-	public static ForgeConfigSpec getConfigSpec() { return SPEC; }
+	public static ForgeConfigSpec getConfigSpec() {
+		return SPEC;
+	}
+
+	public Type getConfigType() {
+		return Type.CLIENT;
+	}
 }

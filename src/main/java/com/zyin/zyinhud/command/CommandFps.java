@@ -3,7 +3,7 @@ package com.zyin.zyinhud.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import com.zyin.zyinhud.mods.Fps;
+import com.zyin.zyinhud.modules.Fps;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.util.text.TranslationTextComponent;

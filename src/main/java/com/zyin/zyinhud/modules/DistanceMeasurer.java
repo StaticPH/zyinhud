@@ -1,5 +1,7 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
+import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes.DistanceMeasurerOptions;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
@@ -12,11 +14,11 @@ import com.zyin.zyinhud.util.Localization;
  * The Distance Measurer calculates the distance from the player to whatever the player's
  * crosshairs is looking at.
  */
-public class DistanceMeasurer extends ZyinHUDModBase {
+public class DistanceMeasurer extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnableDistanceMeasurer.get();
 
 	/**
 	 * Toggles this module on or off
@@ -30,51 +32,7 @@ public class DistanceMeasurer extends ZyinHUDModBase {
 	/**
 	 * The current mode for this module
 	 */
-	public static Modes Mode;
-
-	/**
-	 * The enum for the different types of Modes this module can have
-	 */
-	public static enum Modes {
-		OFF("distancemeasurer.mode.off"),
-		SIMPLE("distancemeasurer.mode.simple"),
-		COORDINATE("distancemeasurer.mode.complex");
-
-		private String unfriendlyName;
-
-		private Modes(String unfriendlyName) {
-			this.unfriendlyName = unfriendlyName;
-		}
-
-		/**
-		 * Sets the next available mode for this module
-		 *
-		 * @return the modes
-		 */
-		public static Modes ToggleMode() {
-			return Mode = Mode.ordinal() < Modes.values().length - 1 ? Modes.values()[Mode.ordinal() + 1] : Modes.values()[0];
-		}
-
-		/**
-		 * Gets the mode based on its internal name as written in the enum declaration
-		 *
-		 * @param modeName the mode name
-		 * @return modes
-		 */
-		public static Modes GetMode(String modeName) {
-			try { return Modes.valueOf(modeName); }
-			catch (IllegalArgumentException e) { return values()[0]; }
-		}
-
-		/**
-		 * Get friendly name string.
-		 *
-		 * @return the string
-		 */
-		public String GetFriendlyName() {
-			return Localization.get(unfriendlyName);
-		}
-	}
+	public static DistanceMeasurerOptions.DistanceMeasurerModes Mode = ZyinHUDConfig.DistanceMeasurerMode.get();
 
 
 	/**
@@ -85,7 +43,7 @@ public class DistanceMeasurer extends ZyinHUDModBase {
 		//and not looking at a menu
 		//and F3 not pressed
 		if (DistanceMeasurer.Enabled &&
-		    Mode != Modes.OFF &&
+		    Mode != DistanceMeasurerOptions.DistanceMeasurerModes.OFF &&
 		    !mc.gameSettings.showDebugInfo &&
 		    (mc.mouseHelper.isMouseGrabbed() || ((mc.currentScreen instanceof ChatScreen)))
 		) {
@@ -102,25 +60,27 @@ public class DistanceMeasurer extends ZyinHUDModBase {
 	}
 
 
-    /**
-     * Calculates the distance of the block the player is pointing at
-     *
-     * @return the distance to a block if Distance Measurer is enabled, otherwise "".
-     */
-    protected static String CalculateDistanceString() {
+	/**
+	 * Calculates the distance of the block the player is pointing at
+	 *
+	 * @return the distance to a block if Distance Measurer is enabled, otherwise "".
+	 */
+	@SuppressWarnings("ConstantConditions")
+	protected static String CalculateDistanceString() {
 //        RayTraceResult objectMouseOver = mc.player.rayTrace(300.0d, 1.0f, RayTraceFluidMode.ALWAYS);
 		// If the third parameter of "func_213324_a" here is true, the raytrace will use RayTraceContext.FluidMode.ANY
 		// see DebugOverlayGui:rayTraceFluid
 		RayTraceResult objectMouseOver = mc.player.func_213324_a(300.0d, 1.0f, true);
 
 		if (objectMouseOver != null && objectMouseOver.getType() == RayTraceResult.Type.BLOCK) {
-			if (Mode == Modes.SIMPLE) {
+			if (Mode == DistanceMeasurerOptions.DistanceMeasurerModes.SIMPLE) {
 				double playerX = mc.player.posX;
 				double playerY = mc.player.posY + mc.player.getEyeHeight();
 				double playerZ = mc.player.posZ;
-
-				double blockX = objectMouseOver.getHitVec().x;
-				double blockY = objectMouseOver.getHitVec().y;
+				//Might be able to replace this pretty much this entire block with something
+				// like mc.player.getPositionVector().distanceTo(mc.player.getLookVec());
+				double blockX = objectMouseOver.getHitVec().x;  //might also work with Entity.*look* returns some Vec?
+				double blockY = objectMouseOver.getHitVec().y;  //EX: mc.player.getLookVec().getY();
 				double blockZ = objectMouseOver.getHitVec().z;
 
 				double deltaX;
@@ -144,7 +104,7 @@ public class DistanceMeasurer extends ZyinHUDModBase {
 
 				return TextFormatting.GOLD + "[" + String.format("%1$,.1f", farthestDistance) + ']';
 			}
-			else if (Mode == Modes.COORDINATE) {
+			else if (Mode == DistanceMeasurerOptions.DistanceMeasurerModes.COORDINATE) {
 				BlockPos pos = ((BlockRayTraceResult) objectMouseOver).getPos();
 
 				return TextFormatting.GOLD + "[" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ']';

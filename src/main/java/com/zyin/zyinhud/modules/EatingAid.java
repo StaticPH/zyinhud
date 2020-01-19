@@ -1,4 +1,4 @@
-//package com.zyin.zyinhud.mods;
+//package com.zyin.zyinhud.modules;
 //
 //import com.zyin.zyinhud.ZyinHUDRenderer;
 //import com.zyin.zyinhud.util.InventoryUtil;
@@ -27,7 +27,7 @@
 ///**
 // * Eating Helper allows the player to eat food in their inventory by calling its Eat() method.
 // */
-//public class EatingAid extends ZyinHUDModBase
+//public class EatingAid extends ZyinHUDModuleBase
 //{
 //    /**
 //     * Enables/Disables this Mod
@@ -71,7 +71,7 @@
 //        }
 //
 //        /**
-//         * Sets the next availble mode for this mod
+//         * Sets the next available mode for this mod
 //         *
 //         * @return the modes
 //         */
@@ -81,7 +81,7 @@
 //        }
 //
 //        /**
-//         * Sets the next availble mode for this mod if forward=true, or previous mode if false
+//         * Sets the next available mode for this mod if forward=true, or previous mode if false
 //         *
 //         * @param forward the forward
 //         * @return the modes
@@ -148,7 +148,7 @@
 //
 //
 //    /**
-//     * Use this instance for all method calls.
+//     * Use this instance for all instance method calls.
 //     */
 //    public static EatingAid instance = new EatingAid();
 //

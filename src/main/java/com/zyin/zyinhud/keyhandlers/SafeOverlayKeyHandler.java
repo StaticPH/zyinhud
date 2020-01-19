@@ -6,8 +6,7 @@ import org.lwjgl.glfw.GLFW;
 
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.ZyinHUDSound;
-import com.zyin.zyinhud.mods.SafeOverlay;
-import com.zyin.zyinhud.mods.SafeOverlay.Modes;
+import com.zyin.zyinhud.modules.SafeOverlay;
 import com.zyin.zyinhud.util.Localization;
 
 public class SafeOverlayKeyHandler implements ZyinHUDKeyHandlerBase {
@@ -81,7 +80,7 @@ public class SafeOverlayKeyHandler implements ZyinHUDKeyHandlerBase {
 
 		//if nothing is pressed, do the default behavior
 
-		SafeOverlay.Modes.ToggleMode();
+		SafeOverlay.Mode.next();
 		ZyinHUDSound.PlayButtonPress();
 	}
 

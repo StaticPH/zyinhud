@@ -3,7 +3,7 @@ package com.zyin.zyinhud.keyhandlers;
 import net.minecraftforge.client.event.InputEvent.MouseInputEvent;
 
 //import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
-import com.zyin.zyinhud.mods.ItemSelector;
+import com.zyin.zyinhud.modules.ItemSelector;
 
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
@@ -18,7 +18,9 @@ public class ItemSelectorKeyHandler implements ZyinHUDKeyHandlerBase {
 	}
 
 	public static void OnMouseSideButton(MouseInputEvent event) {
-		if (!mc.mouseHelper.isMouseGrabbed() || !ItemSelector.Enabled || !ItemSelector.UseMouseSideButtons) { return; }
+		if (!mc.mouseHelper.isMouseGrabbed() || !ItemSelector.Enabled || !ItemSelector.shouldUseMouseSideButtons()) {
+			return;
+		}
 
 		int direction = event.getButton() == 3 ? ItemSelector.WHEEL_UP : ItemSelector.WHEEL_DOWN;
 

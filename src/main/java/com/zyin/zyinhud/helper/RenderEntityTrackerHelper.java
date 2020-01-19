@@ -7,8 +7,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 
-import com.zyin.zyinhud.mods.AnimalInfo;
+import com.zyin.zyinhud.modules.AnimalInfo;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+
+import static com.zyin.zyinhud.modules.ZyinHUDModuleModes.AnimalInfoOptions.*;
 
 /**
  * The RenderEntityTrackerHelper finds entities in the game world.
@@ -17,9 +19,9 @@ public class RenderEntityTrackerHelper {
 	private static Minecraft mc = Minecraft.getInstance();
 
 	/**
-	 * Send information about the positions of entities to mods that need this information.
+	 * Send information about the positions of entities to modules that need this information.
 	 * <p>
-	 * Place new rendering methods for mods in this function.
+	 * Place new rendering methods for modules in this function.
 	 *
 	 * @param entity
 	 * @param partialTickTime
@@ -34,7 +36,7 @@ public class RenderEntityTrackerHelper {
 	 * @param partialTickTime the partial tick time
 	 */
 	public static void RenderEntityInfo(float partialTickTime) {
-		if ((AnimalInfo.Mode == AnimalInfo.Modes.ON) && mc.isGameFocused()) {
+		if ((AnimalInfo.Mode == AnimalInfoModes.ON) && mc.isGameFocused()) {
 			// Best guess at a way to iterate through all loaded entities
 			// if mapped name doesnt work, try field_217429_b
 			Int2ObjectMap<Entity> entitiesById =
@@ -43,11 +45,9 @@ public class RenderEntityTrackerHelper {
 			if (entitiesById == null) { return;}
 
 			//iterate over all the loaded Entity objects and find just the players
-			for (Entity object : entitiesById.values()) {
-				if (!(object instanceof AnimalEntity || object instanceof VillagerEntity)) { continue; }
-
-				RenderEntityInfoInWorld(object, partialTickTime);
-			}
+			entitiesById.values().stream()
+			            .filter(entity-> !(entity instanceof AnimalEntity || entity instanceof VillagerEntity))
+			            .forEach(entity -> RenderEntityInfoInWorld(entity, partialTickTime));
 		}
 	}
 }

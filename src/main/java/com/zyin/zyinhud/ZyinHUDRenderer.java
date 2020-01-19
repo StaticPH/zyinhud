@@ -2,7 +2,7 @@ package com.zyin.zyinhud;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.DisplayEffectsScreen;
+//import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -20,13 +20,13 @@ import org.lwjgl.opengl.GL11;
 
 import com.zyin.zyinhud.helper.HUDEntityTrackerHelper;
 import com.zyin.zyinhud.helper.RenderEntityTrackerHelper;
-import com.zyin.zyinhud.mods.AnimalInfo;
-import com.zyin.zyinhud.mods.DistanceMeasurer;
-import com.zyin.zyinhud.mods.DurabilityInfo;
-import com.zyin.zyinhud.mods.InfoLine;
-import com.zyin.zyinhud.mods.ItemSelector;
-//import com.zyin.zyinhud.mods.PotionTimers;
-import com.zyin.zyinhud.mods.SafeOverlay;
+import com.zyin.zyinhud.modules.AnimalInfo;
+import com.zyin.zyinhud.modules.DistanceMeasurer;
+import com.zyin.zyinhud.modules.DurabilityInfo;
+import com.zyin.zyinhud.modules.InfoLine;
+import com.zyin.zyinhud.modules.ItemSelector;
+//import com.zyin.zyinhud.modules.PotionTimers;
+import com.zyin.zyinhud.modules.SafeOverlay;
 
 /**
  * This class is in charge of rendering things onto the HUD and into the game world.
@@ -83,7 +83,7 @@ public class ZyinHUDRenderer
 		//render unsafe positions (cache calculations are done from this render method)
 		SafeOverlay.instance.RenderAllUnsafePositionsMultithreaded(event.getPartialTicks());
 
-		//calls other mods that need to render things in the game world nearby other entities
+		//calls other modules that need to render things in the game world nearby other entities
 		RenderEntityTrackerHelper.RenderEntityInfo(event.getPartialTicks());
 
 		//store world render transform matrices for later use when rendering HUD

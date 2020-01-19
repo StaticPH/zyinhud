@@ -1,6 +1,8 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
+import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes.AnimalInfoOptions;
 import com.zyin.zyinhud.util.Localization;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -24,11 +26,12 @@ import java.util.ArrayList;
 /**
  * Shows information about horses in the F3 menu.
  */
-public class AnimalInfo extends ZyinHUDModBase {
+@SuppressWarnings({"RedundantCast", "FieldCanBeLocal", "RedundantSuppression"})
+public class AnimalInfo extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	public static boolean Enabled = ZyinHUDConfig.EnableAnimalInfo.get();
 
 	/**
 	 * Toggles this module on or off
@@ -42,66 +45,32 @@ public class AnimalInfo extends ZyinHUDModBase {
 	/**
 	 * The current mode for this module
 	 */
-	public static Modes Mode;
+	public static AnimalInfoOptions.AnimalInfoModes Mode = ZyinHUDConfig.AnimalInfoMode.get();
 
+//_CHECK: It occurs to me, this sort of thing may not play nicely with dynamic config changes...
+// Maybe I'll want a public method that can be called whenever the config is updated, to update the values here?
 	/**
-	 * The enum for the different types of Modes this module can have
+	 * Animals that are farther away than this will not have their info shown
 	 */
-	public static enum Modes {
-		OFF("safeoverlay.mode.0"),
-		ON("safeoverlay.mode.1");
-
-		private String unfriendlyName;
-
-		private Modes(String unfriendlyName) {
-			this.unfriendlyName = unfriendlyName;
-		}
-
-		/**
-		 * Sets the next availble mode for this module
-		 *
-		 * @return the modes
-		 */
-		public static Modes ToggleMode() {
-			return Mode = Mode.ordinal() < Modes.values().length - 1 ? Modes.values()[Mode.ordinal() + 1] : Modes.values()[0];
-		}
-
-		/**
-		 * Gets the mode based on its internal name as written in the enum declaration
-		 *
-		 * @param modeName the mode name
-		 * @return modes
-		 */
-		public static Modes GetMode(String modeName) {
-			try { return Modes.valueOf(modeName); }
-			catch (IllegalArgumentException e) { return values()[0]; }
-		}
-
-		/**
-		 * Get friendly name string.
-		 *
-		 * @return the string
-		 */
-		public String GetFriendlyName() {
-			return Localization.get(unfriendlyName);
-		}
-	}
-
-	public static boolean ShowTextBackgrounds;
-	public static boolean ShowHorseStatsOnF3Menu;
-	public static boolean ShowHorseStatsOverlay;
-	public static boolean ShowBreedingIcons;
-//public static boolean ShowBreedingTimers;
+	public static int viewDistanceCutoff = ZyinHUDConfig.AnimalInfoMaxViewDistance.get();        //how far away we will render the overlay
+	// the min cutoff is not actually used here at the moment, but it's here for consistency if nothing else
+	private static int minViewDistanceCutoff = AnimalInfoOptions.minViewDistanceCutoff;
+	private static int maxViewDistanceCutoff = AnimalInfoOptions.maxViewDistanceCutoff;
 
 	/**
 	 * Sets the number of decimal places that will be rendered when displaying horse stats
 	 */
-	public static int numberOfDecimalsDisplayed = 1;
-	public static int minNumberOfDecimalsDisplayed = 0;
-	public static int maxNumberOfDecimalsDisplayed = 20;
+	public static int numberOfDecimalsDisplayed = ZyinHUDConfig.AnimalInfoNumberOfDecimalsDisplayed.get();
+
+	private static boolean ShowBreedingIcons = ZyinHUDConfig.ShowBreedingIcons.get();
+	//private static boolean ShowBreedingTimers;
+	private static boolean ShowHorseStatsOnF3Menu = ZyinHUDConfig.ShowHorseStatsOnF3Menu.get();
+	private static boolean ShowHorseStatsOverlay = ZyinHUDConfig.ShowHorseStatsOverlay.get();
+	private static boolean ShowTextBackgrounds = ZyinHUDConfig.ShowTextBackgrounds.get();
 
 	private static PlayerEntity me;
 
+	//TODO: verify these values
 	//values above the perfect value are aqua
 	//values between the perfect and good values are green
 	//values between the good and bad values are white
@@ -118,16 +87,9 @@ public class AnimalInfo extends ZyinHUDModBase {
 	private static int goodHorseHPThreshold = 24;
 	private static int badHorseHPThreshold = 20;            //min: 15
 
-	private static final int verticalSpaceBetweenLines = 10;    //space between the overlay lines (because it is more than one line)
-
-	/**
-	 * Animals that are farther away than this will not have their info shown
-	 */
-	public static int viewDistanceCutoff = 8;        //how far away we will render the overlay
-	public static int minViewDistanceCutoff = 0;
-	public static int maxViewDistanceCutoff = 120;
-
-	public static final int maxNumberOfOverlays = 200;    //render only the first nearest 50 overlays
+	//UNUSED?
+//	private static final int verticalSpaceBetweenLines = 10;    //space between the overlay lines (because it is more than one line)
+//	public static final int maxNumberOfOverlays = 200;    //render only the first nearest 50 overlays
 
 	private static DecimalFormat decimalFormat = GetDecimalFormat();
 	private static DecimalFormat twoDigitFormat = new DecimalFormat("00");
@@ -148,7 +110,7 @@ public class AnimalInfo extends ZyinHUDModBase {
 	}
 
 	/**
-	 * Gets the number of deciamls used to display the horse stats.
+	 * Gets the number of deciamls used to display the animal stats.
 	 *
 	 * @return int
 	 */
@@ -157,7 +119,7 @@ public class AnimalInfo extends ZyinHUDModBase {
 	}
 
 	/**
-	 * Sets the number of deciamls used to display the horse stats.
+	 * Sets the number of deciamls used to display the animal stats.
 	 *
 	 * @param numDecimals the num decimals
 	 * @return
@@ -168,7 +130,8 @@ public class AnimalInfo extends ZyinHUDModBase {
 	}
 
 	/**
-	 * Renders a horse's speed, hit points, and jump strength on the F3 menu when the player is riding it.
+	 * Renders an animal's speed, hit points, jump strength, and other relevant information
+	 * on the F3 menu when the player is riding it.
 	 */
 	public static void RenderOntoDebugMenu() {
 		//if F3 is shown
@@ -210,7 +173,6 @@ public class AnimalInfo extends ZyinHUDModBase {
 		}
 	}
 
-
 	/**
 	 * Renders information about an entity into the game world.
 	 *
@@ -224,7 +186,7 @@ public class AnimalInfo extends ZyinHUDModBase {
 		//if the player is in the world
 		//and not looking at a menu
 		//and F3 not pressed
-		if (AnimalInfo.Enabled && Mode == Modes.ON &&
+		if (AnimalInfo.Enabled && Mode == AnimalInfoOptions.AnimalInfoModes.ON &&
 		    (mc.mouseHelper.isMouseGrabbed() || mc.currentScreen == null || mc.currentScreen instanceof ChatScreen)
 		    && !mc.gameSettings.showDebugInfo) {
 
@@ -241,7 +203,6 @@ public class AnimalInfo extends ZyinHUDModBase {
 			RenderAnimalOverlay(animal, partialTickTime);
 		}
 	}
-
 
 	/**
 	 * Renders an overlay in the game world for the specified animal.
@@ -302,12 +263,12 @@ public class AnimalInfo extends ZyinHUDModBase {
 				if (animal instanceof LlamaEntity) {
 					ZyinHUDRenderer.RenderFloatingItemIcon(
 						x, y + animal.getHeight(), z, Blocks.HAY_BLOCK.asItem(), partialTickTime
-                    );
+					);
 				}
 				else {
 					ZyinHUDRenderer.RenderFloatingItemIcon(
 						x, y + animal.getHeight(), z, Items.GOLDEN_CARROT, partialTickTime
-                    );
+					);
 				}
 			}
 			else if (animal instanceof CowEntity) {
@@ -322,7 +283,7 @@ public class AnimalInfo extends ZyinHUDModBase {
 			else if (animal instanceof ChickenEntity) {
 				ZyinHUDRenderer.RenderFloatingItemIcon(
 					x, y + animal.getHeight(), z, Items.WHEAT_SEEDS, partialTickTime
-                );
+				);
 			}
 			else if (animal instanceof RabbitEntity) {
 				ZyinHUDRenderer.RenderFloatingItemIcon(x, y + animal.getHeight(), z, Items.CARROT, partialTickTime);
@@ -336,7 +297,7 @@ public class AnimalInfo extends ZyinHUDModBase {
 			else if (animal instanceof OcelotEntity) {
 				ZyinHUDRenderer.RenderFloatingItemIcon(
 					x, y + animal.getHeight(), z, Items.TROPICAL_FISH, partialTickTime
-                );
+				);
 			}
 		}
 		
@@ -357,13 +318,15 @@ public class AnimalInfo extends ZyinHUDModBase {
 	 * @return the string "animals" if Animal Info is enabled, otherwise "".
 	 */
 	public static String CalculateMessageForInfoLine() {
-		if (Mode == Modes.OFF || !AnimalInfo.Enabled) { return ""; }
-		else if (Mode == Modes.ON) { return TextFormatting.WHITE + Localization.get("animalinfo.infoline"); }
+		if (Mode == AnimalInfoOptions.AnimalInfoModes.OFF || !AnimalInfo.Enabled) { return ""; }
+		else if (Mode == AnimalInfoOptions.AnimalInfoModes.ON) {
+			return TextFormatting.WHITE + Localization.get("animalinfo.infoline");
+		}
 		else { return TextFormatting.WHITE + "???"; }
 	}
 
 	/**
-	 * Gets the baby horses age ranging from 0 to 100.
+	 * Gets the baby "horse's" age ranging from 0 to 100.
 	 *
 	 * @param horse
 	 * @return
@@ -391,7 +354,7 @@ public class AnimalInfo extends ZyinHUDModBase {
 	}
 
 	/**
-	 * Gets a horses speed, colored based on how good it is.
+	 * Gets a "horse's" speed, colored based on how good it is.
 	 *
 	 * @param horse
 	 * @return e.x.:<br>aqua "13.5"<br>green "12.5"<br>white "11.3"<br>red "7.0"
@@ -413,15 +376,16 @@ public class AnimalInfo extends ZyinHUDModBase {
 		return horseSpeedString;
 	}
 
-    /**
-     * Gets a horses HP, colored based on how good it is.
-     *
-     * @param horse
-     * @return e.x.:<br>aqua "28"<br>green "26"<br>white "22"<br>red "18"
-     */
-    private static String GetHorseHPText(AbstractHorseEntity horse) {
-        int horseHP = GetEntityMaxHP(horse);
-        String horseHPString = decimalFormat.format(GetEntityMaxHP(horse));
+	/**
+	 * Gets a "horse's" HP, colored based on how good it is.
+	 *
+	 * @param horse
+	 * @return e.x.:<br>aqua "28"<br>green "26"<br>white "22"<br>red "18"
+	 */
+	private static String GetHorseHPText(AbstractHorseEntity horse) {
+		int horseHP = GetEntityMaxHP(horse);
+		@SuppressWarnings("DuplicatedCode")
+		String horseHPString = decimalFormat.format(GetEntityMaxHP(horse));
 
 		if (horseHP > perfectHorseHPThreshold) {
 			horseHPString = TextFormatting.AQUA + horseHPString + TextFormatting.WHITE;
@@ -437,7 +401,7 @@ public class AnimalInfo extends ZyinHUDModBase {
 	}
 
 	/**
-	 * Gets a horses hearts, colored based on how good it is.
+	 * Gets a "horse's" hearts, colored based on how good it is.
 	 *
 	 * @param horse
 	 * @return e.x.:<br>aqua "15"<br>green "13"<br>white "11"<br>red "9"
@@ -460,15 +424,16 @@ public class AnimalInfo extends ZyinHUDModBase {
 		return horseHeartsString;
 	}
 
-    /**
-     * Gets a horses jump height, colored based on how good it is.
-     *
-     * @param horse
-     * @return e.x.:<br>aqua "5.4"<br>green "4"<br>white "3"<br>red "1.5"
-     */
-    private static String GetHorseJumpText(AbstractHorseEntity horse) {
-        double horseJump = GetHorseMaxJump(horse);
-        String horseJumpString = decimalFormat.format(horseJump);
+	/**
+	 * Gets a "horse's" jump height, colored based on how good it is.
+	 *
+	 * @param horse
+	 * @return e.x.:<br>aqua "5.4"<br>green "4"<br>white "3"<br>red "1.5"
+	 */
+	private static String GetHorseJumpText(AbstractHorseEntity horse) {
+		double horseJump = GetHorseMaxJump(horse);
+		@SuppressWarnings("DuplicatedCode")
+		String horseJumpString = decimalFormat.format(horseJump);
 
 		if (horseJump > perfectHorseJumpThreshold) {
 			horseJumpString = TextFormatting.AQUA + horseJumpString + TextFormatting.WHITE;
@@ -484,10 +449,10 @@ public class AnimalInfo extends ZyinHUDModBase {
 	}
 
 	/**
-	 * Gets a horses primary coloring
+	 * Gets a "horse's" primary coloring
 	 *
 	 * @param horse
-	 * @return empty string if there is no coloring (for donkeys)
+	 * @return empty string if there is no coloring (like for donkeys)
 	 */
 	private static String GetHorseColoringText(AbstractHorseEntity horse) {
 		String texture = "";
@@ -504,10 +469,10 @@ public class AnimalInfo extends ZyinHUDModBase {
 	}
 
 	/**
-	 * Gets a horses secondary coloring
+	 * Gets a "horse's" secondary coloring
 	 *
 	 * @param horse
-	 * @return empty string if there is no secondary coloring (for donkeys)
+	 * @return empty string if there is no secondary coloring (like for donkeys)
 	 */
 	private static String GetHorseMarkingText(AbstractHorseEntity horse) {
 		String texture = "";
@@ -525,7 +490,7 @@ public class AnimalInfo extends ZyinHUDModBase {
 	}
 
 	/**
-	 * Gets the max height a horse can jump when the jump bar is fully charged.
+	 * Gets the max height a "horse" can jump when the jump bar is fully charged.
 	 *
 	 * @param horse
 	 * @return e.x. 1.2?-5.5?
@@ -534,12 +499,12 @@ public class AnimalInfo extends ZyinHUDModBase {
 		double jumpPower = 1.0D; //see AbstractHorse.setJumpPower()
 		double maxJumpStrength = horse.getHorseJumpStrength() * jumpPower;
 		return (-0.1817584952 * Math.pow(maxJumpStrength, 3)) +
-               (3.689713992 * Math.pow(maxJumpStrength, 2)) +
-               (2.128599134 * maxJumpStrength) - 0.343930367;
+		       (3.689713992 * Math.pow(maxJumpStrength, 2)) +
+		       (2.128599134 * maxJumpStrength) - 0.343930367;
 	}
 
 	private static int GetLlamaStrength(LlamaEntity llama) {
-	    return llama.getStrength();
+		return llama.getStrength();
 	}
 
 	/**
@@ -575,21 +540,21 @@ public class AnimalInfo extends ZyinHUDModBase {
 	}
 
 	/**
-	 * Toggle showing horse stats on the F3 menu
+	 * Toggle showing "horse" stats on the F3 menu
 	 *
 	 * @return the new F3 render boolean
 	 */
 	public static boolean ToggleShowHorseStatsOnF3Menu() {
-	    return ShowHorseStatsOnF3Menu = !ShowHorseStatsOnF3Menu;
+		return ShowHorseStatsOnF3Menu = !ShowHorseStatsOnF3Menu;
 	}
 
 	/**
-	 * Toggle showing horse stats on the overlay
+	 * Toggle showing "horse" stats on the overlay
 	 *
 	 * @return the new overlay render boolean
 	 */
 	public static boolean ToggleShowHorseStatsOverlay() {
-	    return ShowHorseStatsOverlay = !ShowHorseStatsOverlay;
+		return ShowHorseStatsOverlay = !ShowHorseStatsOverlay;
 	}
 
 	/**
@@ -598,7 +563,7 @@ public class AnimalInfo extends ZyinHUDModBase {
 	 * @return the new text background boolean
 	 */
 	public static boolean ToggleShowTextBackgrounds() {
-	    return ShowTextBackgrounds = !ShowTextBackgrounds;
+		return ShowTextBackgrounds = !ShowTextBackgrounds;
 	}
 
 	/**
@@ -607,8 +572,9 @@ public class AnimalInfo extends ZyinHUDModBase {
 	 * @return the new boolean
 	 */
 	public static boolean ToggleShowBreedingIcons() {
-	    return ShowBreedingIcons = !ShowBreedingIcons;
+		return ShowBreedingIcons = !ShowBreedingIcons;
 	}
+
 	/**
 	 * Toggles showing breeding timers
 	 * @return the new boolean

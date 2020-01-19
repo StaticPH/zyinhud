@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.keyhandlers;
 
-import com.zyin.zyinhud.mods.PotionAid;
+import com.zyin.zyinhud.modules.PotionAid;
 
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 

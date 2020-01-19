@@ -1,5 +1,6 @@
-package com.zyin.zyinhud.mods;
+package com.zyin.zyinhud.modules;
 
+import com.zyin.zyinhud.ZyinHUDConfig;
 import net.minecraft.client.gui.screen.EnchantmentScreen;
 import net.minecraft.client.gui.screen.inventory.*;
 import net.minecraft.client.gui.screen.inventory.BeaconScreen;
@@ -24,11 +25,23 @@ import com.zyin.zyinhud.util.ModCompatibility;
 /**
  * Quick Deposit allows you to inteligently deposit every item in your inventory quickly into a chest.
  */
-public class QuickDeposit extends ZyinHUDModBase {
+public class QuickDeposit extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled;
+	//TODO: Add blacklist option for additional items
+	public static boolean Enabled = ZyinHUDConfig.EnableQuickDeposit.get();
+	public static boolean BlacklistClockCompass = ZyinHUDConfig.BlacklistClockCompass.get();
+	public static boolean BlacklistWeapons = ZyinHUDConfig.BlacklistWeapons.get();
+	public static boolean BlacklistArrow = ZyinHUDConfig.BlacklistArrow.get();
+	public static boolean BlacklistEnderPearl = ZyinHUDConfig.BlacklistEnderPearl.get();
+	public static boolean BlacklistFood = ZyinHUDConfig.BlacklistFood.get();
+	public static boolean BlacklistTools = ZyinHUDConfig.BlacklistTools.get();
+	public static boolean BlacklistTorch = ZyinHUDConfig.BlacklistTorch.get();
+	public static boolean BlacklistWaterBucket = ZyinHUDConfig.BlacklistWaterBucket.get();
+	public static boolean CloseChestAfterDepositing = ZyinHUDConfig.CloseChestAfterDepositing.get();
+	public static boolean IgnoreItemsInHotbar = ZyinHUDConfig.IgnoreItemsInHotbar.get();
+
 
 	/**
 	 * Toggles this module on or off
@@ -38,17 +51,6 @@ public class QuickDeposit extends ZyinHUDModBase {
 	public static boolean ToggleEnabled() {
 		return Enabled = !Enabled;
 	}
-
-	public static boolean IgnoreItemsInHotbar;
-	public static boolean CloseChestAfterDepositing;
-	public static boolean BlacklistTorch;
-	public static boolean BlacklistTools;
-	public static boolean BlacklistWeapons;
-	public static boolean BlacklistArrow;
-	public static boolean BlacklistFood;
-	public static boolean BlacklistEnderPearl;
-	public static boolean BlacklistWaterBucket;
-	public static boolean BlacklistClockCompass;
 
 	/**
 	 * Deposits all items in your inventory into a chest, if the item exists in the chest
@@ -97,24 +99,20 @@ public class QuickDeposit extends ZyinHUDModBase {
 	 * @return true if it is allowed to be deposited
 	 */
 	public static boolean IsAllowedToBeDepositedInContainer(ItemStack itemStack) {
-		if (itemStack.isEmpty() ||
-		    (BlacklistTorch && (itemStack.getItem() == Item.getItemFromBlock(Blocks.TORCH))) ||
-		    ((BlacklistTools && (itemStack.getItem() instanceof ToolItem)) ||
-		     (itemStack.getItem() instanceof HoeItem) ||
-		     (itemStack.getItem() instanceof ShearsItem) ||
-		     ModCompatibility.TConstruct.IsTConstructHarvestTool(itemStack.getItem())) ||
-		    ((BlacklistWeapons && (itemStack.getItem() instanceof SwordItem)) ||
-		     (itemStack.getItem() instanceof BowItem)) ||
-		    (BlacklistArrow && (itemStack.getItem() == Items.ARROW)) ||
-		    (BlacklistEnderPearl && (itemStack.getItem() == Items.ENDER_PEARL)) ||
-		    (BlacklistWaterBucket && (itemStack.getItem() == Items.WATER_BUCKET)) ||
-		    (BlacklistFood && (itemStack.getItem().isFood())) || // itemStack.getItem() == Items.CAKE)) ||
-		    (BlacklistClockCompass && (itemStack.getItem() == Items.COMPASS || itemStack.getItem() == Items.CLOCK)))
-		{
-			return false;
-		}
-
-		return true;
+		return !itemStack.isEmpty() &&
+		       (!BlacklistTorch || (itemStack.getItem() != Item.getItemFromBlock(Blocks.TORCH))) &&
+		       ((!BlacklistTools || (!(itemStack.getItem() instanceof ToolItem))) &&
+		        (!(itemStack.getItem() instanceof HoeItem)) &&
+		        (!(itemStack.getItem() instanceof ShearsItem)) &&
+		        !ModCompatibility.TConstruct.IsTConstructHarvestTool(itemStack.getItem())) &&
+		       ((!BlacklistWeapons || (!(itemStack.getItem() instanceof SwordItem))) &&
+		        (!(itemStack.getItem() instanceof BowItem))) &&
+		       (!BlacklistArrow || (itemStack.getItem() != Items.ARROW)) &&
+		       (!BlacklistEnderPearl || (itemStack.getItem() != Items.ENDER_PEARL)) &&
+		       (!BlacklistWaterBucket || (itemStack.getItem() != Items.WATER_BUCKET)) &&
+		       (!BlacklistFood || (!itemStack.getItem().isFood())) && // itemStack.getItem() == Items.CAKE)) ||
+		       (!BlacklistClockCompass || (itemStack.getItem() != Items.COMPASS && itemStack.getItem() != Items.CLOCK));
+		//TODO: replace the item checks with tag checks wherever possible. like with torches
 	}
 
 
