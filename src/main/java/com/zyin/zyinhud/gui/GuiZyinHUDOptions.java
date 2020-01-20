@@ -613,7 +613,7 @@
 //    }
 //
 //    /**
-//     * Helper method to get the text for a button that toggles between modes for a mod.
+//     * Helper method to get the text for a button that toggles between modes for a module.
 //     *
 //     * @param modeName The friendly name of the mode (use Mode.toString())
 //     * @return a String to be used as the button label
@@ -623,9 +623,9 @@
 //    }
 //
 //    /**
-//     * Helper method to get the text for a button that toggles the mod on and off.
+//     * Helper method to get the text for a button that toggles the module on and off.
 //     *
-//     * @param enabled the current enabled/disabled boolean status of the mod
+//     * @param enabled the current enabled/disabled boolean status of the module
 //     * @return a color coded String to be used as the button label
 //     */
 //    private static String GetButtonLabel_Enabled(boolean enabled) {

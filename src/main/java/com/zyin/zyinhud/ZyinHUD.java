@@ -7,11 +7,11 @@
  * This code is all open source and you are free to, and encouraged to, do whatever you want with it.
  *
  * Adding your own functionality is (relatively) simple. First make a class in com.zyin.zyinhud.modules
- * which contains all of your module's logic. Then you need a way to interact with your mod. You can
+ * which contains all of your module's logic. Then you need a way to interact with your module. You can
  * do this with a Tick Handler (already setup for you in ZyinHUDRenderer.java), a Hotkey (follow the
  * examples in ZyinHUDKeyHandlers.java), or a single-player only command (see com.zyin.zyinhud.command).
  *
- * To add configurable options to your mod, you need to add a new tab to GuiZyinHUDOptions.java.
+ * To add configurable options to your module, you need to add a new tab to GuiZyinHUDOptions.java.
  * You do this by modifing the tabbedButtonNames and tabbedButtonIDs variables. Then add your new button
  * actions in the actionPerformed() method. To have these configurable options persist after logging out,
  * you need to follow the examples in ZyinHUDConfig.java to write your data to the config file.
@@ -98,7 +98,7 @@ public class ZyinHUD {
 //            setupClient(event);
 //            return null;
 //        });
-//    }
+//    }Unload
 	private void setupClient(final FMLClientSetupEvent event) {
 		MinecraftForge.EVENT_BUS.register(this);
 		MinecraftForge.EVENT_BUS.register(ZyinHUDKeyHandlers.instance);

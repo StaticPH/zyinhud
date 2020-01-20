@@ -182,7 +182,7 @@ public class ZyinHUDConfig {
 	// Info Line Module
 	// ######################################################################
 	// Enable/Disable the entire info line in the top left part of the screen.
-	// This includes the clock, coordinates, compass, mod status, etc
+	// This includes the clock, coordinates, compass, module status, etc
 	public static BooleanValue EnableInfoLine;
 	// The horizontal position of the info line. 1 is left, 400 is far right
 	public static IntValue InfoLineLocationHorizontal;
@@ -251,7 +251,7 @@ public class ZyinHUDConfig {
 	// Enable/Disable showing the time remaining on potions.
 //    public static BooleanValue EnablePotionTimers;
 	// Sets Potion Timer's text display mode. Valid modes are WHITE, COLORED, and NONE
-//    public static EnumValue<PotionTimers.PotionTimerTextModes> PotionTimerTextMode;
+//    public static EnumValue<PotionTimerOptions.PotionTimerModes> PotionTimerMode;
 	// Enable/Disable hiding the default potion effects when you open your inventory.
 //    public static BooleanValue HidePotionEffectsInInventory;
 	// How large the potion timers are rendered, 1.0 being the normal size. Range [0.25, 5.0]
@@ -262,11 +262,11 @@ public class ZyinHUDConfig {
 //    public static IntValue PotionTimersLocationVertical;
 	// Enable/Disable showing the status effect of potions next to the timers.
 //    public static BooleanValue ShowPotionIcons;
-
-	//HideBeaconPotionEffects, boolean, default false
-	//ShowVanillaStatusEffectHUD, boolean, default true
-	//ShowEffectName, boolean, default true
-	//ShowEffectLevel, boolean, default true
+	//TODO?
+	// HideBeaconPotionEffects, boolean, default false
+	// ShowVanillaStatusEffectHUD, boolean, default true
+	// ShowEffectName, boolean, default true
+	// ShowEffectLevel, boolean, default true
 
 	// ######################################################################
 	// Quick Deposit Module
@@ -645,7 +645,7 @@ public class ZyinHUDConfig {
 			EnableInfoLine = builder
 				.comment(
 					"Enable/Disable the entire info line in the top left part of the screen. " +
-					"This includes the clock, coordinates, compass, mod status, etc"
+					"This includes the clock, coordinates, compass, module status, etc"
 				)
 				.define("EnableInfoLine", InfoLineOptions.defaultEnabled);
 			InfoLineLocationHorizontal = builder
@@ -794,9 +794,9 @@ public class ZyinHUDConfig {
 //			EnablePotionTimers = builder
 //				.comment("Enable/Disable showing the time remaining on potions")
 //				.define("EnablePotionTimers", true);
-//			PotionTimerTextMode = builder
+//			PotionTimerMode = builder
 //				.comment("Sets Potion Timer's text display mode.")
-//				.defineEnum("PotionTimerTextMode", PotionTimers.PotionTimerTextModes.COLORED, EnumGetMethod.NAME_IGNORECASE);
+//				.defineEnum("PotionTimerMode", PotionTimers.PotionTimerModes.COLORED, EnumGetMethod.NAME_IGNORECASE);
 //			HidePotionEffectsInInventory = builder
 //				.comment("Enable/Disable hiding the default potion effects when you open your inventory")
 //				.define("HidePotionEffectsInInventory", false);

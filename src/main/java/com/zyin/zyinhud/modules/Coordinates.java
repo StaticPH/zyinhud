@@ -23,6 +23,8 @@ public class Coordinates extends ZyinHUDModuleBase {
 	 * @return The state the module was changed to
 	 */
 	public static boolean ToggleEnabled() {
+		ZyinHUDConfig.EnableCoordinates.set(!Enabled);
+		ZyinHUDConfig.EnableCoordinates.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
 		return Enabled = !Enabled;
 	}
 

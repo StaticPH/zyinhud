@@ -30,18 +30,11 @@ public class QuickDepositKeyHandler implements ZyinHUDKeyHandlerBase {
 		int keyState = GLFW.glfwGetKey(handle, ZyinHUDKeyHandlers.KEY_BINDINGS[7].getKey().getKeyCode());
 
 		if (mc.currentScreen instanceof ContainerScreen) {
-			if (keyState == GLFW.GLFW_PRESS || keyState == GLFW.GLFW_RELEASE) {
-				if (keyState == GLFW.GLFW_PRESS) {
-					if (!keyDown) { OnKeyDown(); }
-					keyDown = true;
-				}
-				else {
-					//if(keyDown == true)
-					//OnKeyUp();
-					keyDown = false;
-				}
+			if (keyState == GLFW.GLFW_PRESS){
+				if (!keyDown) { OnKeyDown(); }
+				keyDown = true;
 			}
-
+			else {keyDown = false; }
 		}
 	}
 

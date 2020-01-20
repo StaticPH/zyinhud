@@ -49,6 +49,8 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 * @return The state the module was changed to
 	 */
 	public static boolean ToggleEnabled() {
+		ZyinHUDConfig.EnableQuickDeposit.set(!Enabled);
+		ZyinHUDConfig.EnableQuickDeposit.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
 		return Enabled = !Enabled;
 	}
 
@@ -98,6 +100,7 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 * @param itemStack the item stack
 	 * @return true if it is allowed to be deposited
 	 */
+	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	public static boolean IsAllowedToBeDepositedInContainer(ItemStack itemStack) {
 		return !itemStack.isEmpty() &&
 		       (!BlacklistTorch || (itemStack.getItem() != Item.getItemFromBlock(Blocks.TORCH))) &&
@@ -110,7 +113,7 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 		       (!BlacklistArrow || (itemStack.getItem() != Items.ARROW)) &&
 		       (!BlacklistEnderPearl || (itemStack.getItem() != Items.ENDER_PEARL)) &&
 		       (!BlacklistWaterBucket || (itemStack.getItem() != Items.WATER_BUCKET)) &&
-		       (!BlacklistFood || (!itemStack.getItem().isFood())) && // itemStack.getItem() == Items.CAKE)) ||
+		       (!BlacklistFood || (!itemStack.isFood())) && // itemStack.getItem() == Items.CAKE)) ||
 		       (!BlacklistClockCompass || (itemStack.getItem() != Items.COMPASS && itemStack.getItem() != Items.CLOCK));
 		//TODO: replace the item checks with tag checks wherever possible. like with torches
 	}

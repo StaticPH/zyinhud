@@ -1,5 +1,6 @@
 package com.zyin.zyinhud.keyhandlers;
 
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes.SafeOverlayOptions.SafeOverlayModes;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
 import org.lwjgl.glfw.GLFW;
@@ -80,7 +81,7 @@ public class SafeOverlayKeyHandler implements ZyinHUDKeyHandlerBase {
 
 		//if nothing is pressed, do the default behavior
 
-		SafeOverlay.Mode.next();
+		SafeOverlay.Mode = (SafeOverlayModes) SafeOverlay.Mode.next();
 		ZyinHUDSound.PlayButtonPress();
 	}
 

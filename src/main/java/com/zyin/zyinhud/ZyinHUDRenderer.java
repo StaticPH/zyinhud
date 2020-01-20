@@ -31,13 +31,9 @@ import com.zyin.zyinhud.modules.SafeOverlay;
 /**
  * This class is in charge of rendering things onto the HUD and into the game world.
  */
-public class ZyinHUDRenderer
-{
-    /**
-     * The constant instance.
-     */
-    public static final ZyinHUDRenderer instance = new ZyinHUDRenderer();
-    private static Minecraft mc = Minecraft.getInstance();
+public class ZyinHUDRenderer {
+	public static final ZyinHUDRenderer instance = new ZyinHUDRenderer();
+	private static Minecraft mc = Minecraft.getInstance();
 
 	/**
 	 * Event fired at various points during the GUI rendering process.

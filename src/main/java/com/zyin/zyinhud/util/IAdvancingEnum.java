@@ -52,6 +52,17 @@ public interface IAdvancingEnum<E extends Enum<E> & IAdvancingEnum<E>> {
 	}
 
 	/**
+	 * Convenience method that returns the next or previous element according to a boolean parameter
+	 *
+	 * @param forward whether to get next or previous element
+	 * @return The next element if the <tt>boolean</tt> parameter <tt>forward</tt> is true,
+	 * or the previous element if <tt>forward</tt> is false.
+	 */
+	default E getNextOrPrevious(boolean forward) {
+		return forward ? next() : prev();
+	}
+
+	/**
 	 * Get the enumeration constant declared after <tt>element</tt>.
 	 * If <tt>element</tt>> is the last constant declared, return the first constant.
 	 *

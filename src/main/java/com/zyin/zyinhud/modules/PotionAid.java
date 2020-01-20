@@ -45,7 +45,7 @@ public class PotionAid extends ZyinHUDModuleBase {
 	private int currentItemInventoryIndex;
 	private int currentItemHotbarIndex;
 
-	private PotionAid() {
+	private PotionAid() {   //TODO: try to avoid AWT
 		try {
 			r = new Robot();
 		}
@@ -63,6 +63,8 @@ public class PotionAid extends ZyinHUDModuleBase {
 	 * @return The state the module was changed to
 	 */
 	public static boolean ToggleEnabled() {
+		ZyinHUDConfig.EnablePotionAid.set(!Enabled);
+		ZyinHUDConfig.EnablePotionAid.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
 		return Enabled = !Enabled;
 	}
 

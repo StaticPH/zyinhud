@@ -30,14 +30,14 @@
 //public class EatingAid extends ZyinHUDModuleBase
 //{
 //    /**
-//     * Enables/Disables this Mod
+//     * Enables/Disables this module
 //     */
 //    public static boolean Enabled;
 //
 //    /**
-//     * Toggles this Mod on or off
+//     * Toggles this module on or off
 //     *
-//     * @return The state the Mod was changed to
+//     * @return The state the module was changed to
 //     */
 //    public static boolean ToggleEnabled()
 //    {
@@ -45,12 +45,12 @@
 //    }
 //
 //    /**
-//     * The current mode for this mod
+//     * The current mode for this module
 //     */
 //    public static Modes Mode;
 //
 //    /**
-//     * The enum for the different types of Modes this mod can have
+//     * The enum for the different types of Modes this module can have
 //     */
 //    public static enum Modes
 //    {
@@ -71,7 +71,7 @@
 //        }
 //
 //        /**
-//         * Sets the next available mode for this mod
+//         * Sets the next available mode for this module
 //         *
 //         * @return the modes
 //         */
@@ -81,7 +81,7 @@
 //        }
 //
 //        /**
-//         * Sets the next available mode for this mod if forward=true, or previous mode if false
+//         * Sets the next available mode for this module if forward=true, or previous mode if false
 //         *
 //         * @param forward the forward
 //         * @return the modes

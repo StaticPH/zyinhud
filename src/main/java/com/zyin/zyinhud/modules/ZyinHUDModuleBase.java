@@ -4,12 +4,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
 
 /**
- * The type Zyin hud mod base.
+ * The type Zyin hud module base.
  */
 public abstract class ZyinHUDModuleBase {
 	protected static final Minecraft mc = Minecraft.getInstance();
 	static final ItemRenderer itemRenderer = mc.getItemRenderer();
 
-	// We can't move the static variable Enabled to this base mod because then if one module
+	// We can't move the static variable Enabled to this base module because then if one module
 	// sets it to false, ALL modules will be set to false
 }

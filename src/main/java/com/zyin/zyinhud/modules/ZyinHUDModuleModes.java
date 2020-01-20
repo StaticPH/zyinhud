@@ -465,6 +465,44 @@ public class ZyinHUDModuleModes {
 	//TODO
 //	public static class PotionTimerOptions{
 //		public static final boolean defaultEnabled = true;
+//		public static PotionTimerModes PotionTimerMode;
+//
+//		/**
+//		 * The enum for the different text display modes available to the PotionTimer module
+//		 */
+//		public static enum PotionTimerModes implements IAdvancingEnum{
+//			WHITE("potiontimers.textmode.white"),
+//			COLORED("potiontimers.textmode.colored"),
+//			NONE("potiontimers.textmode.none");
+//
+//			private String unfriendlyName;
+//
+//			//NOTE: In all likelihood, the next() and prev() methods will likely be called by a gui button, if at all
+//
+//			private PotionTimerModes(String unfriendlyName) {
+//				this.unfriendlyName = unfriendlyName;
+//			}
+//
+//			/**
+//			 * Gets the mode based on its internal name as written in the enum declaration
+//			 *
+//			 * @param modeName the mode name
+//			 * @return text modes
+//			 */
+//			public static PotionTimerModes GetMode(String modeName) {
+//				try { return PotionTimerModes.valueOf(modeName); }
+//				catch (IllegalArgumentException e) { return COLORED; }
+//			}
+//
+//			/**
+//			 * Get friendly name string.
+//			 *
+//			 * @return the string
+//			 */
+//			public String GetFriendlyName() {
+//				return Localization.get(unfriendlyName);
+//			}
+//		}
 //	}
 
 	public static class QuickDepositOptions {
