@@ -97,35 +97,14 @@ public class ZyinHUDRenderer {
 	 * @param partialTickTime the partial tick time
 	 */
 	public static void RenderFloatingItemIcon(float x, float y, float z, Item item, float partialTickTime) {
-		EntityRendererManager renderManager = mc.getRenderManager();
-
-		float playerX = (float) (mc.player.lastTickPosX + (mc.player.posX - mc.player.lastTickPosX) * partialTickTime);
-		float playerY = (float) (mc.player.lastTickPosY + (mc.player.posY - mc.player.lastTickPosY) * partialTickTime);
-		float playerZ = (float) (mc.player.lastTickPosZ + (mc.player.posZ - mc.player.lastTickPosZ) * partialTickTime);
-
-		float dx = x - playerX;
-		float dy = y - playerY;
-		float dz = z - playerZ;
-		float scale = 0.025f;
-
-		GL11.glColor4f(1f, 1f, 1f, 0.75f);
-		GL11.glPushMatrix();
-		GL11.glTranslatef(dx, dy, dz);
-		GL11.glRotatef(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-		GL11.glScalef(-scale, -scale, scale);
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glDepthMask(false);
+		GL11BeforeDrawInWorld(x, y, z, 0.025f, 0.75f, partialTickTime);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
 		RenderItemTexture(-8, -8, item, 16, 16);
 
-		GL11.glColor4f(1f, 1f, 1f, 1f);
-		GL11.glDepthMask(true);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glPopMatrix();
+		GL11AfterDrawInWorld();
 	}
 
    /* @SubscribeEvent
@@ -223,7 +202,7 @@ public class ZyinHUDRenderer {
 		worldrenderer.begin(
 			GL11.GL_QUADS,
 			DefaultVertexFormats.POSITION_TEX
-		);    //I have no clue what the DefaultVertexFormats are, but field_181707_g works
+		);    //I have no clue what the DefaultVertexFormats are, but POSITION_TEX(=field_181707_g) works
 
 		worldrenderer.pos((double) (x), (double) (y + height), (double) zLevel)
 		             .tex((double) textureAtlasSprite.getMaxU(), (double) textureAtlasSprite.getMaxV())
@@ -274,29 +253,10 @@ public class ZyinHUDRenderer {
 	public static void RenderFloatingText(
 		String[] text, float x, float y, float z, int color, boolean renderBlackBackground, float partialTickTime
 	) {
+		//TODO: See how much of this can be replaced with EntityRenderer:renderLivingLabel and GameRenderer.drawNameplate
 		//Thanks to Electric-Expansion mod for the majority of this code
 		//https://github.com/Alex-hawks/Electric-Expansion/blob/master/src/electricexpansion/client/render/RenderFloatingText.java
-
-		EntityRendererManager renderManager = mc.getRenderManager();
-
-		float playerX = (float) (mc.player.lastTickPosX + (mc.player.posX - mc.player.lastTickPosX) * partialTickTime);
-		float playerY = (float) (mc.player.lastTickPosY + (mc.player.posY - mc.player.lastTickPosY) * partialTickTime);
-		float playerZ = (float) (mc.player.lastTickPosZ + (mc.player.posZ - mc.player.lastTickPosZ) * partialTickTime);
-
-		float dx = x - playerX;
-		float dy = y - playerY;
-		float dz = z - playerZ;
-		float distance = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
-		float scale = 0.03f;
-
-		GL11.glColor4f(1f, 1f, 1f, 0.5f);
-		GL11.glPushMatrix();
-		GL11.glTranslatef(dx, dy, dz);
-		GL11.glRotatef(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
-		GL11.glRotatef(renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-		GL11.glScalef(-scale, -scale, scale);
-		GL11.glDisable(GL11.GL_LIGHTING);
-		GL11.glDepthMask(false);
+		GL11BeforeDrawInWorld(x, y, z, 0.03f, 0.5f, partialTickTime);
 		GlStateManager.disableDepthTest();
 		GlStateManager.disableTexture();
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -333,15 +293,19 @@ public class ZyinHUDRenderer {
             */
 
 			//This code taken from 1.8.8 net.minecraft.client.renderer.entity.Render.renderLivingLabel()
-			worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
-			worldrenderer.pos((double) (-stringMiddle - 1), (double) -1, 0.0D).color(
-				0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-			worldrenderer.pos((double) (-stringMiddle - 1), (double) (8 + lineHeight * (text.length - 1)), 0.0D).color(
-				0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-			worldrenderer.pos((double) (stringMiddle + 1), (double) (8 + lineHeight * (text.length - 1)), 0.0D).color(
-				0.0F, 0.0F, 0.0F, 0.25F).endVertex();
-			worldrenderer.pos((double) (stringMiddle + 1), (double) -1, 0.0D).color(
-				0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+			worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
+			worldrenderer.pos((double) (-stringMiddle - 1), (double) -1, 0.0D)
+			             .color(0.0F, 0.0F, 0.0F, 0.25F)
+			             .endVertex();
+			worldrenderer.pos((double) (-stringMiddle - 1), (double) (8 + lineHeight * (text.length - 1)), 0.0D)
+			             .color(0.0F, 0.0F, 0.0F, 0.25F)
+			             .endVertex();
+			worldrenderer.pos((double) (stringMiddle + 1), (double) (8 + lineHeight * (text.length - 1)), 0.0D)
+			             .color(0.0F, 0.0F, 0.0F, 0.25F)
+			             .endVertex();
+			worldrenderer.pos((double) (stringMiddle + 1), (double) -1, 0.0D)
+			             .color(0.0F, 0.0F, 0.0F, 0.25F)
+			             .endVertex();
 			tessellator.draw();
 			//GL11.glEnable(GL11.GL_TEXTURE_2D);
 			GlStateManager.enableTexture();
@@ -356,10 +320,7 @@ public class ZyinHUDRenderer {
 		GlStateManager.enableTexture();
 		GlStateManager.enableLighting();
 		GlStateManager.disableBlend();
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		GL11.glDepthMask(true);
-		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glPopMatrix();
+		GL11AfterDrawInWorld();
 	}
 
 
@@ -372,5 +333,29 @@ public class ZyinHUDRenderer {
 		mc.ingameGUI.setOverlayMessage(message, false);
 	}
 
+	private static void GL11BeforeDrawInWorld(
+		float x, float y, float z, float scale, float alpha, float partialTickTime
+	) {
+		EntityRendererManager renderManager = mc.getRenderManager();
 
+		float playerX = (float) (mc.player.lastTickPosX + (mc.player.posX - mc.player.lastTickPosX) * partialTickTime);
+		float playerY = (float) (mc.player.lastTickPosY + (mc.player.posY - mc.player.lastTickPosY) * partialTickTime);
+		float playerZ = (float) (mc.player.lastTickPosZ + (mc.player.posZ - mc.player.lastTickPosZ) * partialTickTime);
+
+		GL11.glColor4f(1f, 1f, 1f, alpha);
+		GL11.glPushMatrix();
+		GL11.glTranslatef(x - playerX, y - playerY, z - playerZ);
+		GL11.glRotatef(-renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+		GL11.glRotatef(renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+		GL11.glScalef(-scale, -scale, scale);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glDepthMask(false);
+	}
+
+	private static void GL11AfterDrawInWorld() {
+		GL11.glColor4f(1f, 1f, 1f, 1f);
+		GL11.glDepthMask(true);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glPopMatrix();
+	}
 }

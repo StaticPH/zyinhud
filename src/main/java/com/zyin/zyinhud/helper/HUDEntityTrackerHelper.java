@@ -86,11 +86,6 @@ public class HUDEntityTrackerHelper {
 				lookDir = new Vec3d(lookDir.x * -1, lookDir.y * -1, lookDir.z * -1);
 			}
 
-
-			MainWindow res = Minecraft.getInstance().mainWindow;
-			int width = res.getScaledWidth();
-			int height = res.getScaledHeight();
-
 			IntBuffer viewport = BufferUtils.createIntBuffer(16);
 			GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
 
@@ -170,38 +165,40 @@ public class HUDEntityTrackerHelper {
 					x, y, z, modelMatrix, projMatrix, viewport, screenCoords
 				);
 
-				int hudX = Math.round(screenCoords.get(0)) / (int) res.getGuiScaleFactor();
-				int hudY = height - Math.round(screenCoords.get(1)) / (int) res.getGuiScaleFactor();
-
-				// if <hudX, hudY> is outside the screen, scale the coordinates so they're
-				// at the edge of the screen (to preserve angle)
-
-				int newHudX = hudX;
-				int newHudY = hudY;
-
-				//TODO: deal with this duplication. somehow.
-				//use X overshoot to scale Y
-				if (hudX < 0) {
-					newHudY = (int) ((hudY - height / 2) / (1 - (2 * (float) hudX / width)) + height / 2);
-				}
-				else if (hudX > width) {
-					newHudY = (int) ((hudY - height / 2) / ((2 * (float) hudX / width) - 1) + height / 2);
-				}
-
-				//use Y overshoot to scale X
-				if (hudY < 0) {
-					newHudX = (int) ((hudX - width / 2) / (1 - (2 * (float) hudY / height)) + width / 2);
-				}
-				else if (hudY > height) {
-					newHudX = (int) ((hudX - width / 2) / ((2 * (float) hudY / height) - 1) + width / 2);
-				}
-
-				hudX = newHudX;
-				hudY = newHudY;
-
-				RenderEntityInfoOnHUD(object, hudX, hudY);
+				renderHudAtScaledCoordinates(object, screenCoords);
 			}
 		}
+	}
+
+	private static void renderHudAtScaledCoordinates(Entity object, FloatBuffer screenCoords) {
+		MainWindow res = Minecraft.getInstance().mainWindow;
+		int width = res.getScaledWidth();
+		int height = res.getScaledHeight();
+
+		int hudX = Math.round(screenCoords.get(0)) / (int) res.getGuiScaleFactor();
+		int hudY = height - Math.round(screenCoords.get(1)) / (int) res.getGuiScaleFactor();
+
+		// if <hudX, hudY> is outside the screen, scale the coordinates so they're
+		// at the edge of the screen (to preserve angle)
+
+		//use X overshoot to scale Y
+		int newHudY = calcScaledHudPos(height, width, hudY, hudX);
+
+		//use Y overshoot to scale X
+		int newHudX = calcScaledHudPos(width, height, hudX, hudY);
+
+		RenderEntityInfoOnHUD(object, newHudX, newHudY);
+	}
+
+	private static int calcScaledHudPos(int scaleDimension, int overshotDimension, int posToScale, int overshotPos) {
+		//applied -ax + b == b - ax
+		if (overshotPos < 0) {
+			return (scaleDimension / 2) + (int) ((posToScale - scaleDimension / 2) / (-(2f * overshotPos / overshotDimension) + 1));
+		}
+		else if (overshotPos > overshotDimension) {
+			return (scaleDimension / 2) + (int) ((posToScale - scaleDimension / 2) / ((2f * overshotPos / overshotDimension) - 1));
+		}
+		else { return posToScale; }
 	}
 
 }
