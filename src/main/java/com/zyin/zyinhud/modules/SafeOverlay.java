@@ -123,7 +123,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * Machine specs when this test took place: Core i7 2.3GHz, 8GB DDR3, GTX 260
 	 * <br>With vanilla textures, far render distance, superflat map.
 	 */
-	class SafeCalculatorThread extends Thread {
+	static class SafeCalculatorThread extends Thread {
 		BlockPos cachedPlayerPosition;
 
 		/**

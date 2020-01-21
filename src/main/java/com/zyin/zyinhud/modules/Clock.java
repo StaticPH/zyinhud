@@ -65,9 +65,8 @@ public class Clock extends ZyinHUDModuleBase {
 				}
 				else {
 					//day time
-					String daytimeClockString = (time < bedTime ? TextFormatting.YELLOW : TextFormatting.GOLD) +
-					                            String.format("%02d:%02d", hours, seconds);
-					return daytimeClockString;
+					return (time < bedTime ? TextFormatting.YELLOW : TextFormatting.GOLD) +
+					       String.format("%02d:%02d", hours, seconds);
 				}
 			}
 			else if (Clock.Mode == ClockOptions.ClockModes.COUNTDOWN) {
@@ -79,10 +78,7 @@ public class Clock extends ZyinHUDModuleBase {
 					long minutes = secondsTillDay / 60;
 					long seconds = secondsTillDay - minutes * 60;
 
-					String nighttimeCountdownString =
-						TextFormatting.GRAY + String.format("%02d:%02d", minutes, seconds);
-					// + ':' + String.format("%02d", seconds);
-					return nighttimeCountdownString;
+					return TextFormatting.GRAY + String.format("%02d:%02d", minutes, seconds);
 				}
 				else {
 					//day time
@@ -92,15 +88,8 @@ public class Clock extends ZyinHUDModuleBase {
 					long minutes = secondsTillNight / 60;
 					long seconds = secondsTillNight - minutes * 60;
 
-					String daytimeCountdownString = (time < bedTime ? TextFormatting.YELLOW : TextFormatting.GOLD) +
-					                                String.format("%02d:%02d", minutes, seconds);
-					// + ':' + String.format("%02d", seconds);
-//					daytimeCountdownString = (time < bedTime ? TextFormatting.YELLOW : TextFormatting.GOLD)
-//					                                           + daytimeCountdownString
-//					if (time < bedTime) { daytimeCountdownString = TextFormatting.YELLOW + daytimeCountdownString; }
-//					else { daytimeCountdownString = TextFormatting.GOLD + daytimeCountdownString; }
-
-					return daytimeCountdownString;
+					return (time < bedTime ? TextFormatting.YELLOW : TextFormatting.GOLD) +
+					       String.format("%02d:%02d", minutes, seconds);
 				}
 			}
 			else if (Clock.Mode == ClockOptions.ClockModes.GRAPHIC) {

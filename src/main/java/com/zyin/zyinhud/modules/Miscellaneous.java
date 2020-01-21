@@ -49,7 +49,8 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	public void DrawGuiRepairCounts(AnvilScreen guiRepair) {
 		RepairContainer anvil = guiRepair.getContainer();
 		IInventory inputSlots = ZyinHUDUtil.GetFieldByReflection(
-			RepairContainer.class, anvil, "inputSlots", "field_82853_g");
+			RepairContainer.class, anvil, "inputSlots", "field_82853_g"
+		);
 
 		//_CHECK: verify that reflection is not in fact needed for the RepairContainer
 //		RepairContainer anvil = ZyinHUDUtil.GetFieldByReflection(AnvilScreen.class, guiRepair, "anvil", "field_147002_h"); // WAS field_147092_v in ContainerScreen.class
@@ -70,7 +71,8 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 			String leftItemRepairCost;
 
 			if (timesRepaired >= maxRepairTimes) {
-				leftItemRepairCost = TextFormatting.RED.toString() + timesRepaired + TextFormatting.DARK_GRAY + '/' + maxRepairTimes;
+				leftItemRepairCost = TextFormatting.RED.toString() + timesRepaired +
+				                     TextFormatting.DARK_GRAY + '/' + maxRepairTimes;
 			}
 			else { leftItemRepairCost = TextFormatting.DARK_GRAY.toString() + timesRepaired + '/' + maxRepairTimes; }
 
@@ -81,7 +83,8 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 			String rightItemRepairCost;
 
 			if (timesRepaired >= maxRepairTimes) {
-				rightItemRepairCost = TextFormatting.RED.toString() + timesRepaired + TextFormatting.DARK_GRAY + '/' + maxRepairTimes;
+				rightItemRepairCost = TextFormatting.RED.toString() + timesRepaired +
+				                      TextFormatting.DARK_GRAY + '/' + maxRepairTimes;
 			}
 			else { rightItemRepairCost = TextFormatting.DARK_GRAY.toString() + timesRepaired + '/' + maxRepairTimes; }
 
@@ -105,7 +108,7 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	 * @param itemStack the item stack
 	 * @return int
 	 */
-	protected static int GetTimesRepaired(ItemStack itemStack) {
+	protected static int GetTimesRepaired(ItemStack itemStack) {//_CHECK: I vaguely recall the repair costs being adjusted in some update
 		/*
     	times repaired: repair cost, xp
     	0: 0, 2

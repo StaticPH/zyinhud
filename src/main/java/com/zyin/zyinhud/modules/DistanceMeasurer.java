@@ -79,7 +79,7 @@ public class DistanceMeasurer extends ZyinHUDModuleBase {
 				double playerX = mc.player.posX;
 				double playerY = mc.player.posY + mc.player.getEyeHeight();
 				double playerZ = mc.player.posZ;
-				//Might be able to replace this pretty much this entire block with something
+				//_CHECK: Might be able to replace this pretty much this entire block with something
 				// like mc.player.getPositionVector().distanceTo(mc.player.getLookVec());
 				double blockX = objectMouseOver.getHitVec().x;  //might also work with Entity.*look* returns some Vec?
 				double blockY = objectMouseOver.getHitVec().y;  //EX: mc.player.getLookVec().getY();
@@ -90,15 +90,13 @@ public class DistanceMeasurer extends ZyinHUDModuleBase {
 				double deltaZ;
 
 				if (playerX < blockX) { deltaX = blockX - playerX; }
-				else if (playerX > blockX + 0.5) { deltaX = playerX - blockX; }
+//				else if (playerX > blockX + 0.5) { deltaX = playerX - blockX; } //Seems like all 3 of these "else if" clauses are redundant
 				else { deltaX = playerX - blockX; }
 
 				if (playerY < blockY) { deltaY = blockY - playerY; }
-				else if (playerY > blockY) { deltaY = playerY - blockY; }
 				else { deltaY = playerY - blockY; }
 
 				if (playerZ < blockZ) { deltaZ = blockZ - playerZ; }
-				else if (playerZ > blockZ) { deltaZ = playerZ - blockZ; }
 				else { deltaZ = playerZ - blockZ; }
 
 				double farthestHorizontalDistance = Math.max(Math.abs(deltaX), Math.abs(deltaZ));

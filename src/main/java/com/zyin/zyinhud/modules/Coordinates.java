@@ -118,7 +118,7 @@ public class Coordinates extends ZyinHUDModuleBase {
 	 * Paste coordinates into chat.
 	 */
 	public static void PasteCoordinatesIntoChat() {
-		if (mc.currentScreen != null && mc.currentScreen instanceof ChatScreen) {
+		if (mc.currentScreen instanceof ChatScreen) {
 			String coordinateString = Coordinates.ChatStringFormat;
 			coordinateString = coordinateString.replace("{x}", Integer.toString(Coordinates.GetXCoordinate()));
 			coordinateString = coordinateString.replace("{y}", Integer.toString(Coordinates.GetYCoordinate()));

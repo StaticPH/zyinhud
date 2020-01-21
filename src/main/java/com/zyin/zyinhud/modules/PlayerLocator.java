@@ -60,7 +60,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	/**
 	 * Shows how far you are from other players next to their name
 	 */
-	public static boolean ShowDistanceToPlayers = ZyinHUDConfig.ShowDistanceToPlayers.get() ;
+	public static boolean ShowDistanceToPlayers = ZyinHUDConfig.ShowDistanceToPlayers.get();
 	public static boolean ShowPlayerHealth = ZyinHUDConfig.ShowPlayerHealth.get();
 	public static boolean ShowWitherSkeletons = ZyinHUDConfig.ShowWitherSkeletons.get();
 	public static boolean ShowWolves = ZyinHUDConfig.ShowWolves.get();
@@ -91,21 +91,13 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	 * @return Horse Armor Type
 	 */
 	public static int getHorseArmorType(Iterable<ItemStack> armor_list) {
-		if (armor_list == null) { return 0; }
-		else {
-			if (armor_list.iterator().hasNext()) {
-				Item armor_single_item;
-				try { armor_single_item = armor_list.iterator().next().getItem(); }
-				catch (NullPointerException e) { return 0; }
-
-				if (armor_single_item != null) {
-					if (armor_single_item == Items.IRON_HORSE_ARMOR) { return 1; }
-					else if (armor_single_item == Items.GOLDEN_HORSE_ARMOR) { return 2; }
-					else { return armor_single_item == Items.DIAMOND_HORSE_ARMOR ? 3 : 0; }
-				}
-			}
+		if (armor_list != null && armor_list.iterator().hasNext()) {
+			Item armor_single_item = armor_list.iterator().next().getItem();
+			if (armor_single_item == Items.IRON_HORSE_ARMOR) { return 1; }
+			else if (armor_single_item == Items.GOLDEN_HORSE_ARMOR) { return 2; }
+			else { return armor_single_item == Items.DIAMOND_HORSE_ARMOR ? 3 : 0; }
 		}
-		return 0;
+		else { return 0; }
 	}
 
 	/**
@@ -115,6 +107,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	 * @param x      location on the HUD
 	 * @param y      location on the HUD
 	 */
+	@SuppressWarnings("ConstantConditions")
 	public static void RenderEntityInfoOnHUD(Entity entity, int x, int y) {
 		if (numOverlaysRendered > maxNumberOfOverlays) { return; }
 
@@ -148,7 +141,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 				overlayMessage = GetOverlayMessageForOtherPlayer((RemoteClientPlayerEntity) entity, distanceFromMe);
 
 				//format the string to be the same color as that persons team color
-				ScorePlayerTeam team = (ScorePlayerTeam) ((RemoteClientPlayerEntity) entity).getTeam();
+				ScorePlayerTeam team = (ScorePlayerTeam) entity.getTeam();
 				if (team != null) { overlayMessage = team.getName(); }
 			}
 			else if (entity instanceof WolfEntity) {

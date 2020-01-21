@@ -4,7 +4,6 @@ import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -244,9 +243,8 @@ public class PotionAid extends ZyinHUDModuleBase {
 		boolean hasFireResistancePotionEffect = false;
 
 		Collection potionEffects = mc.player.getActivePotionEffects();    //key:potionId, value:potionEffect    getActivePotionEffects gets the values
-		Iterator it = potionEffects.iterator();
-		while (it.hasNext()) {
-			EffectInstance potionEffect = (EffectInstance) it.next();
+		for (Object effect : potionEffects) {
+			EffectInstance potionEffect = (EffectInstance) effect;
 			String potionEffectName = potionEffect.getEffectName();
 
 			if (potionEffectName.equals("effect.regeneration")) { hasRegenerationPotionEffect = true; }

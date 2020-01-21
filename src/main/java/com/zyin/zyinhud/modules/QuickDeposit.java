@@ -100,21 +100,27 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 * @param itemStack the item stack
 	 * @return true if it is allowed to be deposited
 	 */
-	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
+	@SuppressWarnings({"BooleanMethodIsAlwaysInverted", "deprecation"})
 	public static boolean IsAllowedToBeDepositedInContainer(ItemStack itemStack) {
+		//TODO: come up with a way to make BlacklistTorch also consider non-vanilla torches
+		//TODO: figure out what the heck Forge intends me to use instead of Item.getItemFromBlock
 		return !itemStack.isEmpty() &&
-		       (!BlacklistTorch || (itemStack.getItem() != Item.getItemFromBlock(Blocks.TORCH))) &&
-		       ((!BlacklistTools || (!(itemStack.getItem() instanceof ToolItem))) &&
-		        (!(itemStack.getItem() instanceof HoeItem)) &&
-		        (!(itemStack.getItem() instanceof ShearsItem)) &&
-		        !ModCompatibility.TConstruct.IsTConstructHarvestTool(itemStack.getItem())) &&
-		       ((!BlacklistWeapons || (!(itemStack.getItem() instanceof SwordItem))) &&
-		        (!(itemStack.getItem() instanceof BowItem))) &&
-		       (!BlacklistArrow || (itemStack.getItem() != Items.ARROW)) &&
-		       (!BlacklistEnderPearl || (itemStack.getItem() != Items.ENDER_PEARL)) &&
-		       (!BlacklistWaterBucket || (itemStack.getItem() != Items.WATER_BUCKET)) &&
-		       (!BlacklistFood || (!itemStack.isFood())) && // itemStack.getItem() == Items.CAKE)) ||
-		       (!BlacklistClockCompass || (itemStack.getItem() != Items.COMPASS && itemStack.getItem() != Items.CLOCK));
+		       !(BlacklistTorch && itemStack.getItem() == Item.getItemFromBlock(Blocks.TORCH)) &&
+		       (
+			       !(BlacklistTools && itemStack.getItem() instanceof ToolItem) &&
+			       !(itemStack.getItem() instanceof HoeItem) &&
+			       !(itemStack.getItem() instanceof ShearsItem) &&
+			       !ModCompatibility.TConstruct.IsTConstructHarvestTool(itemStack.getItem())
+		       ) &&
+		       (
+			       !(BlacklistWeapons && itemStack.getItem() instanceof SwordItem) &&
+			       !(itemStack.getItem() instanceof BowItem)
+		       ) &&
+		       !(BlacklistArrow && itemStack.getItem() == Items.ARROW) &&
+		       !(BlacklistEnderPearl && itemStack.getItem() == Items.ENDER_PEARL) &&
+		       !(BlacklistWaterBucket && itemStack.getItem() == Items.WATER_BUCKET) &&
+		       !(BlacklistFood && itemStack.isFood()) && // itemStack.getItem() == Items.CAKE)) ||
+		       !(BlacklistClockCompass && (itemStack.getItem() == Items.COMPASS || itemStack.getItem() == Items.CLOCK));
 		//TODO: replace the item checks with tag checks wherever possible. like with torches
 	}
 

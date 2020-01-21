@@ -235,8 +235,8 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 	protected static int GetDamageColor(int currentDamage, int maxDamage) {
 		float percent = 100 - (int) ((double) currentDamage / maxDamage * 100);
 
-		if (percent < 50) { return (int) (0xff0000 + ((int) (0xff * percent / 50) << 8)); }
-		else { return (int) (0x00ff00 + ((int) (0xff * (100 - (percent - 50) * 2) / 100) << 16)); }
+		if (percent < 50) { return 0xff0000 + ((int) (0xff * percent / 50) << 8); }
+		else { return 0x00ff00 + ((int) (0xff * (100 - (percent - 50) * 2) / 100) << 16); }
 	}
 
 
@@ -270,9 +270,10 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 		//if the player is in the world
 		//and not in a menu (except for chat and the custom Options menu)
 		//and not typing
-		if (mc.mouseHelper.isMouseGrabbed() ||
-		    (mc.currentScreen != null && (mc.currentScreen instanceof ChatScreen /*|| mc.currentScreen instanceof GuiZyinHUDOptions && ((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("durabilityinfo.name"))*/)) &&
-		    !mc.gameSettings.keyBindPlayerList.isPressed()
+		if (
+			mc.mouseHelper.isMouseGrabbed() ||
+			(mc.currentScreen instanceof ChatScreen /*|| mc.currentScreen instanceof GuiZyinHUDOptions && ((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("durabilityinfo.name"))*/) &&
+			!mc.gameSettings.keyBindPlayerList.isPressed()
 		) {
 			damagedItemsList.clear();
 			UnequipDamagedArmor();
@@ -361,8 +362,10 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 			//iterate over the armor the user is wearing
 			for (int i = 0; i < itemStacks.size(); i++) {
 				ItemStack itemStack = itemStacks.get(i);
-				if (!itemStack.isEmpty() && !(itemStack.getItem() instanceof ElytraItem) &&
-				    !(itemStack.isEnchanted() && EnchantmentHelper.hasBindingCurse(itemStack))) {
+				if (
+					!(itemStack.isEmpty() || itemStack.getItem() instanceof ElytraItem ||
+					  (itemStack.isEnchanted() && EnchantmentHelper.hasBindingCurse(itemStack)))
+				) {
 					int itemDamage = itemStack.getDamage();
 					int maxDamage = itemStack.getMaxDamage();
 
@@ -395,7 +398,8 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 			if (!itemStack.isEmpty()) {
 				Item item = itemStack.getItem();
 
-				if (item instanceof ToolItem || item instanceof SwordItem ||
+				if (
+					item instanceof ToolItem || item instanceof SwordItem ||
 				    item instanceof BowItem || item instanceof HoeItem ||
 				    item instanceof ShearsItem || item instanceof FishingRodItem
 				) {
@@ -403,7 +407,8 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 					int maxDamage = itemStack.getMaxDamage();
 					int threshold = (item instanceof FishingRodItem) ? 5 : 15;
 
-					if (maxDamage != 0 &&
+					if (
+						maxDamage != 0 &&
 					    maxDamage - itemDamage < threshold &&                //less than 15 durability
 					    (float) itemDamage / (float) maxDamage > 0.9        //less than 10%
 					) {

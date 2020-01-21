@@ -3,7 +3,6 @@ package com.zyin.zyinhud.keyhandlers;
 import com.zyin.zyinhud.ZyinHUDSound;
 import com.zyin.zyinhud.modules.AnimalInfo;
 
-import com.zyin.zyinhud.modules.ZyinHUDModuleModes;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.AnimalInfoOptions.AnimalInfoModes;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 

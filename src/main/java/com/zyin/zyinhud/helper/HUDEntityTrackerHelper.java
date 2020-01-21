@@ -179,6 +179,7 @@ public class HUDEntityTrackerHelper {
 				int newHudX = hudX;
 				int newHudY = hudY;
 
+				//TODO: deal with this duplication. somehow.
 				//use X overshoot to scale Y
 				if (hudX < 0) {
 					newHudY = (int) ((hudY - height / 2) / (1 - (2 * (float) hudX / width)) + height / 2);

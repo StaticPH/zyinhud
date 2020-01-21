@@ -157,6 +157,8 @@ public class InfoLine extends ZyinHUDModuleBase {
 		return TextFormatting.WHITE + biomeName;
 	}
 
+	//Stop complaining that you cant catch the NPE that is the entire reason you're in a try-catch!
+	@SuppressWarnings("ConstantConditions")
 	protected static String CalculatePingForInfoLine() {
 		if (ShowPing && !mc.isSingleplayer()) {
 			if (time < System.currentTimeMillis()) {
