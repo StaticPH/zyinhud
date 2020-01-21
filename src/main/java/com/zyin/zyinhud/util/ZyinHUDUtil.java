@@ -157,8 +157,7 @@ public class ZyinHUDUtil {
 	 * @return the block
 	 */
 	public static Block GetBlock(int x, int y, int z) {
-		BlockPos pos = new BlockPos(x, y, z);
-		return GetBlock(pos);
+		return GetBlock(new BlockPos(x, y, z));
 	}
 
 	/**
@@ -183,8 +182,7 @@ public class ZyinHUDUtil {
 	 * @return the block state
 	 */
 	public static BlockState GetBlockState(int x, int y, int z) {
-		BlockPos pos = new BlockPos(x, y, z);
-		return GetBlockState(pos);
+		return GetBlockState(new BlockPos(x, y, z));
 	}
 
 	/**

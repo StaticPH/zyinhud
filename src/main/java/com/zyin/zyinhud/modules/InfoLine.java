@@ -11,7 +11,7 @@ import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 //import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
-
+//TODO: investigate displaying an indication that the player has not entered a bed in more than 3 days
 
 /**
  * The Info Line consists of everything that gets displayed in the top-left portion

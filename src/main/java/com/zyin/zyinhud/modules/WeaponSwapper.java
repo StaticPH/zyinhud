@@ -32,6 +32,7 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	public static boolean Enabled = ZyinHUDConfig.EnableWeaponSwap.get();
 
 	//TODO
+
 	/**
 	 * Toggles this module on or off
 	 *
@@ -51,14 +52,8 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	 */
 	public static void SwapWeapons() {
 		ItemStack currentItemStack = mc.player.getHeldItemMainhand(); //back when there was no off-hand, this used getHeldItem();
-		Item currentItem = null;
-
-		if (!currentItemStack.isEmpty()) {
-			currentItem = currentItemStack.getItem();   //_CHECK: I dont think this ultimately does anything
-		}
 
 		InitializeListOfWeaponClasses();
-
 
 		int meleeWeaponSlot = GetMostDamagingWeaponSlotFromHotbar();
 		int rangedWeaponSlot = GetBowSlotFromHotbar(rangedWeaponClasses);
@@ -121,31 +116,34 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 			ItemStack itemStack = items.get(i);
 
 			if (!itemStack.isEmpty()) {
-				if (itemStack.getItem() instanceof SwordItem) {
-					double swordDamage = GetItemWeaponDamage(itemStack);
-					double swordAttackSpeed = GetAttackSpeed(itemStack);
-					if ((swordDamage > highestSwordDamage && swordAttackSpeed >= highestSwordAttackSpeed) ||
-					    (swordDamage >= highestSwordDamage && swordAttackSpeed > highestSwordAttackSpeed)) {
-						highestSwordDamage = swordDamage;
-						highestSwordAttackSpeed = swordAttackSpeed;
-						highestSwordDamageSlot = i;
-					}
-					continue;
-				}
 				double weaponDamage = GetItemWeaponDamage(itemStack);
 				double weaponAttackSpeed = GetAttackSpeed(itemStack);
-				if ((weaponDamage > highestWeaponDamage && weaponAttackSpeed >= highestAttackSpeed) ||
-				    (weaponDamage >= highestWeaponDamage && weaponAttackSpeed > highestAttackSpeed)) {
-					highestWeaponDamage = weaponDamage;
-					highestAttackSpeed = weaponAttackSpeed;
-					highestWeaponDamageSlot = i;
+				if (itemStack.getItem() instanceof SwordItem) {
+					if (
+						(weaponDamage > highestSwordDamage && weaponAttackSpeed >= highestSwordAttackSpeed) ||
+						(weaponDamage >= highestSwordDamage && weaponAttackSpeed > highestSwordAttackSpeed)
+					) {
+						highestSwordDamage = weaponDamage;
+						highestSwordAttackSpeed = weaponAttackSpeed;
+						highestSwordDamageSlot = i;
+					}
+				}
+				else {
+					if (
+						(weaponDamage > highestWeaponDamage && weaponAttackSpeed >= highestAttackSpeed) ||
+						(weaponDamage >= highestWeaponDamage && weaponAttackSpeed > highestAttackSpeed)
+					) {
+						highestWeaponDamage = weaponDamage;
+						highestAttackSpeed = weaponAttackSpeed;
+						highestWeaponDamageSlot = i;
+					}
 				}
 			}
 		}
 		if (highestSwordDamageSlot == -1) {
 			return highestWeaponDamageSlot;
 		}
-		else if (
+		else if (//FIXME? Something seems very screwy about these conditionals...
 			(highestAttackSpeed > highestSwordDamage && highestAttackSpeed >= highestSwordAttackSpeed) ||
 			(highestWeaponDamage >= highestSwordDamage && highestAttackSpeed > highestSwordAttackSpeed)
 		) {
@@ -189,10 +187,9 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 		if (multimap.containsKey(SharedMonsterAttributes.ATTACK_DAMAGE.getName())) {
 			Collection<AttributeModifier> attributes = multimap.get(SharedMonsterAttributes.ATTACK_DAMAGE.getName());
 			if (!attributes.isEmpty()) {
-				Object attribute = attributes.iterator().next();
+				AttributeModifier attribute = attributes.iterator().next();
 				if (attribute != null) {
-					AttributeModifier weaponModifier = (AttributeModifier) attribute;
-					return weaponModifier.getAmount() + enchantDamage;
+					return attribute.getAmount() + enchantDamage;
 				}
 			}
 		}
@@ -310,9 +307,9 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 		if (multimap.containsKey(SharedMonsterAttributes.ATTACK_SPEED.getName())) {
 			Collection<AttributeModifier> attributes = multimap.get(SharedMonsterAttributes.ATTACK_SPEED.getName());
 			if (!attributes.isEmpty()) {
-				Object attribute = attributes.iterator().next();
+				AttributeModifier attribute = attributes.iterator().next();
 				if (attribute != null) {
-					return (4.0D) + (((AttributeModifier) attribute).getAmount());
+					return (4.0D) + (attribute.getAmount());
 				}
 			}
 		}

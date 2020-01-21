@@ -18,7 +18,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.Items;
 import net.minecraft.util.text.TextFormatting;
-import org.apache.commons.lang3.text.WordUtils;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -26,7 +25,7 @@ import java.util.ArrayList;
 /**
  * Shows information about horses in the F3 menu.
  */
-@SuppressWarnings({"RedundantCast", "FieldCanBeLocal", "RedundantSuppression"})
+@SuppressWarnings({"FieldCanBeLocal", "RedundantSuppression"})
 public class AnimalInfo extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
@@ -72,22 +71,24 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 
 	private static PlayerEntity me;
 
-	//TODO: verify these values
 	//values above the perfect value are aqua
 	//values between the perfect and good values are green
-	//values between the good and bad values are white
+	//values between the good and bad values are yellow
 	//values below the bad value are red
-	private static double perfectHorseSpeedThreshold = 13;    //max: 14.1?
-	private static double goodHorseSpeedThreshold = 11;
-	private static double badHorseSpeedThreshold = 9.5;        //min: ~7?
+	//NOTE: It should be obvious that this number scale only really makes any sense for natural horses.
+	//      Commands/editors can be used to create horses with stats far outside these ranges.
+	private static final double perfectHorseSpeedThreshold = 13;    //max: 14.1?
+	private static final double goodHorseSpeedThreshold = 11;
+	private static final double badHorseSpeedThreshold = 9.5;        //min: ~7?
 
-	private static double perfectHorseJumpThreshold = 5;    //max: 5.5?
-	private static double goodHorseJumpThreshold = 4;
-	private static double badHorseJumpThreshold = 2.5;        //min: 1.2
+	//I wish I knew for certain what units this was in...
+	private static final double perfectHorseJumpThreshold = 5;    //max: 5.5?
+	private static final double goodHorseJumpThreshold = 4;
+	private static final double badHorseJumpThreshold = 2.5;        //min: 1.2      --its actually really confusing what the minimum is >.>
 
-	private static int perfectHorseHPThreshold = 28;        //max: 30
-	private static int goodHorseHPThreshold = 24;
-	private static int badHorseHPThreshold = 20;            //min: 15
+	private static final int perfectHorseHPThreshold = 28;        //max: 30
+	private static final int goodHorseHPThreshold = 24;
+	private static final int badHorseHPThreshold = 20;            //min: 15
 
 	//UNUSED?
 //	private static final int verticalSpaceBetweenLines = 10;    //space between the overlay lines (because it is more than one line)
@@ -96,6 +97,32 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 	private static DecimalFormat decimalFormat = GetDecimalFormat();
 	private static DecimalFormat twoDigitFormat = new DecimalFormat("00");
 
+
+	private static enum HorseStat {
+		SPEED(badHorseHPThreshold, goodHorseHPThreshold, perfectHorseHPThreshold),
+		JUMP(badHorseJumpThreshold, goodHorseJumpThreshold, perfectHorseJumpThreshold),
+		HP(badHorseSpeedThreshold, goodHorseSpeedThreshold, perfectHorseSpeedThreshold);
+
+		// values less than or equal to this are red; values greater than this are yellow
+		private final double badStatThreshold;
+		// values greater than this are green
+		private final double goodStatThreshold;
+		// values greater than this are aqua
+		private final double perfectStatThreshold;
+
+		private HorseStat(double badStatThreshold, double goodStatThreshold, double perfectStatThreshold) {
+			this.badStatThreshold = badStatThreshold;
+			this.goodStatThreshold = goodStatThreshold;
+			this.perfectStatThreshold = perfectStatThreshold;
+		}
+
+		public TextFormatting getColorForValue(double statValue) {
+			if (statValue > this.perfectStatThreshold) { return TextFormatting.AQUA; }
+			else if (statValue > this.goodStatThreshold) { return TextFormatting.GREEN; }
+			else if (statValue > this.badStatThreshold) { return TextFormatting.YELLOW; }
+			else {return TextFormatting.RED; }
+		}
+	}
 
 	/**
 	 * Gets the amount of decimals that should be displayed with a DecimalFormat object.
@@ -194,6 +221,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 
 			AgeableEntity animal = (AgeableEntity) entity;
 
+			//TODO:Will need to see if this triggers for entities being ridden by others...I expect it will, but I'm not sure.
 			//don't render stats of the horse/animal we are currently riding
 			if (animal.isBeingRidden()) { return; }
 
@@ -256,10 +284,10 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		}
 
 		if (ShowBreedingIcons &&
-		    !animal.isChild() &&            //animal is an adult that is ready to breed
-		    animal instanceof AnimalEntity &&    //animal is not a villager
-		    !((AnimalEntity) animal).isInLove())    //animal is not currently breeding
-		{
+		    !animal.isChild() &&                    //animal is an adult that is ready to breed
+		    animal instanceof AnimalEntity &&       //animal is not a villager
+		    !((AnimalEntity) animal).isInLove()     //animal is not currently breeding
+		) {
 			//render the overlay icon
 			if (animal instanceof AbstractHorseEntity && ((AbstractHorseEntity) animal).isTame()) {
 				if (animal instanceof LlamaEntity) {
@@ -364,18 +392,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 	private static String GetHorseSpeedText(AbstractHorseEntity horse) {
 		double horseSpeed = GetEntityMaxSpeed(horse);
 		String horseSpeedString = decimalFormat.format(horseSpeed);
-
-		if (horseSpeed > perfectHorseSpeedThreshold) {
-			horseSpeedString = TextFormatting.AQUA + horseSpeedString + TextFormatting.WHITE;
-		}
-		else if (horseSpeed > goodHorseSpeedThreshold) {
-			horseSpeedString = TextFormatting.GREEN + horseSpeedString + TextFormatting.WHITE;
-		}
-		else if (horseSpeed < badHorseSpeedThreshold) {
-			horseSpeedString = TextFormatting.RED + horseSpeedString + TextFormatting.WHITE;
-		}
-
-		return horseSpeedString;
+		return HorseStat.SPEED.getColorForValue(horseSpeed) + horseSpeedString + TextFormatting.WHITE;
 	}
 
 	/**
@@ -386,20 +403,8 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 	 */
 	private static String GetHorseHPText(AbstractHorseEntity horse) {
 		int horseHP = GetEntityMaxHP(horse);
-		@SuppressWarnings("DuplicatedCode")
 		String horseHPString = decimalFormat.format(GetEntityMaxHP(horse));
-
-		if (horseHP > perfectHorseHPThreshold) {
-			horseHPString = TextFormatting.AQUA + horseHPString + TextFormatting.WHITE;
-		}
-		else if (horseHP > goodHorseHPThreshold) {
-			horseHPString = TextFormatting.GREEN + horseHPString + TextFormatting.WHITE;
-		}
-		else if (horseHP < badHorseHPThreshold) {
-			horseHPString = TextFormatting.RED + horseHPString + TextFormatting.WHITE;
-		}
-
-		return horseHPString;
+		return HorseStat.HP.getColorForValue(horseHP) + horseHPString + TextFormatting.WHITE;
 	}
 
 	/**
@@ -412,18 +417,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		int horseHP = GetEntityMaxHP(horse);
 		int horseHearts = GetEntityMaxHearts(horse);
 		String horseHeartsString = "" + horseHearts;
-
-		if (horseHP > perfectHorseHPThreshold) {
-			horseHeartsString = TextFormatting.AQUA + horseHeartsString + TextFormatting.WHITE;
-		}
-		else if (horseHP > goodHorseHPThreshold) {
-			horseHeartsString = TextFormatting.GREEN + horseHeartsString + TextFormatting.WHITE;
-		}
-		else if (horseHP < badHorseHPThreshold) {
-			horseHeartsString = TextFormatting.RED + horseHeartsString + TextFormatting.WHITE;
-		}
-
-		return horseHeartsString;
+		return HorseStat.HP.getColorForValue(horseHP) + horseHeartsString + TextFormatting.WHITE;
 	}
 
 	/**
@@ -434,20 +428,8 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 	 */
 	private static String GetHorseJumpText(AbstractHorseEntity horse) {
 		double horseJump = GetHorseMaxJump(horse);
-		@SuppressWarnings("DuplicatedCode")
 		String horseJumpString = decimalFormat.format(horseJump);
-
-		if (horseJump > perfectHorseJumpThreshold) {
-			horseJumpString = TextFormatting.AQUA + horseJumpString + TextFormatting.WHITE;
-		}
-		else if (horseJump > goodHorseJumpThreshold) {
-			horseJumpString = TextFormatting.GREEN + horseJumpString + TextFormatting.WHITE;
-		}
-		else if (horseJump < badHorseJumpThreshold) {
-			horseJumpString = TextFormatting.RED + horseJumpString + TextFormatting.WHITE;
-		}
-
-		return horseJumpString;
+		return HorseStat.JUMP.getColorForValue(horseJump) + horseJumpString + TextFormatting.WHITE;
 	}
 
 	/**
@@ -461,11 +443,10 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		if (horse instanceof HorseEntity) { texture = ((HorseEntity) horse).getVariantTexturePaths()[0]; }
 		if (texture == null || texture.isEmpty()) { return ""; }
 
-		String[] textureArray = texture.split("/");            //"textures/entity/horse/horse_creamy.png"
+		String[] textureArray = texture.split("/");             //"textures/entity/horse/horse_creamy.png"
 		texture = textureArray[textureArray.length - 1];        //"horse_creamy.png"
-		texture = texture.substring(6, texture.length() - 4);    //"creamy"
-		texture = WordUtils.capitalize(texture);            //"Creamy"
-		// NOTE: WordUtils in commons-lang has been deprecated in favor of its counterpart in commons-text
+		texture = texture.substring(6, texture.length() - 4);   //"creamy"
+		texture = Localization.toTitleCase(texture);            //"Creamy"
 
 		return texture;
 	}
@@ -481,12 +462,10 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		if (horse instanceof HorseEntity) { texture = ((HorseEntity) horse).getVariantTexturePaths()[1]; }
 		if (texture == null || texture.isEmpty()) { return ""; }
 
-		String[] textureArray = texture.split(
-			"/");                //"textures/entity/horse/horse_markings_blackdots.png"
-		texture = textureArray[textureArray.length - 1];            //"horse_markings_blackdots.png"
-		texture = texture.substring(15, texture.length() - 4);    //"blackdots"
-		texture = WordUtils.capitalize(texture);                //"Blackdots"
-		// NOTE: WordUtils in commons-lang has been deprecated in favor of its counterpart in commons-text
+		String[] textureArray = texture.split("/");             //"textures/entity/horse/horse_markings_blackdots.png"
+		texture = textureArray[textureArray.length - 1];        //"horse_markings_blackdots.png"
+		texture = texture.substring(15, texture.length() - 4);  // -> "blackdots" -> "Blackdots"
+		texture = Localization.toTitleCase(texture);            //"Blackdots"
 
 		return texture;
 	}
@@ -505,6 +484,12 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		       (2.128599134 * maxJumpStrength) - 0.343930367;
 	}
 
+	/**
+	 * Gets the strength stat of a llama; the range of the stat is [1,5]
+	 *
+	 * @param llama The llama to get the strength of
+	 * @return The strength stat of the llama
+	 */
 	private static int GetLlamaStrength(LlamaEntity llama) {
 		return llama.getStrength();
 	}
@@ -588,3 +573,4 @@ public class AnimalInfo extends ZyinHUDModuleBase {
     }
     */
 }
+//TODO: Investigate displaying the name of a tamed animal's owner above it if the owner is not this user
