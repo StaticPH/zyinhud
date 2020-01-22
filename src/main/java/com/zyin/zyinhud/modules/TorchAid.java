@@ -80,13 +80,13 @@ public class TorchAid extends ZyinHUDModuleBase {
 //            EatingAid.instance.StopEating();    //it's not good if we have a torch selected and hold right click down...
 //        }
 
-//TODO: support additional torches via Tags for both "torches" and "torchplacers"
-// see https://github.com/HenryLoenwind/middletorch/blob/master/1132/src/main/java/info/loenwind/middletorch/KeyInputHandler.java
 		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.BLOCK) {
-			int torchHotbarIndex = InventoryUtil.GetItemIndexFromHotbar(Blocks.TORCH);
+			int torchHotbarIndex = InventoryUtil.GetItemIndexFromHotbar(Blocks.TORCH, tag_TORCH, tag_TORCH_PLACER);
 
 			if (torchHotbarIndex < 0) {
-				int torchInventoryIndex = InventoryUtil.GetItemIndexFromInventory(Blocks.TORCH);
+				int torchInventoryIndex = InventoryUtil.GetItemIndexFromInventory(
+					Blocks.TORCH, tag_TORCH, tag_TORCH_PLACER
+				);
 
 				if (torchInventoryIndex >= 0) {
 					previousTorchIndex = torchInventoryIndex;

@@ -4,8 +4,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
+import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.client.event.InputEvent.MouseInputEvent;
+import net.minecraftforge.client.event.InputEvent.MouseScrollEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -154,31 +156,19 @@ public class ZyinHUDKeyHandlers {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void MouseEvent(MouseInputEvent event) {
-		//event.buttonstate = true if pressed, false if released
-		//event.button = -1 = mouse moved
-		//event.button =  0 = Left click
-		//event.button =  1 = Right click
-		//event.button =  2 = Middle click
-		//event.dwheel =    0 = mouse moved
-		//event.dwheel =  120 = mouse wheel up
-		//event.dwheel = -120 = mouse wheel down
-
-
-//		if (event.getDx() != 0 || event.getDy() != 0)    //mouse movement event
-//			return;
-
-//	TODO://Mouse wheel scroll   getScrollDelta is part of MouseScrollEvent in GuiScreenEvent, NOT in InputEvent...
-//	       but I don't think it makes sense for ItemSelector to work within a gui
-//		if( (event instanceof MouseScrollEvent) && ((MouseScrollEvent)event).getScrollDelta() != 0) {
-//        	if(KEY_BINDINGS[11].isKeyDown())
-//				ItemSelectorKeyHandler.OnMouseWheelScroll(event);
-//		}
+	public void MouseEvent(InputEvent event) {
+		logger.debug("Mouse event triggered");
+		if ((event instanceof MouseScrollEvent) && ((MouseScrollEvent) event).getScrollDelta() != 0) {
+			if (KEY_BINDINGS[11].isKeyDown()) { ItemSelectorKeyHandler.OnMouseWheelScroll((MouseScrollEvent) event); }
+		}
 
 		//Mouse side buttons
-		if (event.getButton() == 3 || event.getButton() == 4) {
+		if (
+			event instanceof MouseInputEvent &&
+			(((MouseInputEvent) event).getButton() == 3 || ((MouseInputEvent) event).getButton() == 4)
+		) {
 			if (mouseHelper.isLeftDown() || mouseHelper.isRightDown()) {
-				ItemSelectorKeyHandler.OnMouseSideButton(event);
+				ItemSelectorKeyHandler.OnMouseSideButton((MouseInputEvent) event);
 			}
 		}
 	}

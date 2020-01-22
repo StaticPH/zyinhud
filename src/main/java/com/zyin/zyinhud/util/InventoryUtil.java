@@ -14,6 +14,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.MerchantOffer;
 import net.minecraft.item.MerchantOffers;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
@@ -82,8 +83,8 @@ public class InventoryUtil {
 	public static int GetSuggestedItemSwapDelay() {
 		//on single player there is very little lag, so we can set the delay betwen swapping items around
 		//to be very small, but the ping on servers requires us to have a larger value in order to work more reliably.
-        if (mc.isSingleplayer()) { return suggestedItemSwapDelay = 170; }
-        else { return suggestedItemSwapDelay = 450; }
+		if (mc.isSingleplayer()) { return suggestedItemSwapDelay = 170; }
+		else { return suggestedItemSwapDelay = 450; }
 	}
 
 	/**
@@ -107,11 +108,11 @@ public class InventoryUtil {
 	 */
 	public static boolean UseItem(Object object) {
 		int hotbarIndex = GetItemIndexFromHotbar(object);
-        if (hotbarIndex < 0) {
-            int inventoryIndex = GetItemIndexFromInventory(object);
-            return inventoryIndex >= 0 && UseItemInInventory(object);
-        }
-        else { return UseItemInHotbar(object); }
+		if (hotbarIndex < 0) {
+			int inventoryIndex = GetItemIndexFromInventory(object);
+			return inventoryIndex >= 0 && UseItemInInventory(object);
+		}
+		else { return UseItemInHotbar(object); }
 	}
 
 
@@ -136,7 +137,7 @@ public class InventoryUtil {
 	 * @return true if the item was used.
 	 */
 	public static boolean UseItemInHotbar(Object object, int itemSlotIndex) {
-        if (itemSlotIndex < 36 || itemSlotIndex > 44) { return false; }
+		if (itemSlotIndex < 36 || itemSlotIndex > 44) { return false; }
 
 		int itemToUseHotbarIndex = TranslateInventoryIndexToHotbarIndex(itemSlotIndex);
 
@@ -179,7 +180,7 @@ public class InventoryUtil {
 	 * @return true if the item was used.
 	 */
 	public static boolean UseItemInInventory(Object object, int itemSlotIndex) {
-        if (itemSlotIndex < 0 || itemSlotIndex > 35) { return false; }
+		if (itemSlotIndex < 0 || itemSlotIndex > 35) { return false; }
 
 		int previouslySelectedHotbarSlotIndex = mc.player.inventory.currentItem;
 		mc.player.inventory.currentItem = 0;    //use the first hotbar slot so that mods that extend the vanilla hotbar will be compatible
@@ -213,8 +214,9 @@ public class InventoryUtil {
 	public static boolean SendUseItem() {
 		//Items need to use the sendUseItem() function to work properly (only works for instant-use items, NOT something like food!)
 		boolean sendUseItem = false;//mc.playerController.sendUseItem((EntityPlayer) mc.thePlayer, (World) mc.theWorld, mc.thePlayer.getHeldItemMainhand());
-		ActionResultType sendUseItem_result = mc.playerController.processRightClick(
-			mc.player, mc.world, Hand.MAIN_HAND);
+		ActionResultType sendUseItem_result =
+			mc.playerController.processRightClick(mc.player, mc.world, Hand.MAIN_HAND);
+
 		//TODO: More expressions!!
 		if (sendUseItem_result == ActionResultType.SUCCESS) {
 			sendUseItem = true;
@@ -292,8 +294,8 @@ public class InventoryUtil {
 	 */
 	@SuppressWarnings("ConstantConditions")
 	public static boolean Swap(int srcIndex, int destIndex) {
-        if (srcIndex == destIndex || srcIndex < 0 || destIndex < 0) { return false; }
-        List inventorySlots = mc.player.container.inventorySlots;
+		if (srcIndex == destIndex || srcIndex < 0 || destIndex < 0) { return false; }
+		List inventorySlots = mc.player.container.inventorySlots;
 		ItemStack srcStack = ((Slot) inventorySlots.get(srcIndex)).getStack();
 		ItemStack destStack = ((Slot) inventorySlots.get(destIndex)).getStack();
 
@@ -301,9 +303,9 @@ public class InventoryUtil {
 		ItemStack handStack = mc.player.inventory.getItemStack();
 		if (!handStack.isEmpty()) {
 			int emptyIndex = GetFirstEmptyIndexInInventory();
-            if (emptyIndex < 0) {
-                emptyIndex = 1;    //use the crafting area
-            }
+			if (emptyIndex < 0) {
+				emptyIndex = 1;    //use the crafting area
+			}
 
 			LeftClickInventorySlot(emptyIndex);
 		}
@@ -326,8 +328,7 @@ public class InventoryUtil {
 			return true;
 		}
 		//4: src = item, dest = item
-		else// if(srcStack != null && destStack != null)
-		{
+		else {// if(srcStack != null && destStack != null)
 	    	/*if(srcStack.itemID == destStack.itemID)
 	    	{
 	    		//if the 2 items are the same, do nothing
@@ -377,16 +378,16 @@ public class InventoryUtil {
 			//if we can't deposit this item being held in the cursor, put it down in our inventory
 			if (!QuickDeposit.IsAllowedToBeDepositedInContainer(handStack)) {
 				emptyIndex = GetFirstEmptyIndexInContainerInventory();
-                if (emptyIndex < 0) { return false; }
-                else { LeftClickContainerSlot(emptyIndex); }
+				if (emptyIndex < 0) { return false; }
+				else { LeftClickContainerSlot(emptyIndex); }
 			}
 			//if we can deposit this item being held in the cursor, put it in the chest
 			else {
 				emptyIndex = GetFirstItemIndexInContainer(handStack);
 				if (emptyIndex < 0) {
 					emptyIndex = GetFirstEmptyIndexInContainerInventory();
-                    if (emptyIndex < 0) { return false; }
-                    else { LeftClickContainerSlot(emptyIndex); }
+					if (emptyIndex < 0) { return false; }
+					else { LeftClickContainerSlot(emptyIndex); }
 				}
 				else {
 					LeftClickContainerSlot(emptyIndex);
@@ -395,7 +396,7 @@ public class InventoryUtil {
 					handStack = mc.player.inventory.getItemStack();
 					while (!handStack.isEmpty()) {
 						emptyIndex = GetFirstEmptyIndexInContainer(handStack);
-                        if (emptyIndex < 0) { return false; }
+						if (emptyIndex < 0) { return false; }
 
 						LeftClickContainerSlot(emptyIndex);
 						handStack = mc.player.inventory.getItemStack();
@@ -413,12 +414,12 @@ public class InventoryUtil {
 		int numChestSlots = numDisplayedSlots - numInventorySlots;
 
 		//some 3rd party mods have containers with no slots (such as Pixelmon)
-        if (numChestSlots <= 0) { return false; }
+		if (numChestSlots <= 0) { return false; }
 
 		int iStart = numChestSlots;
 		int iEnd = numDisplayedSlots;
 
-        if (ignoreItemsInHotbar) { iEnd -= 9; }
+		if (ignoreItemsInHotbar) { iEnd -= 9; }
 
 		//iterate over the player's inventory and deposit items as needed
 		for (int i = iStart; i < iEnd; i++) {
@@ -438,8 +439,8 @@ public class InventoryUtil {
 					int emptyIndex = GetFirstEmptyIndexInContainer(itemStack);
 
 					//if an empty spot exists in the chest
-                    if (emptyIndex >= 0) { DepositItemInContainer(i, emptyIndex); }
-                    else { return true; }
+					if (emptyIndex >= 0) { DepositItemInContainer(i, emptyIndex); }
+					else { return true; }
 				}
 			}
 		}
@@ -468,20 +469,20 @@ public class InventoryUtil {
 		//double chest = 54 big
 		int numContainerSlots = numDisplayedSlots - numInventorySlots;
 
-        if (numContainerSlots == 53 - numInventorySlots && (srcIndex < 18 || srcIndex > 53)) { return false; }
-        if (numContainerSlots == 63 - numInventorySlots && (srcIndex < 28 || srcIndex > 63)) { return false; }
-        if (numContainerSlots == 90 - numInventorySlots && (srcIndex < 55 || srcIndex > 90)) { return false; }
+		if (numContainerSlots == 53 - numInventorySlots && (srcIndex < 18 || srcIndex > 53)) { return false; }
+		if (numContainerSlots == 63 - numInventorySlots && (srcIndex < 28 || srcIndex > 63)) { return false; }
+		if (numContainerSlots == 90 - numInventorySlots && (srcIndex < 55 || srcIndex > 90)) { return false; }
 
-        if (destIndex < 0) { return false; }
-        if (numContainerSlots == 53 - numInventorySlots && (destIndex < 0 || destIndex > 17)) { return false; }
-        if (numContainerSlots == 63 - numInventorySlots && (destIndex < 0 || destIndex > 27)) { return false; }
-        if (numContainerSlots == 90 - numInventorySlots && (destIndex < 0 || destIndex > 54)) { return false; }
+		if (destIndex < 0) { return false; }
+		if (numContainerSlots == 53 - numInventorySlots && (destIndex < 0 || destIndex > 17)) { return false; }
+		if (numContainerSlots == 63 - numInventorySlots && (destIndex < 0 || destIndex > 27)) { return false; }
+		if (numContainerSlots == 90 - numInventorySlots && (destIndex < 0 || destIndex > 54)) { return false; }
 
 		ItemStack srcStack = mc.player.openContainer.inventorySlots.get(srcIndex).getStack();
 		ItemStack destStack = mc.player.openContainer.inventorySlots.get(destIndex).getStack();
 
 
-        if (!QuickDeposit.IsAllowedToBeDepositedInContainer(srcStack)) { return true; }
+		if (!QuickDeposit.IsAllowedToBeDepositedInContainer(srcStack)) { return true; }
 
 
 		//there are 4 cases we need to handle:
@@ -500,15 +501,13 @@ public class InventoryUtil {
 			return true;
 		}
 		//4: src = item, dest = item
-		else// if(srcStack != null && destStack != null)
-		{
+		else {// if(srcStack != null && destStack != null)
 			//if the 2 items are of different item types
 			if (!areItemStacksEqualIgnoreAmount(srcStack, destStack)) {
 				return false;
 			}
 			//if the 2 items are the same, stack as much as we can into the spot then place the leftovers in a new slot
-			else// if(srcStack.itemID == destStack.itemID)
-			{
+			else {// if(srcStack.itemID == destStack.itemID)
 				//there are 3 cases we need to handle:
 				//1: dest is a full stack
 				if (destStack.getCount() == destStack.getMaxStackSize()) {
@@ -582,7 +581,7 @@ public class InventoryUtil {
 	 */
 	@SuppressWarnings("DuplicatedCode")
 	public static boolean DepositAllMatchingItemsInMerchant() {
-        if (!(mc.currentScreen instanceof MerchantScreen)) { return false; }
+		if (!(mc.currentScreen instanceof MerchantScreen)) { return false; }
 
 		//villager container = 39 big
 		//slot 0 = left buy slot
@@ -598,7 +597,7 @@ public class InventoryUtil {
 		MerchantScreen guiMerchant = ((MerchantScreen) mc.currentScreen);
 		MerchantOffers merchantRecipeList = guiMerchant.getContainer().func_217051_h();
 
-        if (merchantRecipeList == null || merchantRecipeList.isEmpty()) { return false; }
+		if (merchantRecipeList == null || merchantRecipeList.isEmpty()) { return false; }
 
 		//field_70473_e used to work in 1.6.4
 		//field_147041_z works in 1.7.2, and appears to still be the same for 1.14.4
@@ -644,8 +643,8 @@ public class InventoryUtil {
 
 	@SuppressWarnings({"ConstantConditions", "DuplicatedCode"})
 	private static boolean DepositItemInMerchant(int srcIndex, int destIndex) {
-        if (destIndex < 0 || destIndex > 1) { return false; }
-        if (srcIndex < 3 || srcIndex > 39) { return false; }
+		if (destIndex < 0 || destIndex > 1) { return false; }
+		if (srcIndex < 3 || srcIndex > 39) { return false; }
 
 		ItemStack srcStack = mc.player.openContainer.inventorySlots.get(srcIndex).getStack();
 		ItemStack destStack = mc.player.openContainer.inventorySlots.get(destIndex).getStack();
@@ -690,7 +689,7 @@ public class InventoryUtil {
 	 */
 	@SuppressWarnings("DuplicatedCode")
 	public static boolean DepositAllMatchingItemsInFurance() {
-        if (!(mc.currentScreen instanceof FurnaceScreen)) { return false; }
+		if (!(mc.currentScreen instanceof FurnaceScreen)) { return false; }
 
 		//furance container = 39 big
 		//slot 0 = input
@@ -739,10 +738,10 @@ public class InventoryUtil {
 		//take the item from the output slot and put it in our inventory
 		if (!outputStack.isEmpty()) {
 			int openSlot = GetFirstEmptyIndexInContainerInventory(outputStack);
-            if (openSlot > 0) {
-                DepositItemInFurance(
-                    2, openSlot);    //'deposit' it from the output slot into an empty slot in our inventory
-            }
+			if (openSlot > 0) {
+				DepositItemInFurance(
+					2, openSlot);    //'deposit' it from the output slot into an empty slot in our inventory
+			}
 		}
 
 		return true;
@@ -788,7 +787,7 @@ public class InventoryUtil {
 
 					do {
 						int openSlot = GetFirstEmptyIndexInContainerInventory(srcStack);
-                        if (openSlot < 0) { break; }
+						if (openSlot < 0) { break; }
 
 						LeftClickContainerSlot(openSlot);
 						handStack = mc.player.inventory.getItemStack();
@@ -808,7 +807,7 @@ public class InventoryUtil {
 	 */
 	@SuppressWarnings("DuplicatedCode")
 	public static boolean DepositAllMatchingItemsInBrewingStand() {
-        if (!(mc.currentScreen instanceof BrewingStandScreen)) { return false; }
+		if (!(mc.currentScreen instanceof BrewingStandScreen)) { return false; }
 
 		//brewing stand container = 40 big
 		//slot 0 = input
@@ -891,8 +890,8 @@ public class InventoryUtil {
 
 	@SuppressWarnings({"ConstantConditions", "DuplicatedCode"})
 	private static boolean DepositItemInBrewingStand(int srcIndex, int destIndex) {
-        if (destIndex < 0 || destIndex > 3) { return false; }
-        if (srcIndex < 5 || srcIndex > 39) { return false; }
+		if (destIndex < 0 || destIndex > 3) { return false; }
+		if (srcIndex < 5 || srcIndex > 39) { return false; }
 
 		ItemStack srcStack = mc.player.openContainer.inventorySlots.get(srcIndex).getStack();
 		ItemStack destStack = mc.player.openContainer.inventorySlots.get(destIndex).getStack();
@@ -938,7 +937,7 @@ public class InventoryUtil {
 	 * @param iEnd   index in the inventory to stop looking
 	 * @return 9-44, -1 if not found
 	 */
-	private static int GetItemIndex(Object object, int iStart, int iEnd) {
+	private static int GetItemIndex(Object object, int iStart, int iEnd, Tag... tags) {
 		List inventorySlots = mc.player.container.inventorySlots;   //???:think this one might actually be inventory.mainInventory
 
 		//iterate over the main inventory (9~44)
@@ -960,13 +959,16 @@ public class InventoryUtil {
 						return i;
 					}
 				}
-				else if ((object instanceof Block
-				          && Block.getBlockFromItem(itemStack.getItem()) == object)) {
+				else if ((object instanceof Block && Block.getBlockFromItem(itemStack.getItem()) == object)) {
 					return i;
 				}
-				else if (object instanceof Item
-				         && itemStack.getItem() == object) {
+				else if (object instanceof Item && itemStack.getItem() == object) {
 					return i;
+				}
+				else {
+					for (Tag tag : tags) {
+						if (tag.getAllElements().contains(object)) { return i; }
+					}
 				}
 			}
 		}
@@ -984,6 +986,16 @@ public class InventoryUtil {
 		return GetItemIndex(object, 9, 35);
 	}
 
+	/**
+	 * Gets the index of an item class in your inventory.
+	 *
+	 * @param object The type of item being used. E.x.: Blocks.torch, Items.ender_pearl
+	 * @param tags   In addition to matching exact types, also allow matching anything with any of these Tags
+	 * @return 9 -44, -1 if not found
+	 */
+	public static int GetItemIndexFromInventory(Object object, Tag... tags) {
+		return GetItemIndex(object, 9, 35, tags);
+	}
 
 	/**
 	 * Gets the index of an item class in your hotbar.
@@ -993,6 +1005,17 @@ public class InventoryUtil {
 	 */
 	public static int GetItemIndexFromHotbar(Object object) {
 		return GetItemIndex(object, 36, 44);
+	}
+
+	/**
+	 * Gets the index of an item class in your hotbar.
+	 *
+	 * @param object The type of item being used. E.x.: Blocks.torch, Items.ender_pearl
+	 * @param tags   In addition to matching exact types, also allow matching anything with any of these Tags
+	 * @return 36 -44, -1 if not found
+	 */
+	public static int GetItemIndexFromHotbar(Object object, Tag... tags) {
+		return GetItemIndex(object, 36, 44, tags);
 	}
 
 
@@ -1063,8 +1086,8 @@ public class InventoryUtil {
 			}
 		}
 
-        if (firstEmptyMatchingItemStackIndex != -1) { return firstEmptyMatchingItemStackIndex; }
-        else { return firstEmptyIndex; }
+		if (firstEmptyMatchingItemStackIndex != -1) { return firstEmptyMatchingItemStackIndex; }
+		else { return firstEmptyIndex; }
 	}
 
 	/**
@@ -1095,9 +1118,9 @@ public class InventoryUtil {
 		int iStart = 0;
 		int iEnd = numContainerSlots;
 
-        if (mc.currentScreen instanceof HorseInventoryScreen) {
-            iStart = 2;    //the first index is the saddle slot, second index is the armor slot
-        }
+		if (mc.currentScreen instanceof HorseInventoryScreen) {
+			iStart = 2;    //the first index is the saddle slot, second index is the armor slot
+		}
 
 		int firstEmptyIndex = -1;
 		int firstEmptyMatchingItemStackIndex = -1;
@@ -1118,8 +1141,8 @@ public class InventoryUtil {
 			}
 		}
 
-        if (firstEmptyMatchingItemStackIndex != -1) { return firstEmptyMatchingItemStackIndex; }
-        else { return firstEmptyIndex; }
+		if (firstEmptyMatchingItemStackIndex != -1) { return firstEmptyMatchingItemStackIndex; }
+		else { return firstEmptyIndex; }
 	}
 
 	/**
@@ -1140,9 +1163,9 @@ public class InventoryUtil {
 		int iStart = 0;
 		int iEnd = numContainerSlots;
 
-        if (mc.currentScreen instanceof HorseInventoryScreen) {
-            iStart = 2;    //the first index is the saddle slot, second index is the armor slot - skip these
-        }
+		if (mc.currentScreen instanceof HorseInventoryScreen) {
+			iStart = 2;    //the first index is the saddle slot, second index is the armor slot - skip these
+		}
 
 		//iterate over the chest's inventory (0,1-16,27,54)
 		for (int i = iStart; i <= iEnd - 1; i++) {
@@ -1203,7 +1226,7 @@ public class InventoryUtil {
 	 * @return 36 -44, -1 if not a valid index
 	 */
 	public static int TranslateHotbarIndexToInventoryIndex(int hotbarIndex) {
-        if (hotbarIndex < 0 || hotbarIndex > 8) { return -1; }
+		if (hotbarIndex < 0 || hotbarIndex > 8) { return -1; }
 
 		return hotbarIndex + 36;
 	}
@@ -1216,7 +1239,7 @@ public class InventoryUtil {
 	 * @return 0 -8, -1 if not a valid index
 	 */
 	public static int TranslateInventoryIndexToHotbarIndex(int inventoryIndex) {
-        if (inventoryIndex < 36 || inventoryIndex > 44) { return -1; }
+		if (inventoryIndex < 36 || inventoryIndex > 44) { return -1; }
 
 		return inventoryIndex - 36;
 	}
@@ -1249,8 +1272,8 @@ public class InventoryUtil {
 	 */
 	@SuppressWarnings("SameParameterValue")
 	private static void SendInventoryClick(int itemIndex, boolean rightClick, boolean shiftHold) {
-        if (itemIndex < 0 || itemIndex > 44)    //0-44 is the size of the players inventory
-        { return; }
+		if (itemIndex < 0 || itemIndex > 44)    //0-44 is the size of the players inventory
+		{ return; }
 
 		try {
 			mc.playerController.windowClick(
@@ -1278,8 +1301,8 @@ public class InventoryUtil {
 	 */
 	@SuppressWarnings("SameParameterValue")
 	private static void SendContainerClick(int itemIndex, boolean rightClick, boolean shiftHold) {
-        if (itemIndex < 0)    //don't check for an upper bounds in case a mod increases the size of a container past a double chest
-        { return; }
+		if (itemIndex < 0)    //don't check for an upper bounds in case a mod increases the size of a container past a double chest
+		{ return; }
 
 		try {
 			mc.playerController.windowClick(

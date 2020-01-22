@@ -4,7 +4,7 @@ import com.zyin.zyinhud.util.IAdvancingEnum;
 import com.zyin.zyinhud.util.Localization;
 
 //TODO: give this a more appropriate name
-//TODO: ?add setter methods for all modes so that the config code can control them without this class importing from it?
+//      ?add setter methods for all modes so that the config code can control them without this class importing from it?
 public class ZyinHUDModuleModes {
 	//module imports from this class and the config class
 	//  where possible, sets its internal default values according to their equivalent config
@@ -12,12 +12,11 @@ public class ZyinHUDModuleModes {
 	//config imports from this class, NEVER MODULES
 	//this class NEVER imports from modules or the config class
 
-	//TODO: ToggleEnabled FOR EVERYTHING
 	//Can probably replace enums that are simply ON and OFF with regular booleans
 
 	public static class AnimalInfoOptions {
 		public static final boolean defaultEnabled = true;
-		public static AnimalInfoModes animalInfoMode;   //TODO:default?
+		public static AnimalInfoModes animalInfoMode;
 		/* How far away (in blocks) will the overlay by visible from by default*/
 		public static final int defaultViewDistanceCutoff = 8;
 		/* Do you REALLY want a bunch of nonsense in your face when you're in the same block space?

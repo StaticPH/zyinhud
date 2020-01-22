@@ -230,8 +230,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 		double y = mc.player.lastTickPosY + (mc.player.posY - mc.player.lastTickPosY) * partialTickTime;
 		double z = mc.player.lastTickPosZ + (mc.player.posZ - mc.player.lastTickPosZ) * partialTickTime;
 
-		//_CHECK: Is there an impact if all the int casts are removed, given that a double-only constructor for BlockPos is available?
-		playerPosition = new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
+		playerPosition = new BlockPos(x, y, z);
 
 		if (safeCalculatorThread == null || !safeCalculatorThread.isAlive()) {
 			if (unsafePositions != null) { unsafePositions.clear(); }

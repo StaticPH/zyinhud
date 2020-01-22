@@ -31,8 +31,6 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	 */
 	public static boolean Enabled = ZyinHUDConfig.EnableWeaponSwap.get();
 
-	//TODO
-
 	/**
 	 * Toggles this module on or off
 	 *
