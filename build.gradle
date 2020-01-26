@@ -14,8 +14,8 @@ apply plugin: 'eclipse'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
-group = mod_group
-archivesBaseName = 'ZyinsHUD-1.14.2'
+//group = mod_group
+archivesBaseName = 'ZyinsHUD'
 
 version = "${minecraft_version}-${mod_version}"
 /** If on a build server, append the build number to the version string **/
@@ -64,6 +64,23 @@ minecraft {
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+        data {
+            workingDirectory project.file('run')
+
+            // Recommended logging data for a userdev environment
+            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+
+            // Recommended logging level for the console
+            property 'forge.logging.console.level', 'debug'
+
+            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
 
             mods {
                 examplemod {

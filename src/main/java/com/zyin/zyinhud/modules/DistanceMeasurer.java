@@ -72,7 +72,7 @@ public class DistanceMeasurer extends ZyinHUDModuleBase {
 //        RayTraceResult objectMouseOver = mc.player.rayTrace(300.0d, 1.0f, RayTraceFluidMode.ALWAYS);
 		// If the third parameter of "func_213324_a" here is true, the raytrace will use RayTraceContext.FluidMode.ANY
 		// see DebugOverlayGui:rayTraceFluid
-		RayTraceResult objectMouseOver = mc.player.func_213324_a(300.0d, 1.0f, true);
+		RayTraceResult objectMouseOver = mc.player.pick(300.0d, 1.0f, true);
 
 		if (objectMouseOver != null && objectMouseOver.getType() == RayTraceResult.Type.BLOCK) {
 			if (Mode == DistanceMeasurerOptions.DistanceMeasurerModes.SIMPLE) {

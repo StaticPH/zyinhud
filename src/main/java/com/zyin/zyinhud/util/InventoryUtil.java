@@ -417,9 +417,7 @@ public class InventoryUtil {
 		if (numChestSlots <= 0) { return false; }
 
 		int iStart = numChestSlots;
-		int iEnd = numDisplayedSlots;
-
-		if (ignoreItemsInHotbar) { iEnd -= 9; }
+		int iEnd = ignoreItemsInHotbar? numDisplayedSlots-9:numDisplayedSlots;
 
 		//iterate over the player's inventory and deposit items as needed
 		for (int i = iStart; i < iEnd; i++) {
@@ -595,7 +593,7 @@ public class InventoryUtil {
 		//_CHECK that the guiMerchant and merchantRecipeList work
 
 		MerchantScreen guiMerchant = ((MerchantScreen) mc.currentScreen);
-		MerchantOffers merchantRecipeList = guiMerchant.getContainer().func_217051_h();
+		MerchantOffers merchantRecipeList = guiMerchant.getContainer().getOffers();
 
 		if (merchantRecipeList == null || merchantRecipeList.isEmpty()) { return false; }
 
@@ -605,8 +603,8 @@ public class InventoryUtil {
 			MerchantScreen.class, guiMerchant, "selectedMerchantRecipe", "field_147041_z");
 		MerchantOffer merchantRecipe = merchantRecipeList.get(currentRecipeIndex);
 
-		ItemStack buyingItemStack1 = merchantRecipe.func_222218_a(); // Get first item the trade requires
-		ItemStack buyingItemStack2 = merchantRecipe.func_222202_c(); // Get second item the trade requires
+		ItemStack buyingItemStack1 = merchantRecipe.getBuyingStackFirst(); // Get first item the trade requires
+		ItemStack buyingItemStack2 = merchantRecipe.getBuyingStackSecond(); // Get second item the trade requires
 
 		//check if we have an item in our cursor
 		ItemStack handStack = mc.player.inventory.getItemStack();
