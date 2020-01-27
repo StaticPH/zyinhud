@@ -90,9 +90,10 @@ public class HUDEntityTrackerHelper {
 			GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
 
 			// Best guess at a way to iterate through all loaded entities
-			// if mapped name doesnt work, try field_217429_b
+			// if unmapped name doesnt work, try entitiesById
+			//_CHECK: ClientWorld or ServerWorld?
 			Int2ObjectMap<Entity> entitiesById =
-				ObfuscationReflectionHelper.getPrivateValue(ClientWorld.class, mc.world, "entitiesById");
+				ObfuscationReflectionHelper.getPrivateValue(ClientWorld.class, mc.world, "field_217429_b");
 			if (entitiesById == null) { return; }
 
 			//iterate over all the loaded Entity objects and find just the entities we are tracking

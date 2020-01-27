@@ -39,6 +39,7 @@ public class RenderEntityTrackerHelper {
 		if ((AnimalInfo.Mode == AnimalInfoModes.ON) && mc.isGameFocused()) {
 			// Best guess at a way to iterate through all loaded entities
 			// if mapped name doesnt work, try field_217429_b
+			//_CHECK: ClientWorld or ServerWorld?
 			Int2ObjectMap<Entity> entitiesById =
 				ObfuscationReflectionHelper.getPrivateValue(ClientWorld.class, mc.world, "entitiesById");
 

@@ -235,8 +235,7 @@ public class ZyinHUDRenderer {
 	public static void RenderFloatingText(
 		String text, float x, float y, float z, int color, boolean renderBlackBackground, float partialTickTime
 	) {
-		String[] textArray = {text};
-		RenderFloatingText(textArray, x, y, z, color, renderBlackBackground, partialTickTime);
+		RenderFloatingText(new String[]{text}, x, y, z, color, renderBlackBackground, partialTickTime);
 	}
 
 	/**

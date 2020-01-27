@@ -125,7 +125,7 @@ public class ZyinHUD {
 	 */
 	@SubscribeEvent
 	public void serverStarting(FMLServerStartingEvent event) {
-		//THIS EVENT IS NOT FIRED ON SMP SERVERS
+	//FIXME: Perhaps command registration should be moved to the player login event PlayerLoggedInEvent...or is it the login event LoggedInEvent? need to find out the difference
 		CommandFps.register(event.getCommandDispatcher());
 
 //        CommandZyinHUDOptions.register(event.getCommandDispatcher());

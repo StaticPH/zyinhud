@@ -157,7 +157,7 @@ public class ZyinHUDKeyHandlers {
 	 */
 	@SubscribeEvent
 	public void MouseEvent(InputEvent event) {
-		logger.debug("Mouse event triggered");
+//		logger.debug("Mouse event triggered");
 		if ((event instanceof MouseScrollEvent) && ((MouseScrollEvent) event).getScrollDelta() != 0) {
 			if (KEY_BINDINGS[11].isKeyDown()) { ItemSelectorKeyHandler.OnMouseWheelScroll((MouseScrollEvent) event); }
 		}

@@ -50,9 +50,9 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 		RepairContainer anvil = guiRepair.getContainer();
 		IInventory inputSlots = ZyinHUDUtil.GetFieldByReflection(
 			RepairContainer.class, anvil, "inputSlots", "field_82853_g"
-		);
+		); //Not sure if this should/can be saved in a static final field...
 
-		//_CHECK: verify that reflection is not in fact needed for the RepairContainer
+		//_CHECK: verify that reflection is not in fact needed for the RepairContainer Object itself
 //		RepairContainer anvil = ZyinHUDUtil.GetFieldByReflection(AnvilScreen.class, guiRepair, "anvil", "field_147002_h"); // WAS field_147092_v in ContainerScreen.class
 //    	IInventory inputSlots = ZyinHUDUtil.GetFieldByReflection(RepairContainer.class, anvil, "inputSlots", "field_82853_g");
 

@@ -43,6 +43,7 @@ public class Clock extends ZyinHUDModuleBase {
 	//mc.world.isDaytime() always returns true on client, so it cant be used to determine bedtime
 	private static final long bedTime = 12540;
 
+	//TODO: consider adjusting time display to be constant if mc.gameSettings.doDaylightCycle == false
 	/**
 	 * Calculates time
 	 *

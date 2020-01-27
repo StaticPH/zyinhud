@@ -23,6 +23,7 @@ import net.minecraft.util.math.BlockRayTraceResult;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Predicate;
 
 import static net.minecraftforge.items.ItemHandlerHelper.canItemStacksStack;
 
@@ -926,6 +927,25 @@ public class InventoryUtil {
 		}
 	}
 
+	/**
+	 * Gets the index of an item class.
+	 *
+	 * @param object   The type of item being used. E.x.: Blocks.torch, Items.ender_pearl, or the BlockPos of a block
+	 * @param iStart   index in the inventory to start looking
+	 * @param iEnd     index in the inventory to stop looking
+	 * @param matchTo  only match items for which this Predicate holds true.
+	 * @return 9-44, -1 if not found
+	 */
+	private static int GetItemIndex(Object object, int iStart, int iEnd, Predicate<Item> matchTo) {
+		//???:think this one might actually be inventory.mainInventory
+		List<Slot> inventorySlots = mc.player.container.inventorySlots.subList(iStart, iEnd);
+
+		//iterate over the main inventory (9~44)
+		for (Slot slot : inventorySlots) {
+			if (matchTo.test(slot.getStack().getItem())) {return slot.getSlotIndex();}
+		}
+		return -1;
+	}
 
 	/**
 	 * Gets the index of an item class.
@@ -933,20 +953,22 @@ public class InventoryUtil {
 	 * @param object The type of item being used. E.x.: Blocks.torch, Items.ender_pearl, or the BlockPos of a block
 	 * @param iStart index in the inventory to start looking
 	 * @param iEnd   index in the inventory to stop looking
+	 * @param tags   Optionally also accept items matching any of these Tags
 	 * @return 9-44, -1 if not found
 	 */
 	private static int GetItemIndex(Object object, int iStart, int iEnd, Tag... tags) {
-		List inventorySlots = mc.player.container.inventorySlots;   //???:think this one might actually be inventory.mainInventory
+		List<Slot> inventorySlots = mc.player.container.inventorySlots;   //???:think this one might actually be inventory.mainInventory
 
 		//iterate over the main inventory (9~44)
 		for (int i = iStart; i <= iEnd; i++) {
-			Slot slot = (Slot) inventorySlots.get(i);
+			Slot slot = inventorySlots.get(i);
 			ItemStack itemStack = slot.getStack();
 			if (!itemStack.isEmpty()) {
+				Item item = itemStack.getItem();
 				if (object instanceof BlockPos) {
 					Block blockToFind = ZyinHUDUtil.GetBlock((BlockPos) object);
 
-					if (Block.getBlockFromItem(itemStack.getItem()) == blockToFind) {
+					if (Block.getBlockFromItem(item) == blockToFind) {
 //                        int blockToFindDamage = getDamageValue(mc.world, (BlockPos) object);
 //                        int inventoryBlockDamage = itemStack.getDamage();
 //
@@ -957,10 +979,10 @@ public class InventoryUtil {
 						return i;
 					}
 				}
-				else if ((object instanceof Block && Block.getBlockFromItem(itemStack.getItem()) == object)) {
+				else if ((object instanceof Block && Block.getBlockFromItem(item) == object)) {
 					return i;
 				}
-				else if (object instanceof Item && itemStack.getItem() == object) {
+				else if (object instanceof Item && item == object) {
 					return i;
 				}
 				else {
@@ -996,6 +1018,17 @@ public class InventoryUtil {
 	}
 
 	/**
+	 * Gets the index of an item class in your inventory.
+	 *
+	 * @param object The type of item being used. E.x.: Blocks.torch, Items.ender_pearl
+	 * @param matchTo  only match items for which this Predicate holds true.
+	 * @return 9 -44, -1 if not found
+	 */
+	public static int GetItemIndexFromInventory(Object object, Predicate<Item> matchTo) {
+		return GetItemIndex(object, 9, 35, matchTo);
+	}
+
+	/**
 	 * Gets the index of an item class in your hotbar.
 	 *
 	 * @param object The type of item being used. E.x.: Blocks.torch, Items.ender_pearl
@@ -1014,6 +1047,16 @@ public class InventoryUtil {
 	 */
 	public static int GetItemIndexFromHotbar(Object object, Tag... tags) {
 		return GetItemIndex(object, 36, 44, tags);
+	}
+	/**
+	 * Gets the index of an item class in your hotbar.
+	 *
+	 * @param object The type of item being used. E.x.: Blocks.torch, Items.ender_pearl
+	 * @param matchTo  only match items for which this Predicate holds true.
+	 * @return 36 -44, -1 if not found
+	 */
+	public static int GetItemIndexFromHotbar(Object object, Predicate<Item> matchTo) {
+		return GetItemIndex(object, 36, 44, matchTo);
 	}
 
 

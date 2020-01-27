@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+	"minecraft:torch"
+  ],
+  "optional": [
+	"druidcraft:fiery_torch",
+	"silentgear:stone_torch",
+	"tconstruct:stone_torch"
+  ]
+}

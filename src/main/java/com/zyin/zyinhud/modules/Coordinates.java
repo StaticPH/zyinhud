@@ -126,7 +126,7 @@ public class Coordinates extends ZyinHUDModuleBase {
 
 			TextFieldWidget inputField = ZyinHUDUtil.GetFieldByReflection(
 				ChatScreen.class, (ChatScreen) mc.currentScreen, "inputField", "field_146415_a"
-			);
+			);//Not sure if this should/can be saved in a static final field...
 
 			if (inputField != null) { inputField.writeText(coordinateString); }
 		}

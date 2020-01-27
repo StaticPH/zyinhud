@@ -13,6 +13,7 @@ public class QuickDepositKeyHandler implements ZyinHUDKeyHandlerBase {
 	private static boolean keyDown = false;
 
 	//_CHECK: having set the conflict context in ZyinHUDKeyHandlers may make the ContainerScreen check unnecessary
+	//_CHECK: KeyInputEvent might need to be replaced by one of the events from GuiScreenEvent
 	public static void Pressed(KeyInputEvent event) {
 		//don't activate if the user isn't looking at a container gui
 		if (!(mc.currentScreen instanceof ContainerScreen)) { return; }

@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.EnumGetMethod;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.*;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.config.ModConfig.Type;
 
@@ -17,6 +18,7 @@ import static net.minecraftforge.common.ForgeConfigSpec.IntValue;
 /**
  * This class is responsible for interacting with the configuration file.
  */
+@Mod.EventBusSubscriber
 public class ZyinHUDConfig {
 
 	private static ForgeConfigSpec SPEC; // Will hold the built config when done
@@ -337,6 +339,10 @@ public class ZyinHUDConfig {
 	//TODO: custom implementation of some .define* methods that allow for placement of a comment
 	// after ranges/accepted values, but before the configuration option itself.
 
+	//TODO: config option for quickdeposit not to deposit (item)"minecraft:tipped_arrow" and (item)"minecraft:spectral_arrow"
+	//			maybe I should add an option that holds a list of namespaced items(/?tags?) that should be handled the same way as regular arrows are?
+	//      add configurable lists of namespaced items(/?tags?) for quickdeposit to treat as tools, weapons, torches, or arrows
+	//          or just provide a data Tag in the zyinhud namespace for each, and let the end user deal with it?
 	private static void configure(Builder builder, Builder builder_override) {
 		// ######################################################################
 		// Animal(Mainly Horse) Info Module

@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [],
+  "optional": [
+	"torchbandolier:torch_bandolier",
+	"xreliquary:sojourner_staff"
+  ]
+}

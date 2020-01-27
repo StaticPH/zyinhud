@@ -2,6 +2,7 @@ package com.zyin.zyinhud.modules;
 
 
 import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.helper.TagHelper.ItemLike;
 import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.ModCompatibility;
 import net.minecraft.block.Blocks;
@@ -81,12 +82,10 @@ public class TorchAid extends ZyinHUDModuleBase {
 //        }
 
 		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.BLOCK) {
-			int torchHotbarIndex = InventoryUtil.GetItemIndexFromHotbar(Blocks.TORCH, tag_TORCH, tag_TORCH_PLACER);
+			int torchHotbarIndex = InventoryUtil.GetItemIndexFromHotbar(Blocks.TORCH, ItemLike::isTorchLike);
 
 			if (torchHotbarIndex < 0) {
-				int torchInventoryIndex = InventoryUtil.GetItemIndexFromInventory(
-					Blocks.TORCH, tag_TORCH, tag_TORCH_PLACER
-				);
+				int torchInventoryIndex = InventoryUtil.GetItemIndexFromInventory(Blocks.TORCH, ItemLike::isTorchLike);
 
 				if (torchInventoryIndex >= 0) {
 					previousTorchIndex = torchInventoryIndex;

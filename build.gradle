@@ -81,6 +81,8 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
+//                '"' + rootProject.file('src/generated/resources/') + '"',
+//                '--existing', '"' + rootProject.file('src/main/resources') + '"'
 
             mods {
                 examplemod {
@@ -89,6 +91,11 @@ minecraft {
             }
         }
     }
+}
+
+// Use with commented args in minecraft.runs.data
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
 }
 
 dependencies {

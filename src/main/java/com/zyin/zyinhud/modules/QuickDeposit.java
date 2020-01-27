@@ -1,6 +1,7 @@
 package com.zyin.zyinhud.modules;
 
 import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.helper.TagHelper.ItemLike;
 import net.minecraft.client.gui.screen.EnchantmentScreen;
 import net.minecraft.client.gui.screen.inventory.*;
 import net.minecraft.client.gui.screen.inventory.BeaconScreen;
@@ -27,10 +28,11 @@ import net.minecraft.tags.ItemTags;
  * Quick Deposit allows you to inteligently deposit every item in your inventory quickly into a chest.
  */
 public class QuickDeposit extends ZyinHUDModuleBase {
+	//TODO: Add blacklist option(s) for additional items
+	//      consider expanding "arrows" to "ammunition" in general?
 	/**
 	 * Enables/Disables this module
 	 */
-	//TODO: Add blacklist option for additional items
 	public static boolean Enabled = ZyinHUDConfig.EnableQuickDeposit.get();
 	public static boolean BlacklistClockCompass = ZyinHUDConfig.BlacklistClockCompass.get();
 	public static boolean BlacklistWeapons = ZyinHUDConfig.BlacklistWeapons.get();
@@ -56,7 +58,8 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	}
 
 	/**
-	 * Deposits all items in your inventory into a chest, if the item exists in the chest
+	 * Deposits all items in your inventory into a chest.
+	 * Can optionally be limited to depositing items that are already found in the inventory.
 	 *
 	 * @param onlyDepositMatchingItems only deposit an item if another one exists in the chest already
 	 */
@@ -64,10 +67,12 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 		if (!(mc.currentScreen instanceof ContainerScreen) || !QuickDeposit.Enabled) { return; }
 
 		try {
-			if (mc.currentScreen instanceof BeaconScreen ||
+			if (
+				mc.currentScreen instanceof BeaconScreen ||
 			    mc.currentScreen instanceof CraftingScreen ||
 			    mc.currentScreen instanceof EnchantmentScreen ||
-			    mc.currentScreen instanceof AnvilScreen) {
+			    mc.currentScreen instanceof AnvilScreen
+			) {
 				//we don't support these
 				return;
 			}
@@ -101,28 +106,14 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 * @param itemStack the item stack
 	 * @return true if it is allowed to be deposited
 	 */
-	@SuppressWarnings({"BooleanMethodIsAlwaysInverted", "deprecation"})
+	@SuppressWarnings({"BooleanMethodIsAlwaysInverted"})
 	public static boolean IsAllowedToBeDepositedInContainer(ItemStack itemStack) {
-		//TODO: figure out what the heck Forge intends me to use instead of Item.getItemFromBlock
-		Item item = itemStack.getItem(); // no need to call this for every comparison; just once will do
+		Item item = itemStack.getItem(); // no need to call this for every comparison; just once per item will do
 		return !itemStack.isEmpty() &&
-		       !(BlacklistTorch &&
-		         (item == Item.getItemFromBlock(Blocks.TORCH) ||
-		         tag_TORCH.contains(item) || tag_TORCH_PLACER.contains(item))
-		       ) &&
-		       (
-			       !(BlacklistTools && item instanceof ToolItem) &&
-			       !(item instanceof HoeItem) &&
-			       !(item instanceof ShearsItem) &&
-			       !ModCompatibility.TConstruct.IsTConstructHarvestTool(item)
-		       ) &&
-		       (
-			       !(BlacklistWeapons && item instanceof SwordItem) &&
-			       !(item instanceof BowItem)
-		       ) &&
-		       !(BlacklistArrow &&
-		         (item == Items.ARROW || ItemTags.ARROWS.contains(item))
-		       ) &&
+		       !(BlacklistTorch && ItemLike.isTorchLike(item)) &&
+		       !(BlacklistTools && ItemLike.isToolLike(item)) &&
+		       !(BlacklistWeapons && (item instanceof SwordItem || item instanceof BowItem)) &&
+		       !(BlacklistArrow && ItemLike.isArrowLike(item)) &&
 		       !(BlacklistEnderPearl && item == Items.ENDER_PEARL) &&
 		       !(BlacklistWaterBucket && item == Items.WATER_BUCKET) &&
 		       !(BlacklistFood && item.isFood()) && // item == Items.CAKE)) ||

@@ -197,11 +197,14 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 					int y = 2 + height * i + 144 + height + height;
 					AbstractGui.fill(1, y - 1, 2 + width + 1, y + height - 1, -0xa9AFAFB0);
 					mc.fontRenderer.drawString(s, 2, y, 0xE0E0E0);
-				}
+				} //FIXME: currently renders behind other debug text
 			}
 		}
 	}
 
+	//FIXME? May need to include a check here to prevent rendering through blocks
+	// see how Neat does it https://github.com/Vazkii/Neat/blob/master/src/main/java/vazkii/neat/HealthBarRenderer.java#L98
+	//FIXME: currently is comparing the player to AgeableEntity xD we want to do everything EXCEPT players
 	/**
 	 * Renders information about an entity into the game world.
 	 *
