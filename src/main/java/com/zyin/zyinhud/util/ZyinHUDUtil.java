@@ -21,15 +21,19 @@ import net.minecraft.block.BedBlock;
 import net.minecraft.block.CakeBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * General utility class for ZyinHUD.
@@ -38,8 +42,12 @@ public class ZyinHUDUtil {
 	protected static Minecraft mc = Minecraft.getInstance();
 	protected static final ItemRenderer itemRenderer = mc.getItemRenderer();
 	protected static final TextureManager textureManager = mc.getTextureManager();
-	private static final Method itemUseMethod =
-		ObfuscationReflectionHelper.findMethod(Minecraft.class, "func_147121_ag"); // the private method: rightClickMouse()
+	private static final Method itemUseMethod =     // the private method: rightClickMouse()
+		ObfuscationReflectionHelper.findMethod(Minecraft.class, "func_147121_ag");
+
+	public static boolean doesScreenShowHUD(Screen screen){
+		return (screen == null || screen instanceof ChatScreen);
+	}
 
 	/***
 	 * Determines if something will happen if you right click on the block the
@@ -166,7 +174,7 @@ public class ZyinHUDUtil {
 	 * @param pos the pos
 	 * @return the block
 	 */
-	@Nullable
+	@CheckForNull
 	public static Block GetBlock(BlockPos pos) {
 		BlockState blockState = GetBlockState(pos);
 		if (blockState == null) { return null; }
@@ -191,25 +199,65 @@ public class ZyinHUDUtil {
 	 * @param pos the pos
 	 * @return the block state
 	 */
-	@Nullable
+	@CheckForNull
 	public static BlockState GetBlockState(BlockPos pos) {
 		if (mc.world != null) { return mc.world.getBlockState(pos); }
 		else { return null; }
 	}
 
-	public static String bindingToKeyName(KeyBinding key) {
+	@Nonnull
+	public static String bindingToKeyName(@Nonnull KeyBinding key) {
 		String s = key.getTranslationKey();
 		return s.substring(1 + s.lastIndexOf('.')).toUpperCase();
 	}
 
-	public static void useItem(){
+	public static void useItem() {
 		try { itemUseMethod.invoke(mc); }
 		catch (IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}
 
-	// Because lwjgl3 doesnt provide glu anymore, we're just going to have to provide the function we needed ourselves
+	public static <T> boolean objectEqualsAnyOf(Object object, T[] possibilities){
+		for (T thing : possibilities){
+			if (object.equals(thing)){ return true; }
+		}
+		return false;
+	}
+
+	/**
+	 * Extremely minimal Object for holding a <tt>double[]</tt> that must always contain exactly 3 values
+	 * The only available methods are the static <tt>create</tt> method, whose parameters cannot be null,
+	 * and the <tt>get</tt> method, which returns the internal double[].
+	 * This class is totally unnecessary, but I wanted to do it this way, so I did.
+	 */
+	@ParametersAreNonnullByDefault
+	public static final class Array3d {
+		@Nonnull
+		private final double[] array;
+
+		private Array3d(double a, double b, double c) {
+			this.array = new double[]{a, b, c};
+		}
+
+		/**
+		 * Creates and returns a new Array3d instance
+		 *
+		 * @return the new Array3d instance
+		 */
+		@Nonnull
+		public static Array3d create(double a, double b, double c) {
+			return new Array3d(a, b, c);
+		}
+
+		/**
+		 * @return the internal double[]
+		 */
+		public double[] get() {return this.array;}
+	}
+
+	// Because lwjgl3 doesnt provide glu anymore, we're just going to have to provide the functions we needed ourselves,
+	// along with some wrapper calls for convenience
 	public static class ProjectionHelper {
 		private static final float[] in = new float[4];
 		private static final float[] out = new float[4];
@@ -275,5 +323,28 @@ public class ZyinHUDUtil {
 
 			return true;
 		}
+
+		public static boolean mapTargetCoordsToWindowCoords(
+			@Nonnull Array3d coords,
+			FloatBuffer modelMatrix, FloatBuffer projMatrix,
+			IntBuffer viewport, FloatBuffer win_pos
+		) {
+			return mapTargetCoordsToWindowCoords(
+				(float) coords.array[0], (float) coords.array[1], (float) coords.array[2],
+				modelMatrix, projMatrix, viewport, win_pos
+			);
+		}
+
+		public static boolean mapTargetVecToWindowCoords(
+			@Nonnull Vec3d targetVec,
+			FloatBuffer modelMatrix, FloatBuffer projMatrix,
+			IntBuffer viewport, FloatBuffer win_pos
+		) {
+			return mapTargetCoordsToWindowCoords(
+				(float) targetVec.x, (float) targetVec.y, (float) targetVec.z,
+				modelMatrix, projMatrix, viewport, win_pos
+			);
+		}
 	}
+
 }

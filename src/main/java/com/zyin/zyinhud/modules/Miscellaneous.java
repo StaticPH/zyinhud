@@ -31,6 +31,7 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	public void GuiOpenEvent(GuiOpenEvent event) {
 		if (UseQuickPlaceSign && event.getGui() instanceof EditSignScreen && mc.player.isSneaking()) {
 			event.setCanceled(true);
+			event.getGui().onClose();
 		}
 	}
 

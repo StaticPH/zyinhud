@@ -115,8 +115,10 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	 */
 	private static boolean AdjustSlot(int direction) {
 		if (!mc.isSingleplayer()) {
-			if (!currentInventory.get(currentHotbarSlot).isEmpty() && currentInventory.get(
-				currentHotbarSlot).isEnchanted()) {
+			if (
+				!currentInventory.get(currentHotbarSlot).isEmpty() &&
+				currentInventory.get(currentHotbarSlot).isEnchanted()
+			) {
 				ZyinHUDRenderer.DisplayNotification(Localization.get("itemselector.error.enchant"));
 				return false;
 			}

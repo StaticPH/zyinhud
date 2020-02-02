@@ -4,12 +4,13 @@ package com.zyin.zyinhud.modules;
 import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.helper.TagHelper.ItemLike;
 import com.zyin.zyinhud.util.InventoryUtil;
-import com.zyin.zyinhud.util.ModCompatibility;
+//import com.zyin.zyinhud.util.ModCompatibility;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.ToolItem;
+//import net.minecraft.item.ToolItem;
 import net.minecraft.util.math.RayTraceResult;
 
+import static com.zyin.zyinhud.helper.TagHelper.ItemLike.canItemPlaceTorches;
 import static com.zyin.zyinhud.util.ZyinHUDUtil.useItem;
 
 /**
@@ -63,10 +64,7 @@ public class TorchAid extends ZyinHUDModuleBase {
 		if (mc.currentScreen == null && mc.mouseHelper.isMouseGrabbed()) {
 			ItemStack currentItemStack = mc.player.getHeldItemMainhand();
 			if (currentItemStack.isEmpty()) { return; }
-			else if (
-				currentItemStack.getItem() instanceof ToolItem ||
-				ModCompatibility.TConstruct.IsTConstructToolWithoutARightClickAction(currentItemStack.getItem())
-			) {
+			else if (canItemPlaceTorches(currentItemStack.getItem())) {
 				UseTorch();
 			}
 		}

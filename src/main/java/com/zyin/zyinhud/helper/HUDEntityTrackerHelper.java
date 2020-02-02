@@ -22,6 +22,8 @@ import org.lwjgl.opengl.GL11;
 
 import com.zyin.zyinhud.modules.PlayerLocator;
 
+import javax.annotation.Nonnull;
+
 /**
  * The EntityTrackerHUDHelper calculates the (x,y) position on the HUD for
  * entities in the game world.
@@ -97,19 +99,19 @@ public class HUDEntityTrackerHelper {
 			if (entitiesById == null) { return; }
 
 			//iterate over all the loaded Entity objects and find just the entities we are tracking
-			for (Entity object : entitiesById.values()) {
+			for (Entity entity : entitiesById.values()) {
 				//???: RESEMBLES https://github.com/Vazkii/Neat/blob/master/src/main/java/vazkii/neat/HealthBarRenderer.java#L105
 
 //				if (object == null) { continue; }   already covered by subsequent instanceof checks
 
 				//only track entities that we are tracking (i.e. other players/wolves/witherskeletons)
-				if (!(object instanceof RemoteClientPlayerEntity ||
-				      object instanceof WolfEntity ||
-				      object instanceof WitherSkeletonEntity)) { continue; }
+				if (!(entity instanceof RemoteClientPlayerEntity ||
+				      entity instanceof WolfEntity ||
+				      entity instanceof WitherSkeletonEntity)) { continue; }
 
-				double entityX = object.lastTickPosX + (object.posX - object.lastTickPosX) * partialTickTime;
-				double entityY = object.lastTickPosY + (object.posY - object.lastTickPosY) * partialTickTime;
-				double entityZ = object.lastTickPosZ + (object.posZ - object.lastTickPosZ) * partialTickTime;
+				double entityX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTickTime;
+				double entityY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTickTime;
+				double entityZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTickTime;
 
 				// direction to target entity
 				Vec3d toEntity = new Vec3d(entityX - meX, entityY - meY, entityZ - meZ);
@@ -120,55 +122,69 @@ public class HUDEntityTrackerHelper {
 
 				double dist = Math.sqrt(toEntity.lengthSquared());
 				toEntity = toEntity.normalize();
+				ZyinHUDUtil.Array3d coords = (lookDir.dotProduct(toEntity) <= 0.02)             ?
+				                             createDummyTargetLocation(lookDir, toEntity, dist) :
+				                             ZyinHUDUtil.Array3d.create(x, y, z);
 
-				if (lookDir.dotProduct(toEntity) <= 0.02) {
-					// angle between vectors is greater than about 89 degrees, so
-					// create a dummy target location that is 89 degrees away from look direction
-					// along the arc between look direction and direction to target entity
-
-					final double angle = 89.0 * pi / 180;
-					final double sin = Math.sin(angle);
-					final double cos = Math.cos(angle);
-
-					// vector orthogonal to look direction and direction to target entity
-					Vec3d ortho = lookDir.crossProduct(toEntity);
-					double ox = ortho.x;
-					double oy = ortho.y;
-					double oz = ortho.z;
-
-					// build a rotation matrix to rotate around a vector (ortho) by an angle (89 degrees)
-					// from http://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
-					double m00 = cos + ox * ox * (1 - cos);
-					double m01 = ox * oy * (1 - cos) - oz * sin;
-					double m02 = ox * oz * (1 - cos) + oy * sin;
-					double m10 = oy * ox * (1 - cos) + oz * sin;
-					double m11 = cos + oy * oy * (1 - cos);
-					double m12 = oy * oz * (1 - cos) - ox * sin;
-					double m20 = oz * ox * (1 - cos) - oy * sin;
-					double m21 = oz * oy * (1 - cos) + ox * sin;
-					double m22 = cos + oz * oz * (1 - cos);
-
-					// transform (multiply) look direction vector with rotation matrix and scale by distance to target entity;
-					// this produces the coordinates for the dummy target
-					x = (float) (dist * (m00 * lookDir.x + m01 * lookDir.y + m02 * lookDir.z));
-					y = (float) (dist * (m10 * lookDir.x + m11 * lookDir.y + m12 * lookDir.z));
-					z = (float) (dist * (m20 * lookDir.x + m21 * lookDir.y + m22 * lookDir.z));
-				}
+//				if (lookDir.dotProduct(toEntity) <= 0.02) {
+//					coords = createDummyTargetLocation(lookDir, toEntity, dist);
+//				}
+//				else{coords = ZyinHUDUtil.Array3d.create(x,y,z); }
 
 				FloatBuffer screenCoords = BufferUtils.createFloatBuffer(3);
 
 				modelMatrix.rewind();
 				projMatrix.rewind();
 
-				// map target's object coordinates into window coordinates
+				// map target's entity coordinates into window coordinates
 				// using world render transform matrices stored by StoreMatrices()
 				ZyinHUDUtil.ProjectionHelper.mapTargetCoordsToWindowCoords(
-					x, y, z, modelMatrix, projMatrix, viewport, screenCoords
+					coords, modelMatrix, projMatrix, viewport, screenCoords
 				);
 
-				renderHudAtScaledCoordinates(object, screenCoords);
+				renderHudAtScaledCoordinates(entity, screenCoords);
 			}
 		}
+	}
+
+	@Nonnull
+	private static ZyinHUDUtil.Array3d createDummyTargetLocation(Vec3d lookDir, Vec3d toEntity, double dist) {
+		float x;
+		float y;
+		float z;
+		ZyinHUDUtil.Array3d coords;// angle between vectors is greater than about 89 degrees, so
+		// create a dummy target location that is 89 degrees away from look direction
+		// along the arc between look direction and direction to target entity
+
+		final double angle = 89.0 * pi / 180;
+		final double sin = Math.sin(angle);
+		final double cos = Math.cos(angle);
+
+		// vector orthogonal to look direction and direction to target entity
+		Vec3d ortho = lookDir.crossProduct(toEntity);
+		double ox = ortho.x;
+		double oy = ortho.y;
+		double oz = ortho.z;
+
+		// build a rotation matrix to rotate around a vector (ortho) by an angle (89 degrees)
+		// from http://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
+		double m00 = cos + ox * ox * (1 - cos);
+		double m01 = ox * oy * (1 - cos) - oz * sin;
+		double m02 = ox * oz * (1 - cos) + oy * sin;
+		double m10 = oy * ox * (1 - cos) + oz * sin;
+		double m11 = cos + oy * oy * (1 - cos);
+		double m12 = oy * oz * (1 - cos) - ox * sin;
+		double m20 = oz * ox * (1 - cos) - oy * sin;
+		double m21 = oz * oy * (1 - cos) + ox * sin;
+		double m22 = cos + oz * oz * (1 - cos);
+
+		// transform (multiply) look direction vector with rotation matrix and scale by distance to target entity;
+		// this produces the coordinates for the dummy target
+		x = (float) (dist * (m00 * lookDir.x + m01 * lookDir.y + m02 * lookDir.z));
+		y = (float) (dist * (m10 * lookDir.x + m11 * lookDir.y + m12 * lookDir.z));
+		z = (float) (dist * (m20 * lookDir.x + m21 * lookDir.y + m22 * lookDir.z));
+		coords = ZyinHUDUtil.Array3d.create(x,y,z);
+		return coords;
 	}
 
 	private static void renderHudAtScaledCoordinates(Entity object, FloatBuffer screenCoords) {

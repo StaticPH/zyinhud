@@ -1,31 +1,25 @@
 package com.zyin.zyinhud.modules;
 
 import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.ZyinHUDSound;
 import com.zyin.zyinhud.helper.TagHelper.ItemLike;
+import com.zyin.zyinhud.util.InventoryUtil;
 import net.minecraft.client.gui.screen.EnchantmentScreen;
-import net.minecraft.client.gui.screen.inventory.*;
+import net.minecraft.client.gui.screen.inventory.AnvilScreen;
 import net.minecraft.client.gui.screen.inventory.BeaconScreen;
 import net.minecraft.client.gui.screen.inventory.BrewingStandScreen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.screen.inventory.CraftingScreen;
 import net.minecraft.client.gui.screen.inventory.FurnaceScreen;
-import net.minecraft.block.Blocks;
+import net.minecraft.client.gui.screen.inventory.MerchantScreen;
 import net.minecraft.item.BowItem;
-import net.minecraft.item.HoeItem;
-import net.minecraft.item.Items;
 import net.minecraft.item.Item;
-import net.minecraft.item.ShearsItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
-import net.minecraft.item.ToolItem;
-
-import com.zyin.zyinhud.ZyinHUDSound;
-import com.zyin.zyinhud.util.InventoryUtil;
-import com.zyin.zyinhud.util.ModCompatibility;
-import net.minecraft.tags.ItemTags;
 
 /**
- * Quick Deposit allows you to inteligently deposit every item in your inventory quickly into a chest.
+ * Quick Deposit allows you to intelligently deposit every item in your inventory quickly into a chest.
  */
 public class QuickDeposit extends ZyinHUDModuleBase {
 	//TODO: Add blacklist option(s) for additional items

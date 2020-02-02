@@ -199,7 +199,7 @@ public class ZyinHUDKeyHandlers {
 
 	private static boolean useBlockButtonPreviouslyDown = false;
 
-	private static void FireUseBlockEvents() {
+	private static void FireUseBlockEvents() {//TODO: Migrate either to a dedicated TorchAid event helper, or to TorchAid itself
 		//.keyBindUseItem		isButtonDown()
 
 		boolean useBlockButtonDown;

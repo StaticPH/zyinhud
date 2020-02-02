@@ -11,10 +11,10 @@ import net.minecraft.util.text.TranslationTextComponent;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandFps {
+public class CommandFps implements ICommandBase{
 	/**
 	 * Registers the command, and calls
-	 * {@link #registerAliases(CommandDispatcher, LiteralCommandNode, List) registerAliases}
+	 * {@link #registerAliasesStatic(CommandDispatcher, LiteralCommandNode, List) registerAliases}
 	 * to add alternative command names.
 	 *
 	 * @param dispatcher The command dispatcher
@@ -27,7 +27,7 @@ public class CommandFps {
 				return 0;
 			})
 		);
-		registerAliases(
+		ICommandBase.registerAliasesStatic(
 			dispatcher, commandLiteral,
 			Collections.singletonList("f")
 		);
@@ -37,27 +37,10 @@ public class CommandFps {
 	 * What the command does when successful
 	 *
 	 * @param command
-	 * @return 1 in the absence of catastrophic failures (crashes)
+	 * @return 0 in the absence of catastrophic failures (crashes)
 	 */
 	public static int execute(CommandContext<CommandSource> command) {
 		Fps.ToggleEnabled();
-		return 1;
-	}
-
-	/**
-	 * Register aliases for a command
-	 *
-	 * @param dispatcher     The command dispatcher
-	 * @param commandLiteral The command to register the aliases for
-	 * @param aliases        A List of Strings, one for each alias to register
-	 */
-	public static void registerAliases(
-		CommandDispatcher<CommandSource> dispatcher,
-		LiteralCommandNode<CommandSource> commandLiteral,
-		List<String> aliases
-	) {
-		aliases.forEach(
-			(str) -> dispatcher.register(Commands.literal(str).redirect(commandLiteral))
-		);
+		return 0;
 	}
 }

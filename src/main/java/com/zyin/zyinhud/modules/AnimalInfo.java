@@ -5,7 +5,6 @@ import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.AnimalInfoOptions;
 import com.zyin.zyinhud.util.Localization;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.AgeableEntity;
 import net.minecraft.entity.LivingEntity;
@@ -21,6 +20,8 @@ import net.minecraft.util.text.TextFormatting;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import static com.zyin.zyinhud.util.ZyinHUDUtil.doesScreenShowHUD;
 
 /**
  * Shows information about horses in the F3 menu.
@@ -219,7 +220,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		//and not looking at a menu
 		//and F3 not pressed
 		if (AnimalInfo.Enabled && Mode == AnimalInfoOptions.AnimalInfoModes.ON &&
-		    (mc.mouseHelper.isMouseGrabbed() || mc.currentScreen == null || mc.currentScreen instanceof ChatScreen)
+		    (mc.mouseHelper.isMouseGrabbed() || doesScreenShowHUD(mc.currentScreen))
 		    && !mc.gameSettings.showDebugInfo) {
 
 			AgeableEntity animal = (AgeableEntity) entity;

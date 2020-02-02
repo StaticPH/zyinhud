@@ -24,6 +24,7 @@
 
 package com.zyin.zyinhud;
 
+import com.zyin.zyinhud.command.CommandDev;
 import com.zyin.zyinhud.command.CommandFps;
 //import com.zyin.zyinhud.command.CommandZyinHUDOptions;
 import com.zyin.zyinhud.modules.HealthMonitor;
@@ -127,7 +128,7 @@ public class ZyinHUD {
 	public void serverStarting(FMLServerStartingEvent event) {
 	//FIXME: Perhaps command registration should be moved to the player login event PlayerLoggedInEvent...or is it the login event LoggedInEvent? need to find out the difference
 		CommandFps.register(event.getCommandDispatcher());
-
+		CommandDev.register(event.getCommandDispatcher());
 //        CommandZyinHUDOptions.register(event.getCommandDispatcher());
 	}
 
