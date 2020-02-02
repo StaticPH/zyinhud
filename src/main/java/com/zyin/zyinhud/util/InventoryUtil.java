@@ -293,7 +293,6 @@ public class InventoryUtil {
 	 * @param destIndex the dest index
 	 * @return true if the items were successfully swapped
 	 */
-	@SuppressWarnings("ConstantConditions")
 	public static boolean Swap(int srcIndex, int destIndex) {
 		if (srcIndex == destIndex || srcIndex < 0 || destIndex < 0) { return false; }
 		List inventorySlots = mc.player.container.inventorySlots;
@@ -316,22 +315,21 @@ public class InventoryUtil {
 		if (srcStack.isEmpty() && destStack.isEmpty()) {
 			return false;
 		}
-		//2: src = null, dest = item
-		else if (srcStack.isEmpty() && !destStack.isEmpty()) {
+		//2: src = null, dest = item        srcStack.isEmpty() && !destStack.isEmpty()
+		else if (srcStack.isEmpty()) {
 			LeftClickInventorySlot(destIndex);
 			LeftClickInventorySlot(srcIndex);
 			return true;
 		}
-		//3: src = item, dest = null
-		else if (!srcStack.isEmpty() && destStack.isEmpty()) {
+		//3: src = item, dest = null        !srcStack.isEmpty() && destStack.isEmpty()
+		else if (destStack.isEmpty()) {
 			LeftClickInventorySlot(srcIndex);
 			LeftClickInventorySlot(destIndex);
 			return true;
 		}
-		//4: src = item, dest = item
-		else {// if(srcStack != null && destStack != null)
-	    	/*if(srcStack.itemID == destStack.itemID)
-	    	{
+		//4: src = item, dest = item        srcStack != null && destStack != null
+		else {
+	    	/*if(srcStack.itemID == destStack.itemID) {
 	    		//if the 2 items are the same, do nothing
 	    		return false;
 	    	}*/
@@ -418,7 +416,7 @@ public class InventoryUtil {
 		if (numChestSlots <= 0) { return false; }
 
 		int iStart = numChestSlots;
-		int iEnd = ignoreItemsInHotbar? numDisplayedSlots-9:numDisplayedSlots;
+		int iEnd = ignoreItemsInHotbar ? numDisplayedSlots - 9 : numDisplayedSlots;
 
 		//iterate over the player's inventory and deposit items as needed
 		for (int i = iStart; i < iEnd; i++) {
@@ -453,11 +451,11 @@ public class InventoryUtil {
 	 * @param destIndex chest slot: single chest = 0-27, double chest = 0-54
 	 * @return true if an item was successfully moved
 	 */
-	@SuppressWarnings({"DuplicatedCode", "ConstantConditions"})
+	@SuppressWarnings({"DuplicatedCode"})
 	public static boolean DepositItemInContainer(int srcIndex, int destIndex) {
-		//horse chest + player invetory = 53 big
-		//single chest + player invetory = 63 big
-		//double chest + player invetory = 90 big
+		//horse chest + player inventory = 53 big
+		//single chest + player inventory = 63 big
+		//double chest + player inventory = 90 big
 		int numDisplayedSlots = mc.player.openContainer.inventorySlots.size();
 
 		//the last 4 rows (9*4=36) are the player's inventory
@@ -468,14 +466,15 @@ public class InventoryUtil {
 		//double chest = 54 big
 		int numContainerSlots = numDisplayedSlots - numInventorySlots;
 
+		//Don't try to move from the container into itself
 		if (numContainerSlots == 53 - numInventorySlots && (srcIndex < 18 || srcIndex > 53)) { return false; }
 		if (numContainerSlots == 63 - numInventorySlots && (srcIndex < 28 || srcIndex > 63)) { return false; }
 		if (numContainerSlots == 90 - numInventorySlots && (srcIndex < 55 || srcIndex > 90)) { return false; }
 
 		if (destIndex < 0) { return false; }
-		if (numContainerSlots == 53 - numInventorySlots && (destIndex < 0 || destIndex > 17)) { return false; }
-		if (numContainerSlots == 63 - numInventorySlots && (destIndex < 0 || destIndex > 27)) { return false; }
-		if (numContainerSlots == 90 - numInventorySlots && (destIndex < 0 || destIndex > 54)) { return false; }
+		if (numContainerSlots == 53 - numInventorySlots && destIndex > 17) { return false; }
+		if (numContainerSlots == 63 - numInventorySlots && destIndex > 27) { return false; }
+		if (numContainerSlots == 90 - numInventorySlots && destIndex > 54) { return false; }
 
 		ItemStack srcStack = mc.player.openContainer.inventorySlots.get(srcIndex).getStack();
 		ItemStack destStack = mc.player.openContainer.inventorySlots.get(destIndex).getStack();
@@ -485,22 +484,18 @@ public class InventoryUtil {
 
 
 		//there are 4 cases we need to handle:
-		//1: src = null, dest = null
-		if (srcStack.isEmpty() && destStack.isEmpty()) {
-			return false;
-		}
-		//2: src = null, dest = item
-		else if (srcStack.isEmpty() && !destStack.isEmpty()) {
-			return false;
-		}
-		//3: src = item, dest = null
-		else if (!srcStack.isEmpty() && destStack.isEmpty()) {
+		//1: src = null, dest = null        srcStack.isEmpty() && destStack.isEmpty()
+		//2: src = null, dest = item        srcStack.isEmpty() && !destStack.isEmpty()
+		if (srcStack.isEmpty()) { return false; }
+
+		//3: src = item, dest = null        !srcStack.isEmpty() && destStack.isEmpty()
+		else if (destStack.isEmpty()) {
 			LeftClickContainerSlot(srcIndex);
 			LeftClickContainerSlot(destIndex);
 			return true;
 		}
-		//4: src = item, dest = item
-		else {// if(srcStack != null && destStack != null)
+		//4: src = item, dest = item        srcStack != null && destStack != null
+		else {
 			//if the 2 items are of different item types
 			if (!areItemStacksEqualIgnoreAmount(srcStack, destStack)) {
 				return false;
@@ -640,32 +635,30 @@ public class InventoryUtil {
 		return true;
 	}
 
-	@SuppressWarnings({"ConstantConditions", "DuplicatedCode"})
 	private static boolean DepositItemInMerchant(int srcIndex, int destIndex) {
 		if (destIndex < 0 || destIndex > 1) { return false; }
 		if (srcIndex < 3 || srcIndex > 39) { return false; }
 
+		return depositItemsIgnoringQuantity(srcIndex, destIndex);
+	}
+
+	private static boolean depositItemsIgnoringQuantity(int srcIndex, int destIndex) {
 		ItemStack srcStack = mc.player.openContainer.inventorySlots.get(srcIndex).getStack();
 		ItemStack destStack = mc.player.openContainer.inventorySlots.get(destIndex).getStack();
 
 		//there are 4 cases we need to handle:
-		//1: src = null, dest = null
-		if (srcStack.isEmpty() && destStack.isEmpty()) {
-			return false;
-		}
-		//2: src = null, dest = item
-		else if (srcStack.isEmpty() && !destStack.isEmpty()) {
-			return false;
-		}
-		//3: src = item, dest = null
-		else if (!srcStack.isEmpty() && destStack.isEmpty()) {
+		//1: src = null, dest = null        srcStack.isEmpty() && destStack.isEmpty()
+		//2: src = null, dest = item        srcStack.isEmpty() && !destStack.isEmpty()
+		if (srcStack.isEmpty()) { return false; }
+
+		//3: src = item, dest = null        !srcStack.isEmpty() && destStack.isEmpty()
+		else if (destStack.isEmpty()) {
 			LeftClickContainerSlot(srcIndex);
 			LeftClickContainerSlot(destIndex);
 			return true;
 		}
-		//4: src = item, dest = item
-		else// if(srcStack != null && destStack != null)
-		{
+		//4: src = item, dest = item        srcStack != null && destStack != null
+		else {
 			if (areItemStacksEqualIgnoreAmount(destStack, srcStack)) {
 				LeftClickContainerSlot(srcIndex);
 				LeftClickContainerSlot(destIndex);
@@ -679,7 +672,6 @@ public class InventoryUtil {
 			return false;
 		}
 	}
-
 
 	/**
 	 * Deposit all matching items in furance boolean.
@@ -700,7 +692,7 @@ public class InventoryUtil {
 		int numInventorySlots = 36;
 		int numFurnaceSlots = numDisplayedSlots - numInventorySlots;
 
-		List furanceSlots = mc.player.openContainer.inventorySlots;
+		List furnaceSlots = mc.player.openContainer.inventorySlots;
 
 		ItemStack inputStack = mc.player.openContainer.inventorySlots.get(0).getStack();
 		ItemStack fuelStack = mc.player.openContainer.inventorySlots.get(1).getStack();
@@ -717,12 +709,12 @@ public class InventoryUtil {
 			}
 		}
 
-		int iStart = numFurnaceSlots;    //furances have 3 container slots
+		int iStart = numFurnaceSlots;    //furnaces have 3 container slots
 		int iEnd = numDisplayedSlots;
 
 		//find items in our inventory that match the items in the furance fuel/input slot
 		for (int i = iStart; i < iEnd; i++) {
-			Slot slot = (Slot) furanceSlots.get(i);
+			Slot slot = (Slot) furnaceSlots.get(i);
 			ItemStack itemStack = slot.getStack();
 			if (!itemStack.isEmpty()) {
 				if (!inputStack.isEmpty() && areItemStacksEqualIgnoreAmount(itemStack, inputStack)) {
@@ -746,7 +738,6 @@ public class InventoryUtil {
 		return true;
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	private static boolean DepositItemInFurance(int srcIndex, int destIndex) {
 		/*
 		if(destIndex < 0 || destIndex > 1)
@@ -759,23 +750,18 @@ public class InventoryUtil {
 		ItemStack destStack = mc.player.openContainer.inventorySlots.get(destIndex).getStack();
 
 		//there are 4 cases we need to handle:
-		//1: src = null, dest = null
-		if (srcStack.isEmpty() && destStack.isEmpty()) {
-			return false;
-		}
-		//2: src = null, dest = item
-		else if (srcStack.isEmpty() && !destStack.isEmpty()) {
-			return false;
-		}
-		//3: src = item, dest = null
-		else if (!srcStack.isEmpty() && destStack.isEmpty()) {
+		//1: src = null, dest = null        srcStack.isEmpty() && destStack.isEmpty()
+		//2: src = null, dest = item        srcStack.isEmpty() && !destStack.isEmpty()
+		if (srcStack.isEmpty()) { return false; }
+
+		//3: src = item, dest = null        !srcStack.isEmpty() && destStack.isEmpty()
+		else if (destStack.isEmpty()) {
 			LeftClickContainerSlot(srcIndex);
 			LeftClickContainerSlot(destIndex);
 			return true;
 		}
-		//4: src = item, dest = item
-		else// if(srcStack != null && destStack != null)
-		{
+		//4: src = item, dest = item        srcStack != null && destStack != null
+		else {
 			if (destStack.isItemEqual(srcStack)) {
 				LeftClickContainerSlot(srcIndex);
 				LeftClickContainerSlot(destIndex);
@@ -797,7 +783,6 @@ public class InventoryUtil {
 			return false;
 		}
 	}
-
 
 	/**
 	 * Deposit all matching items in brewing stand boolean.
@@ -850,7 +835,7 @@ public class InventoryUtil {
 			}
 		}
 
-		int iStart = numFurnaceSlots;    //furances have 3 container slots
+		int iStart = numFurnaceSlots;    //furnaces have 3 container slots
 		int iEnd = numDisplayedSlots;
 
 		//find items in our inventory that match the items in the furance fuel/input slot
@@ -886,54 +871,20 @@ public class InventoryUtil {
 		return true;
 	}
 
-
-	@SuppressWarnings({"ConstantConditions", "DuplicatedCode"})
 	private static boolean DepositItemInBrewingStand(int srcIndex, int destIndex) {
 		if (destIndex < 0 || destIndex > 3) { return false; }
 		if (srcIndex < 5 || srcIndex > 39) { return false; }
 
-		ItemStack srcStack = mc.player.openContainer.inventorySlots.get(srcIndex).getStack();
-		ItemStack destStack = mc.player.openContainer.inventorySlots.get(destIndex).getStack();
-
-		//there are 4 cases we need to handle:
-		//1: src = null, dest = null
-		if (srcStack.isEmpty() && destStack.isEmpty()) {
-			return false;
-		}
-		//2: src = null, dest = item
-		else if (srcStack.isEmpty() && !destStack.isEmpty()) {
-			return false;
-		}
-		//3: src = item, dest = null
-		else if (!srcStack.isEmpty() && destStack.isEmpty()) {
-			LeftClickContainerSlot(srcIndex);
-			LeftClickContainerSlot(destIndex);
-			return true;
-		}
-		//4: src = item, dest = item
-		else// if(srcStack != null && destStack != null)
-		{
-			if (areItemStacksEqualIgnoreAmount(destStack, srcStack)) {
-				LeftClickContainerSlot(srcIndex);
-				LeftClickContainerSlot(destIndex);
-
-				ItemStack handStack = mc.player.inventory.getItemStack();
-				if (!handStack.isEmpty()) {
-					LeftClickContainerSlot(srcIndex);
-				}
-				return true;
-			}
-			return false;
-		}
+		return depositItemsIgnoringQuantity(srcIndex, destIndex);
 	}
 
 	/**
 	 * Gets the index of an item class.
 	 *
-	 * @param object   The type of item being used. E.x.: Blocks.torch, Items.ender_pearl, or the BlockPos of a block
-	 * @param iStart   index in the inventory to start looking
-	 * @param iEnd     index in the inventory to stop looking
-	 * @param matchTo  only match items for which this Predicate holds true.
+	 * @param object  The type of item being used. E.x.: Blocks.torch, Items.ender_pearl, or the BlockPos of a block
+	 * @param iStart  index in the inventory to start looking
+	 * @param iEnd    index in the inventory to stop looking
+	 * @param matchTo only match items for which this Predicate holds true.
 	 * @return 9-44, -1 if not found
 	 */
 	private static int GetItemIndex(Object object, int iStart, int iEnd, Predicate<Item> matchTo) {
@@ -1020,8 +971,8 @@ public class InventoryUtil {
 	/**
 	 * Gets the index of an item class in your inventory.
 	 *
-	 * @param object The type of item being used. E.x.: Blocks.torch, Items.ender_pearl
-	 * @param matchTo  only match items for which this Predicate holds true.
+	 * @param object  The type of item being used. E.x.: Blocks.torch, Items.ender_pearl
+	 * @param matchTo only match items for which this Predicate holds true.
 	 * @return 9 -44, -1 if not found
 	 */
 	public static int GetItemIndexFromInventory(Object object, Predicate<Item> matchTo) {
@@ -1048,15 +999,16 @@ public class InventoryUtil {
 	public static int GetItemIndexFromHotbar(Object object, Tag... tags) {
 		return GetItemIndex(object, 36, 44, tags);
 	}
+
 	/**
 	 * Gets the index of an item class in your hotbar.
 	 *
-	 * @param object The type of item being used. E.x.: Blocks.torch, Items.ender_pearl
-	 * @param matchTo  only match items for which this Predicate holds true.
+	 * @param object  The type of item being used. E.x.: Blocks.torch, Items.ender_pearl
+	 * @param matchTo only match items for which this Predicate holds true.
 	 * @return 36 -44, -1 if not found
 	 */
 	public static int GetItemIndexFromHotbar(Object object, Predicate<Item> matchTo) {
-		return GetItemIndex(object, 36, 44, matchTo);
+		return GetItemIndex(object, 0, 8, matchTo);
 	}
 
 
@@ -1096,7 +1048,6 @@ public class InventoryUtil {
 	 * @param itemStackToMatch an ItemStack to count as an empty spot
 	 * @return 0, 1-15,27,54. -1 if no empty spot
 	 */
-	@SuppressWarnings({"ConstantConditions", "DuplicatedCode"})
 	private static int GetFirstEmptyIndexInContainerInventory(ItemStack itemStackToMatch) {
 		List containerSlots = mc.player.openContainer.inventorySlots;
 
@@ -1108,8 +1059,11 @@ public class InventoryUtil {
 		int iStart = numContainerSlots;
 		int iEnd = numDisplayedSlots;
 
+		return seekEmptyContainerIndex(itemStackToMatch, containerSlots, iStart, iEnd);
+	}
+
+	private static int seekEmptyContainerIndex(ItemStack itemStackToMatch, List containerSlots, int iStart, int iEnd) {
 		int firstEmptyIndex = -1;
-		int firstEmptyMatchingItemStackIndex = -1;
 
 		//iterate over the chest's inventory (0,1-15,27,54)
 		for (int i = iStart; i <= iEnd - 1; i++) {
@@ -1118,17 +1072,15 @@ public class InventoryUtil {
 			if (itemStack.isEmpty() && firstEmptyIndex == -1) {
 				firstEmptyIndex = i;
 			}
-			else if (!itemStack.isEmpty() && !itemStackToMatch.isEmpty()
-			         && areItemStacksEqualIgnoreAmount(itemStack, itemStackToMatch)
-			         && itemStack.getCount() < itemStack.getMaxStackSize()
-			         && firstEmptyMatchingItemStackIndex == -1) {
-				firstEmptyMatchingItemStackIndex = i;
-				break;
+			else if (
+				!itemStack.isEmpty() && !itemStackToMatch.isEmpty() &&
+				areItemStacksEqualIgnoreAmount(itemStack, itemStackToMatch) &&
+				itemStack.getCount() < itemStack.getMaxStackSize()
+			) {
+				return i; // This is the index of first partially-filled stack matching itemStackToMatch
 			}
 		}
-
-		if (firstEmptyMatchingItemStackIndex != -1) { return firstEmptyMatchingItemStackIndex; }
-		else { return firstEmptyIndex; }
+		return firstEmptyIndex;
 	}
 
 	/**
@@ -1147,43 +1099,18 @@ public class InventoryUtil {
 	 * @param itemStackToMatch an ItemStack to count as an empty spot
 	 * @return 0, 1-15,27,54. -1 if no empty spot
 	 */
-	@SuppressWarnings({"ConstantConditions", "DuplicatedCode"})
 	private static int GetFirstEmptyIndexInContainer(ItemStack itemStackToMatch) {
 		List containerSlots = mc.player.openContainer.inventorySlots;
 
-		int numDisplayedSlots = containerSlots.size();
+		// containerSlots.size() returns the number of slots in a given container(the one currently opened by the player)
+		// 36 is the number of normal slots in the player's inventory
+		int numContainerSlots = containerSlots.size() - 36;
 
-		int numInventorySlots = 36;
-		int numContainerSlots = numDisplayedSlots - numInventorySlots;
-
-		int iStart = 0;
+		// In a horse's inventory screen, the first index is the saddle slot, second index is the armor slot. Skip them.
+		int iStart = (mc.currentScreen instanceof HorseInventoryScreen) ? 2 : 0;
 		int iEnd = numContainerSlots;
 
-		if (mc.currentScreen instanceof HorseInventoryScreen) {
-			iStart = 2;    //the first index is the saddle slot, second index is the armor slot
-		}
-
-		int firstEmptyIndex = -1;
-		int firstEmptyMatchingItemStackIndex = -1;
-
-		//iterate over the chest's inventory (0,1-15,27,54)
-		for (int i = iStart; i <= iEnd - 1; i++) {
-			Slot slot = (Slot) containerSlots.get(i);
-			ItemStack itemStack = slot.getStack();
-			if (itemStack.isEmpty() && firstEmptyIndex == -1) {
-				firstEmptyIndex = i;
-			}
-			else if (!itemStack.isEmpty() && !itemStackToMatch.isEmpty()
-			         && areItemStacksEqualIgnoreAmount(itemStack, itemStackToMatch)
-			         && itemStack.getCount() < itemStack.getMaxStackSize()
-			         && firstEmptyMatchingItemStackIndex == -1) {
-				firstEmptyMatchingItemStackIndex = i;
-				break;
-			}
-		}
-
-		if (firstEmptyMatchingItemStackIndex != -1) { return firstEmptyMatchingItemStackIndex; }
-		else { return firstEmptyIndex; }
+		return seekEmptyContainerIndex(itemStackToMatch, containerSlots, iStart, iEnd);
 	}
 
 	/**
@@ -1192,25 +1119,20 @@ public class InventoryUtil {
 	 * @param 'itemID' the item to search for
 	 * @return 0-27,54, -1 if no item found
 	 */
-	@SuppressWarnings("DuplicatedCode")
 	private static int GetFirstItemIndexInContainer(ItemStack itemStackToMatch) {
-		List chestSlots = mc.player.openContainer.inventorySlots;
+		List containerSlots = mc.player.openContainer.inventorySlots;
 
-		int numDisplayedSlots = chestSlots.size();
+		// containerSlots.size() returns the number of slots in a given container(the one currently opened by the player)
+		// 36 is the number of normal slots in the player's inventory
+		int numContainerSlots = containerSlots.size() - 36;
 
-		int numInventorySlots = 36;
-		int numContainerSlots = numDisplayedSlots - numInventorySlots;
-
-		int iStart = 0;
+		// In a horse's inventory screen, the first index is the saddle slot, second index is the armor slot. Skip them.
+		int iStart = (mc.currentScreen instanceof HorseInventoryScreen) ? 2 : 0;
 		int iEnd = numContainerSlots;
-
-		if (mc.currentScreen instanceof HorseInventoryScreen) {
-			iStart = 2;    //the first index is the saddle slot, second index is the armor slot - skip these
-		}
 
 		//iterate over the chest's inventory (0,1-16,27,54)
 		for (int i = iStart; i <= iEnd - 1; i++) {
-			Slot slot = (Slot) chestSlots.get(i);
+			Slot slot = (Slot) containerSlots.get(i);
 			ItemStack itemStack = slot.getStack();
 			if (!itemStack.isEmpty() && areItemStacksEqualIgnoreAmount(itemStack, itemStackToMatch)) {
 				return i;
@@ -1220,7 +1142,6 @@ public class InventoryUtil {
 		return -1;
 	}
 
-
 	/**
 	 * Gets the index of whatever the player currently has selected on their hotbar
 	 *
@@ -1229,8 +1150,7 @@ public class InventoryUtil {
 	public static int GetCurrentlySelectedItemInventoryIndex() {
 		return TranslateHotbarIndexToInventoryIndex(mc.player.inventory.currentItem);
 	}
-
-
+	
 	/**
 	 * Moves an armor the player is wearing into their inventory
 	 *
@@ -1244,8 +1164,7 @@ public class InventoryUtil {
 		return emptySlotIndex != -1 && Swap(armorSlotIndex, emptySlotIndex);
 
 	}
-
-
+	
 	/**
 	 * Moves an item the player has selected (selected in the hotbar) to their inventory
 	 *
@@ -1256,9 +1175,7 @@ public class InventoryUtil {
 		int emptySlotIndex = GetFirstEmptyIndexInInventory();
 
 		return emptySlotIndex != -1 && Swap(heldItemSlotIndex, emptySlotIndex);
-
 	}
-
 
 	/**
 	 * Converts hotbar indexes (0-8) to inventory indexes (36-44)
@@ -1271,8 +1188,7 @@ public class InventoryUtil {
 
 		return hotbarIndex + 36;
 	}
-
-
+	
 	/**
 	 * Converts inventory indexes (9-35) to hotbar index (0-8)
 	 *
@@ -1284,7 +1200,6 @@ public class InventoryUtil {
 
 		return inventoryIndex - 36;
 	}
-
 
 	/**
 	 * Simulates a left click as if your inventory GUI screen was open at the specified item slot index.
@@ -1313,8 +1228,7 @@ public class InventoryUtil {
 	 */
 	@SuppressWarnings("SameParameterValue")
 	private static void SendInventoryClick(int itemIndex, boolean rightClick, boolean shiftHold) {
-		if (itemIndex < 0 || itemIndex > 44)    //0-44 is the size of the players inventory
-		{ return; }
+		if (itemIndex < 0 || itemIndex > 44) { return; } //0-44 is the size of the players inventory
 
 		try {
 			mc.playerController.windowClick(
@@ -1342,8 +1256,8 @@ public class InventoryUtil {
 	 */
 	@SuppressWarnings("SameParameterValue")
 	private static void SendContainerClick(int itemIndex, boolean rightClick, boolean shiftHold) {
-		if (itemIndex < 0)    //don't check for an upper bounds in case a mod increases the size of a container past a double chest
-		{ return; }
+		//don't check for an upper bounds in case a mod increases the size of a container past a double chest
+		if (itemIndex < 0) { return; }
 
 		try {
 			mc.playerController.windowClick(
@@ -1360,6 +1274,7 @@ public class InventoryUtil {
 		}
 	}
 
+	//_CHECK: Pretty sure this is effectively equivalent to ItemStack.areItemsEqual()
 	public static boolean areItemStacksEqualIgnoreAmount(ItemStack itemStack1, ItemStack itemStack2) {
 		if (!itemStack1.isEmpty() && !itemStack2.isEmpty() && itemStack1.getItem() == itemStack2.getItem()) {
 			ItemStack itemA = itemStack1.copy();
@@ -1368,6 +1283,7 @@ public class InventoryUtil {
 			itemB.setCount(1);
 			return ItemStack.areItemStacksEqual(itemA, itemB);
 		}
+	
 		return false;
 	}
 
