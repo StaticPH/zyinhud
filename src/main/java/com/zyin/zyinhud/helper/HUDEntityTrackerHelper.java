@@ -1,9 +1,7 @@
 package com.zyin.zyinhud.helper;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
-import com.zyin.zyinhud.modules.ZyinHUDModuleModes;
+import com.zyin.zyinhud.modules.PlayerLocator;
+import com.zyin.zyinhud.modules.ZyinHUDModuleModes.LocatorOptions;
 import com.zyin.zyinhud.util.ZyinHUDUtil;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.MainWindow;
@@ -15,14 +13,15 @@ import net.minecraft.entity.monster.WitherSkeletonEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
-
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-import com.zyin.zyinhud.modules.PlayerLocator;
-
 import javax.annotation.Nonnull;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 /**
  * The EntityTrackerHUDHelper calculates the (x,y) position on the HUD for
@@ -34,6 +33,7 @@ public class HUDEntityTrackerHelper {
 	private static final double twoPi = 2 * Math.PI;
 	private static FloatBuffer modelMatrix = BufferUtils.createFloatBuffer(16);
 	private static FloatBuffer projMatrix = BufferUtils.createFloatBuffer(16);
+	public static final Logger logger = LogManager.getLogger(HUDEntityTrackerHelper.class);
 
 	/**
 	 * Stores world render transform matrices for later use when rendering HUD.
@@ -59,6 +59,18 @@ public class HUDEntityTrackerHelper {
 		PlayerLocator.RenderEntityInfoOnHUD(entity, x, y);
 	}
 
+	/* Alternative to Entity.getLook() and/or Entity.getLookVec()
+	 The resulting vector components are typically the same for at least the first 3 digits after the decimal.
+	 */
+	@Nonnull
+	static Vec3d customPlayerFacing(PlayerEntity player) {
+		double pitch = ((player.rotationPitch + 90) * Math.PI) / 180;
+		double yaw = ((player.rotationYaw + 90) * Math.PI) / 180;
+		return new Vec3d(
+			Math.sin(pitch) * Math.cos(yaw), Math.cos(pitch), Math.sin(pitch) * Math.sin(yaw)
+		);
+	}
+
 	/**
 	 * Calculates the on-screen (x,y) positions of entities and renders various
 	 * overlays over them.
@@ -68,24 +80,20 @@ public class HUDEntityTrackerHelper {
 	public static void RenderEntityInfo(float partialTickTime) {
 		PlayerLocator.numOverlaysRendered = 0;
 
-		if (PlayerLocator.Enabled && PlayerLocator.Mode == ZyinHUDModuleModes.LocatorOptions.LocatorModes.ON && mc.isGameFocused()) {
-			PlayerEntity me = mc.player;
+		if (PlayerLocator.Enabled && PlayerLocator.Mode == LocatorOptions.LocatorModes.ON && mc.isGameFocused()) {
+			PlayerEntity player = mc.player;
 
-			double meX = me.lastTickPosX + (me.posX - me.lastTickPosX) * partialTickTime;
-			double meY = me.lastTickPosY + (me.posY - me.lastTickPosY) * partialTickTime;
-			double meZ = me.lastTickPosZ + (me.posZ - me.lastTickPosZ) * partialTickTime;
-
-			double pitch = ((me.rotationPitch + 90) * Math.PI) / 180;
-			double yaw = ((me.rotationYaw + 90) * Math.PI) / 180;
+			double meX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTickTime;
+			double meY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTickTime;
+			double meZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTickTime;
 
 			// direction the player is facing
-			Vec3d lookDir = new Vec3d(
-				Math.sin(pitch) * Math.cos(yaw), Math.cos(pitch), Math.sin(pitch) * Math.sin(yaw)
-			);
+			Vec3d lookDir = player.getLook(partialTickTime);
 
+//			if (mc.gameRenderer.getActiveRenderInfo().isThirdPerson()) {        TODO: is this better??
 			// When in the reversed 3rd-person view, flip the look direction
 			if (mc.gameSettings.thirdPersonView == 2) {
-				lookDir = new Vec3d(lookDir.x * -1, lookDir.y * -1, lookDir.z * -1);
+				lookDir = lookDir.inverse();
 			}
 
 			IntBuffer viewport = BufferUtils.createIntBuffer(16);
@@ -105,6 +113,8 @@ public class HUDEntityTrackerHelper {
 //				if (object == null) { continue; }   already covered by subsequent instanceof checks
 
 				//only track entities that we are tracking (i.e. other players/wolves/witherskeletons)
+				//TODO: consider replacing this check and the loop as a whole with
+				//      entitiesById.values().stream().filter(STUFF_HERE).forEach(MORE_STUFF);
 				if (!(entity instanceof RemoteClientPlayerEntity ||
 				      entity instanceof WolfEntity ||
 				      entity instanceof WitherSkeletonEntity)) { continue; }
@@ -122,14 +132,9 @@ public class HUDEntityTrackerHelper {
 
 				double dist = Math.sqrt(toEntity.lengthSquared());
 				toEntity = toEntity.normalize();
-				ZyinHUDUtil.Array3d coords = (lookDir.dotProduct(toEntity) <= 0.02)             ?
+				ZyinHUDUtil.Array3d coords = (lookDir.dotProduct(toEntity) <= 0.02) ?
 				                             createDummyTargetLocation(lookDir, toEntity, dist) :
 				                             ZyinHUDUtil.Array3d.create(x, y, z);
-
-//				if (lookDir.dotProduct(toEntity) <= 0.02) {
-//					coords = createDummyTargetLocation(lookDir, toEntity, dist);
-//				}
-//				else{coords = ZyinHUDUtil.Array3d.create(x,y,z); }
 
 				FloatBuffer screenCoords = BufferUtils.createFloatBuffer(3);
 
@@ -183,11 +188,11 @@ public class HUDEntityTrackerHelper {
 		x = (float) (dist * (m00 * lookDir.x + m01 * lookDir.y + m02 * lookDir.z));
 		y = (float) (dist * (m10 * lookDir.x + m11 * lookDir.y + m12 * lookDir.z));
 		z = (float) (dist * (m20 * lookDir.x + m21 * lookDir.y + m22 * lookDir.z));
-		coords = ZyinHUDUtil.Array3d.create(x,y,z);
+		coords = ZyinHUDUtil.Array3d.create(x, y, z);
 		return coords;
 	}
 
-	private static void renderHudAtScaledCoordinates(Entity object, FloatBuffer screenCoords) {
+	private static void renderHudAtScaledCoordinates(Entity entity, FloatBuffer screenCoords) {
 		MainWindow res = Minecraft.getInstance().mainWindow;
 		int width = res.getScaledWidth();
 		int height = res.getScaledHeight();
@@ -204,7 +209,7 @@ public class HUDEntityTrackerHelper {
 		//use Y overshoot to scale X
 		int newHudX = calcScaledHudPos(width, height, hudX, hudY);
 
-		RenderEntityInfoOnHUD(object, newHudX, newHudY);
+		RenderEntityInfoOnHUD(entity, newHudX, newHudY);
 	}
 
 	private static int calcScaledHudPos(int scaleDimension, int overshotDimension, int posToScale, int overshotPos) {

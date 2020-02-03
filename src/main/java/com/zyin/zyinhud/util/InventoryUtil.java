@@ -888,12 +888,20 @@ public class InventoryUtil {
 	 * @return 9-44, -1 if not found
 	 */
 	private static int GetItemIndex(Object object, int iStart, int iEnd, Predicate<Item> matchTo) {
-		//???:think this one might actually be inventory.mainInventory
 		List<Slot> inventorySlots = mc.player.container.inventorySlots.subList(iStart, iEnd);
 
-		//iterate over the main inventory (9~44)
+		//iterate over the main inventory CONTAINER (9~44)
+		// 0-4 are the crafting grid input and output
+		// 5-8 are the armor slots
+		// 9-35 are the main inventory
+		// 36-44 are the hotbar
+		// 45 is the offhand
 		for (Slot slot : inventorySlots) {
-			if (matchTo.test(slot.getStack().getItem())) {return slot.getSlotIndex();}
+			if (matchTo.test(slot.getStack().getItem())) {
+				// Offset the hotbar index so that we get the correct result(actually the value we already got here)
+				// from subsequent calls to TranslateHotbarIndexToInventoryIndex
+				return slot.getSlotIndex() + 36;
+			}
 		}
 		return -1;
 	}
@@ -976,7 +984,10 @@ public class InventoryUtil {
 	 * @return 9 -44, -1 if not found
 	 */
 	public static int GetItemIndexFromInventory(Object object, Predicate<Item> matchTo) {
-		return GetItemIndex(object, 9, 35, matchTo);
+		// FIXME: GET RID OF THIS DANG OFFSET, WITHOUT BREAKING OTHER FUNCTIONS (like calls to TranslateHotbarIndexToInventoryIndex)
+		// Offset the hotbar index so that we get the correct result(actually the value we originally got in
+		// GetItemIndex before adding an offset for the sake of TranslateHotbarIndexToInventoryIndex)
+		return GetItemIndex(object, 9, 35, matchTo) - 36;
 	}
 
 	/**
@@ -1008,9 +1019,8 @@ public class InventoryUtil {
 	 * @return 36 -44, -1 if not found
 	 */
 	public static int GetItemIndexFromHotbar(Object object, Predicate<Item> matchTo) {
-		return GetItemIndex(object, 0, 8, matchTo);
+		return GetItemIndex(object, 36, 44, matchTo);
 	}
-
 
 	/**
 	 * Gets the index in your inventory of the first empty slot.
@@ -1150,7 +1160,7 @@ public class InventoryUtil {
 	public static int GetCurrentlySelectedItemInventoryIndex() {
 		return TranslateHotbarIndexToInventoryIndex(mc.player.inventory.currentItem);
 	}
-	
+
 	/**
 	 * Moves an armor the player is wearing into their inventory
 	 *
@@ -1164,7 +1174,7 @@ public class InventoryUtil {
 		return emptySlotIndex != -1 && Swap(armorSlotIndex, emptySlotIndex);
 
 	}
-	
+
 	/**
 	 * Moves an item the player has selected (selected in the hotbar) to their inventory
 	 *
@@ -1188,7 +1198,7 @@ public class InventoryUtil {
 
 		return hotbarIndex + 36;
 	}
-	
+
 	/**
 	 * Converts inventory indexes (9-35) to hotbar index (0-8)
 	 *
@@ -1283,7 +1293,7 @@ public class InventoryUtil {
 			itemB.setCount(1);
 			return ItemStack.areItemStacksEqual(itemA, itemB);
 		}
-	
+
 		return false;
 	}
 

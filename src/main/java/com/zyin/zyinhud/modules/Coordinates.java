@@ -3,10 +3,7 @@ package com.zyin.zyinhud.modules;
 import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.CoordinateOptions;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.util.text.TextFormatting;
-
-import com.zyin.zyinhud.util.ZyinHUDUtil;
 
 /**
  * The Coordinates calculates the player's position.
@@ -61,7 +58,7 @@ public class Coordinates extends ZyinHUDModuleBase {
 	};
 
 	/**
-	 * Calculates the players coordinates
+	 * Calculates the player's coordinates
 	 *
 	 * @return coordinates string if the Coordinates are enabled, otherwise "".
 	 */
@@ -124,11 +121,7 @@ public class Coordinates extends ZyinHUDModuleBase {
 			coordinateString = coordinateString.replace("{y}", Integer.toString(Coordinates.GetYCoordinate()));
 			coordinateString = coordinateString.replace("{z}", Integer.toString(Coordinates.GetZCoordinate()));
 
-			TextFieldWidget inputField = ZyinHUDUtil.GetFieldByReflection(
-				ChatScreen.class, (ChatScreen) mc.currentScreen, "inputField", "field_146415_a"
-			);//Not sure if this should/can be saved in a static final field...
-
-			if (inputField != null) { inputField.writeText(coordinateString); }
+			mc.player.sendChatMessage(coordinateString);
 		}
 	}
 

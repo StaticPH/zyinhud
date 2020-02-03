@@ -30,7 +30,7 @@ public class TagHelper {
 		}
 	}
 
-	static class BlockTags extends TagHelper {
+	static class ZHBlockTags extends TagHelper {
 		static Tag<Block> forgeTag(String name) {
 			return tag("forge", name);
 		}
@@ -54,8 +54,7 @@ public class TagHelper {
 		}
 
 		public static boolean isArrowLike(Item item) {
-			//use forge's arrow tag over vanilla's
-			return item == Items.ARROW || Tags.Items.ARROWS.contains(item);
+			return item == Items.ARROW || ItemTags.ARROWS.contains(item);
 		}
 
 		public static boolean isArrowLike(Item item, boolean excludeSpecialArrows) {
@@ -85,6 +84,12 @@ public class TagHelper {
 			       item instanceof HoeItem ||
 			       item instanceof ShearsItem ||
 			       ModCompatibility.TConstruct.IsTConstructHarvestTool(item);
+		}
+
+		public static boolean canItemPlaceTorches(Item item) {
+			return item instanceof ToolItem ||
+			       ModCompatibility.TConstruct.IsTConstructToolWithoutARightClickAction(item);
+
 		}
 	}
 

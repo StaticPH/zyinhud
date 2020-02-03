@@ -4,9 +4,10 @@ import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.AnimalInfoOptions;
 import com.zyin.zyinhud.util.Localization;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.AgeableEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.passive.*;
@@ -14,10 +15,11 @@ import net.minecraft.entity.passive.horse.AbstractHorseEntity;
 import net.minecraft.entity.passive.horse.HorseEntity;
 import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.block.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.text.TextFormatting;
 
+import javax.annotation.CheckForNull;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
@@ -205,7 +207,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 
 	//FIXME? May need to include a check here to prevent rendering through blocks
 	// see how Neat does it https://github.com/Vazkii/Neat/blob/master/src/main/java/vazkii/neat/HealthBarRenderer.java#L98
-	//FIXME: currently is comparing the player to AgeableEntity xD we want to do everything EXCEPT players
+
 	/**
 	 * Renders information about an entity into the game world.
 	 *
@@ -222,10 +224,11 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		if (AnimalInfo.Enabled && Mode == AnimalInfoOptions.AnimalInfoModes.ON &&
 		    (mc.mouseHelper.isMouseGrabbed() || doesScreenShowHUD(mc.currentScreen))
 		    && !mc.gameSettings.showDebugInfo) {
+			//_CHECK: my use of doesScreenShowHUD here may remove the need to check that the debugInfo is not being shown
 
 			AgeableEntity animal = (AgeableEntity) entity;
 
-			//TODO:Will need to see if this triggers for entities being ridden by others...I expect it will, but I'm not sure.
+			//_CHECK:Will need to see if this triggers for entities being ridden by others...I expect it will, but I'm not sure.
 			//don't render stats of the horse/animal we are currently riding
 			if (animal.isBeingRidden()) { return; }
 
@@ -257,8 +260,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		if (ShowHorseStatsOverlay && animal instanceof AbstractHorseEntity) {
 			AbstractHorseEntity horse = (AbstractHorseEntity) animal;
 
-			multilineOverlayArrayList.add(
-				GetHorseSpeedText(horse) + ' ' + Localization.get("animalinfo.overlay.speed"));
+			multilineOverlayArrayList.add(GetHorseSpeedText(horse) + ' ' + Localization.get("animalinfo.overlay.speed"));
 			multilineOverlayArrayList.add(GetHorseHPText(horse) + ' ' + Localization.get("animalinfo.overlay.hp"));
 			multilineOverlayArrayList.add(GetHorseJumpText(horse) + ' ' + Localization.get("animalinfo.overlay.jump"));
 			if (animal instanceof LlamaEntity) {
@@ -270,7 +272,8 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 			//if (animalGrowingAge < 0)
 			//    multilineOverlayArrayList.add(GetHorseBabyGrowingAgeAsPercent(horse) + "%");
 		}
-        /* Breeding timer info no longer available on client in 1.8
+        /* Breeding timer info no longer available on client in 1.8 (without talking to server);
+           only whether the entity is a baby can be determined if the world is remote
     	if(ShowBreedingTimers && animal instanceof EntityAgeable)
         {
             if (animalGrowingAge > 0)	//if the animal has recently bred
@@ -278,13 +281,17 @@ public class AnimalInfo extends ZyinHUDModuleBase {
         }
         */
 
+        //???: I wonder if it'd be better to do something like using a StringBuilder or Stream.reduce instead here
 		String[] multilineOverlayMessage = new String[1];
 		multilineOverlayMessage = multilineOverlayArrayList.toArray(multilineOverlayMessage);
 
 		if (multilineOverlayMessage[0] != null) {
 			//render the overlay message
 			ZyinHUDRenderer.RenderFloatingText(
-				multilineOverlayMessage, x, y, z, 0xFFFFFF, ShowTextBackgrounds, partialTickTime);
+				multilineOverlayMessage,
+				x, y + (animal.getHeight() * 0.5f), z,
+				0xFFFFFF, ShowTextBackgrounds, partialTickTime
+			);
 		}
 
 		if (ShowBreedingIcons &&
@@ -292,46 +299,9 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		    animal instanceof AnimalEntity &&       //animal is not a villager
 		    !((AnimalEntity) animal).isInLove()     //animal is not currently breeding
 		) {
-			//render the overlay icon
-			if (animal instanceof AbstractHorseEntity && ((AbstractHorseEntity) animal).isTame()) {
-				if (animal instanceof LlamaEntity) {
-					ZyinHUDRenderer.RenderFloatingItemIcon(
-						x, y + animal.getHeight(), z, Blocks.HAY_BLOCK.asItem(), partialTickTime
-					);
-				}
-				else {
-					ZyinHUDRenderer.RenderFloatingItemIcon(
-						x, y + animal.getHeight(), z, Items.GOLDEN_CARROT, partialTickTime
-					);
-				}
-			}
-			else if (animal instanceof CowEntity) {
-				ZyinHUDRenderer.RenderFloatingItemIcon(x, y + animal.getHeight(), z, Items.WHEAT, partialTickTime);
-			}
-			else if (animal instanceof SheepEntity) {
-				ZyinHUDRenderer.RenderFloatingItemIcon(x, y + animal.getHeight(), z, Items.WHEAT, partialTickTime);
-			}
-			else if (animal instanceof PigEntity) {
-				ZyinHUDRenderer.RenderFloatingItemIcon(x, y + animal.getHeight(), z, Items.CARROT, partialTickTime);
-			}
-			else if (animal instanceof ChickenEntity) {
-				ZyinHUDRenderer.RenderFloatingItemIcon(
-					x, y + animal.getHeight(), z, Items.WHEAT_SEEDS, partialTickTime
-				);
-			}
-			else if (animal instanceof RabbitEntity) {
-				ZyinHUDRenderer.RenderFloatingItemIcon(x, y + animal.getHeight(), z, Items.CARROT, partialTickTime);
-			}
-			else if (animal instanceof WolfEntity && ((WolfEntity) animal).isTamed()) {
-				ZyinHUDRenderer.RenderFloatingItemIcon(x, y + animal.getHeight(), z, Items.BEEF, partialTickTime);
-			}
-			else if (animal instanceof WolfEntity && !((WolfEntity) animal).isTamed()) {
-				ZyinHUDRenderer.RenderFloatingItemIcon(x, y + animal.getHeight(), z, Items.BONE, partialTickTime);
-			}
-			else if (animal instanceof OcelotEntity) {
-				ZyinHUDRenderer.RenderFloatingItemIcon(
-					x, y + animal.getHeight(), z, Items.TROPICAL_FISH, partialTickTime
-				);
+			Item item = getBreedingItem(animal);
+			if (item != null) {
+				ZyinHUDRenderer.RenderFloatingItemIcon(x, y + animal.getHeight(), z, item, partialTickTime);
 			}
 		}
 		
@@ -346,6 +316,28 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		*/
 	}
 
+	//TODO: Support more of the new entities in Vanilla
+	@CheckForNull
+	private static Item getBreedingItem(AgeableEntity animal) {
+		//render the overlay icon indicating the item required to breed this entity
+		//_CHECK: There must be a better way of finding the correct item(s), but I cant seem to find any consistent means of doing so
+		//      I've noticed some entities override AnimalEntity.isBreedingItem(ItemStack)
+		//      for entities like wolves,
+		if (animal instanceof AbstractHorseEntity && ((AbstractHorseEntity) animal).isTame()) {
+			return animal instanceof LlamaEntity ? Blocks.HAY_BLOCK.asItem() : Items.GOLDEN_CARROT;
+		}
+		else if (animal instanceof CowEntity) {return Items.WHEAT; }
+		else if (animal instanceof SheepEntity) {return Items.WHEAT; }
+		else if (animal instanceof PigEntity) {return Items.CARROT; }
+		else if (animal instanceof ChickenEntity) {return Items.WHEAT_SEEDS; }
+		else if (animal instanceof RabbitEntity) {return Items.CARROT; }
+		else if (animal instanceof WolfEntity && ((WolfEntity) animal).isTamed()) {return Items.BEEF; }
+//      Bones are for taming, not breeding; maybe this should be another function?
+//		else if (animal instanceof WolfEntity && !((WolfEntity) animal).isTamed()) { return Items.BONE; }
+		else if (animal instanceof OcelotEntity) { return Items.TROPICAL_FISH;}
+		return null;
+	}
+
 	/**
 	 * Gets the status of the Animal Info
 	 *
@@ -356,7 +348,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		else if (Mode == AnimalInfoOptions.AnimalInfoModes.ON) {
 			return TextFormatting.WHITE + Localization.get("animalinfo.infoline");
 		}
-		else { return TextFormatting.WHITE + "???"; }
+		else { return TextFormatting.WHITE + "Animal Mode ERROR"; }
 	}
 
 	/**
@@ -365,10 +357,12 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 	 * @param horse
 	 * @return
 	 */
+	/*
 	private static int GetHorseBabyGrowingAgeAsPercent(AbstractHorseEntity horse) {
 		float horseGrowingAge = horse.getRenderScale();     //horse size ranges from 0.5 to 1
 		return (int) ((horseGrowingAge - 0.5f) * 2.0f * 100f);
 	}
+	*/
 
 	/**
 	 * Gets the time remaining before this animal can breed again
@@ -376,6 +370,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 	 * @param animal
 	 * @return null if the animal ready to breed or is a baby, otherwise "#:##" formatted string
 	 */
+	/*
 	private static String GetTimeUntilBreedAgain(AgeableEntity animal) {
 		int animalBreedingTime = animal.getGrowingAge();
 
@@ -386,6 +381,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 
 		return minutes + ':' + twoDigitFormat.format(seconds % 60);
 	}
+	*/
 
 	/**
 	 * Gets a "horse's" speed, colored based on how good it is.
@@ -571,8 +567,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 	 * @return the new boolean
 	 */
     /*
-    public static boolean ToggleShowBreedingTimers()
-    {
+    public static boolean ToggleShowBreedingTimers() {
     	return ShowBreedingTimers = !ShowBreedingTimers;
     }
     */

@@ -102,7 +102,7 @@ public class ZyinHUDRenderer {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-		RenderItemTexture(-8, -8, item, 16, 16);
+		RenderItemTexture(-8, -8, new ItemStack(item), 16, 16);
 
 		GL11AfterDrawInWorld();
 	}
@@ -116,7 +116,6 @@ public class ZyinHUDRenderer {
 
 	/**
 	 * Renders a texture at the specified location
-	 * Copy/pasted static version of Gui.func_175175_a()
 	 *
 	 * @param x      the x
 	 * @param y      the y
@@ -128,8 +127,22 @@ public class ZyinHUDRenderer {
 		// Don't use the deprecated IBakedModel.getParticleTexture method
 //        IBakedModel iBakedModel = mc.getItemRenderer().getItemModelMesher().getItemModel(new ItemStack(item));
 //        TextureAtlasSprite textureAtlasSprite = mc.getTextureMap().getAtlasSprite(iBakedModel.getParticleTexture().getName().toString());
-		TextureAtlasSprite textureAtlasSprite = mc.getItemRenderer().getItemModelMesher().getParticleIcon(
-			new ItemStack(item));
+
+		RenderItemTexture(x, y, new ItemStack(item), width, height);
+	}
+
+	/**
+	 * Renders the texture of an ItemStack at the specified location
+	 * More or less copy/pasted static version of what used to be Gui.func_175175_a()
+	 *
+	 * @param x         the x
+	 * @param y         the y
+	 * @param itemStack the ItemStack
+	 * @param width     the width
+	 * @param height    the height
+	 */
+	public static void RenderItemTexture(int x, int y, ItemStack itemStack, int width, int height) {
+		TextureAtlasSprite textureAtlasSprite = mc.getItemRenderer().getItemModelMesher().getParticleIcon(itemStack);
 		mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
 
 		RenderTexture(x, y, textureAtlasSprite, width, height, 0);

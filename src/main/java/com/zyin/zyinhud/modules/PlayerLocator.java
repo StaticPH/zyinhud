@@ -5,8 +5,8 @@ import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.LocatorOptions;
 import com.zyin.zyinhud.util.Localization;
 import net.minecraft.client.entity.player.RemoteClientPlayerEntity;
-import net.minecraft.client.gui.screen.ChatScreen;
 //import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -19,15 +19,17 @@ import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.passive.horse.HorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Items;
 import net.minecraft.item.DyeColor;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.Iterator;
 import java.util.Objects;
 
 //TODO: Tamed cats, maybe birds and other creatures?
@@ -93,9 +95,10 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	public static int getHorseArmorType(Iterable<ItemStack> armor_list) {
 		if (armor_list != null && armor_list.iterator().hasNext()) {
 			Item armor_single_item = armor_list.iterator().next().getItem();
-			if (armor_single_item == Items.IRON_HORSE_ARMOR) { return 1; }
-			else if (armor_single_item == Items.GOLDEN_HORSE_ARMOR) { return 2; }
-			else { return armor_single_item == Items.DIAMOND_HORSE_ARMOR ? 3 : 0; }
+			if (armor_single_item == Items.LEATHER_HORSE_ARMOR) { return 1; }
+			else if (armor_single_item == Items.IRON_HORSE_ARMOR) { return 2; }
+			else if (armor_single_item == Items.GOLDEN_HORSE_ARMOR) { return 3; }
+			else { return armor_single_item == Items.DIAMOND_HORSE_ARMOR ? 4 : 0; }
 		}
 		else { return 0; }
 	}
@@ -114,7 +117,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 		if (!(entity instanceof RemoteClientPlayerEntity ||
 		      entity instanceof WolfEntity ||
 		      entity instanceof WitherSkeletonEntity)) {
-			return;    //we only care about other players and wolves
+			return;    //we only care about other players and wolves( and wither skeletons)
 		}
 
 		//if the player is in the world
@@ -214,14 +217,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 
 			//also render whatever the player is currently riding on
 			if (entity.getRidingEntity() instanceof HorseEntity) {
-				//armor is 0 when no horse armor is equipped
-				Iterable<ItemStack> armor_list = entity.getRidingEntity().getArmorInventoryList();
-				int armor = getHorseArmorType(armor_list);
-
-				if (armor == 1) { RenderHorseArmorIronIcon(x, y); }
-				else if (armor == 2) { RenderHorseArmorGoldIcon(x, y); }
-				else if (armor == 3) { RenderHorseArmorDiamondIcon(x, y); }
-				else if (((HorseEntity) entity.getRidingEntity()).isHorseSaddled()) { RenderSaddleIcon(x, y); }
+				renderHorseArmorOrSaddleIcon((HorseEntity) (entity.getRidingEntity()), x, y);
 			}
 			if (entity.getRidingEntity() instanceof PigEntity) {
 				RenderSaddleIcon(x, y);
@@ -263,7 +259,32 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 		}
 	}
 
+	/**
+	 * If the horse is wearing anything at all in its armor slot, render that Item's icon.
+	 * If the horse is saddled, but the armor slot is empty, render the icon for a saddle.
+	 * If both the horse's saddle slot and armor slot are empty, do nothing 
+	 *
+	 * @param horse the HorseEntity for which to render the icon
+	 * @param x
+	 * @param y
+	 */
+	@ParametersAreNonnullByDefault
+	private static void renderHorseArmorOrSaddleIcon(HorseEntity horse, int x, int y) {
+		Iterator<ItemStack> armorIter = horse.getArmorInventoryList().iterator();
+		if (armorIter.hasNext()) {
+			itemRenderer.renderItemIntoGUI(armorIter.next(), x, y - 4);
+		}
+		else if (horse.isHorseSaddled()){
+			itemRenderer.renderItemIntoGUI(new ItemStack(Items.SADDLE), x, y - 4);
+		}
+		else{ return; }
+		GL11.glDisable(GL11.GL_LIGHTING);
+	}
 
+	//TODO: May want to look at condensing all of the myriad "RenderItemIcon" methods into a static final Map
+//      Or better yet, just create a single method that takes the Item to render as a parameter
+	
+	//FIXME?: this doesnt seem correct
 	private static boolean PlayerIsWolfsOwner(WolfEntity wolf) {
 		return wolf.isOnSameTeam(mc.player);
 	}
@@ -275,9 +296,9 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 		String overlayMessage;
 		if (witherSkeleton.hasCustomName()) {
 			overlayMessage = witherSkeleton.getName().getString();
-			overlayMessage += '(' + I18n.format("entity.WitherSkeleton.name") + ')';
+			overlayMessage += '(' + I18n.format("entity.minecraft.wither_skeleton") + ')';
 		}
-		else { overlayMessage = I18n.format("entity.WitherSkeleton.name"); }
+		else { overlayMessage = I18n.format("entity.minecraft.wither_skeleton"); }
 
 		//add distance to this wither skeleton into the message
 		if (ShowDistanceToPlayers) {
@@ -292,9 +313,9 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 
 		if (wolf.hasCustomName()) {
 			overlayMessage = Objects.requireNonNull(wolf.getCustomName()).getString() +
-			                 '(' + Localization.get("entity.Wolf.name") + ')';
+			                 '(' + Localization.get("entity.minecraft.wolf") + ')';
 		}
-		else { overlayMessage = Localization.get("entity.Wolf.name"); }
+		else { overlayMessage = Localization.get("entity.minecraft.wolf"); }
 
 		//add distance to this wolf into the message
 		if (ShowDistanceToPlayers) {
@@ -336,22 +357,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 		itemRenderer.renderItemIntoGUI(new ItemStack(Items.MINECART), x, y - 4);
 		GL11.glDisable(GL11.GL_LIGHTING);
 	}
-
-	private static void RenderHorseArmorDiamondIcon(int x, int y) {
-		itemRenderer.renderItemIntoGUI(new ItemStack(Items.DIAMOND_HORSE_ARMOR), x, y - 4);
-		GL11.glDisable(GL11.GL_LIGHTING);
-	}
-
-	private static void RenderHorseArmorGoldIcon(int x, int y) {
-		itemRenderer.renderItemIntoGUI(new ItemStack(Items.GOLDEN_HORSE_ARMOR), x, y - 4);
-		GL11.glDisable(GL11.GL_LIGHTING);
-	}
-
-	private static void RenderHorseArmorIronIcon(int x, int y) {
-		itemRenderer.renderItemIntoGUI(new ItemStack(Items.IRON_HORSE_ARMOR), x, y - 4);
-		GL11.glDisable(GL11.GL_LIGHTING);
-	}
-
+	
 	private static void RenderSaddleIcon(int x, int y) {
 		itemRenderer.renderItemIntoGUI(new ItemStack(Items.SADDLE), x, y - 4);
 		GL11.glDisable(GL11.GL_LIGHTING);

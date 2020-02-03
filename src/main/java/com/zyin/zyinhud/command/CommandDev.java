@@ -189,6 +189,7 @@ public class CommandDev implements ICommandBase {
 	                    return 1;
                     })
 		);
+		//FIXME: completion doesnt work for the /zhd alias
 		ICommandBase.registerAliasesStatic(
 			dispatcher, commandLiteral,
 			Collections.singletonList("zhd")
