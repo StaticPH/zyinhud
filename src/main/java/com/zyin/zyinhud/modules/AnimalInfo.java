@@ -255,35 +255,35 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		//a positive value means the horse has bred recently
 		int animalGrowingAge = animal.getGrowingAge();
 
-		ArrayList<String> multilineOverlayArrayList = new ArrayList<>();
+		ArrayList<String> multilineOverlayArray = new ArrayList<>();
 
 		if (ShowHorseStatsOverlay && animal instanceof AbstractHorseEntity) {
 			AbstractHorseEntity horse = (AbstractHorseEntity) animal;
 
-			multilineOverlayArrayList.add(GetHorseSpeedText(horse) + ' ' + Localization.get("animalinfo.overlay.speed"));
-			multilineOverlayArrayList.add(GetHorseHPText(horse) + ' ' + Localization.get("animalinfo.overlay.hp"));
-			multilineOverlayArrayList.add(GetHorseJumpText(horse) + ' ' + Localization.get("animalinfo.overlay.jump"));
+			multilineOverlayArray.add(GetHorseSpeedText(horse) + ' ' + Localization.get("animalinfo.overlay.speed"));
+			multilineOverlayArray.add(GetHorseHPText(horse) + ' ' + Localization.get("animalinfo.overlay.hp"));
+			multilineOverlayArray.add(GetHorseJumpText(horse) + ' ' + Localization.get("animalinfo.overlay.jump"));
 			if (animal instanceof LlamaEntity) {
-				multilineOverlayArrayList.add(
-					GetLlamaStrength((LlamaEntity) animal) + " " + Localization.get("animalinfo.overlay.strength")
+				multilineOverlayArray.add(
+					GetLlamaStrength((LlamaEntity) animal) + ' ' + Localization.get("animalinfo.overlay.strength")
 				);
 			}
 
 			//if (animalGrowingAge < 0)
-			//    multilineOverlayArrayList.add(GetHorseBabyGrowingAgeAsPercent(horse) + "%");
+			//    multilineOverlayArray.add(GetHorseBabyGrowingAgeAsPercent(horse) + "%");
 		}
         /* Breeding timer info no longer available on client in 1.8 (without talking to server);
            only whether the entity is a baby can be determined if the world is remote
     	if(ShowBreedingTimers && animal instanceof EntityAgeable)
         {
             if (animalGrowingAge > 0)	//if the animal has recently bred
-                multilineOverlayArrayList.add(GetTimeUntilBreedAgain(animal));
+                multilineOverlayArray.add(GetTimeUntilBreedAgain(animal));
         }
         */
 
-        //???: I wonder if it'd be better to do something like using a StringBuilder or Stream.reduce instead here
+		//???: I wonder if it'd be better to do something like using a StringBuilder or Stream.reduce instead here
 		String[] multilineOverlayMessage = new String[1];
-		multilineOverlayMessage = multilineOverlayArrayList.toArray(multilineOverlayMessage);
+		multilineOverlayMessage = multilineOverlayArray.toArray(multilineOverlayMessage);
 
 		if (multilineOverlayMessage[0] != null) {
 			//render the overlay message

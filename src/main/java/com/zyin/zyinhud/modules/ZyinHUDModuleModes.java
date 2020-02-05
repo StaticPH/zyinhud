@@ -23,7 +23,7 @@ public class ZyinHUDModuleModes {
 		 * I sure wouldn't; minimum increased from 0->1 */
 		public static final int minViewDistanceCutoff = 1;
 		/* Honestly, I think 120 is already a bit ridiculous, but we'll see */
-		public static final int maxViewDistanceCutoff = 120;
+		public static final int maxViewDistanceCutoff = 64;
 
 		/* The default number of decimal places to include when displaying animal stats */
 		public static final int defautNumberOfDecimalsDisplayed = 2;
@@ -114,7 +114,7 @@ public class ZyinHUDModuleModes {
 		}
 	}
 
-	public static class CompassOptions{
+	public static class CompassOptions {
 		public static final boolean defaultEnabled = true;
 	}
 
@@ -282,11 +282,11 @@ public class ZyinHUDModuleModes {
 //		public static final boolean defaultEnabled = true;
 //	}
 
-	public static class EnderPearlAidOptions{
+	public static class EnderPearlAidOptions {
 		public static final boolean defaultEnabled = true;
 	}
 
-	public static class FpsOptions{
+	public static class FpsOptions {
 		public static final boolean defaultEnabled = false;
 	}
 
@@ -451,13 +451,13 @@ public class ZyinHUDModuleModes {
 		}
 	}
 
-	public static class MiscOptions{
+	public static class MiscOptions {
 		public static final boolean ShowAnvilRepairs = true;
 		public static final boolean UseQuickPlaceSign = false;
 		public static final boolean UseUnlimitedSprintingSP = false;
 	}
 
-	public static class PotionAidOptions{
+	public static class PotionAidOptions {
 		public static final boolean defaultEnabled = true;
 	}
 
@@ -566,11 +566,11 @@ public class ZyinHUDModuleModes {
 		}
 	}
 
-	public static class TorchAidOptions{
+	public static class TorchAidOptions {
 		public static final boolean defaultEnabled = false;
 	}
 
-	public static class WeaponSwapOptions{
+	public static class WeaponSwapOptions {
 		public static final boolean defaultEnabled = true;
 	}
 }

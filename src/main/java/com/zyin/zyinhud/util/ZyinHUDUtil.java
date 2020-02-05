@@ -1,30 +1,23 @@
 package com.zyin.zyinhud.util;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.util.stream.Stream;
-
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.AnvilBlock;
+import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.CakeBlock;
 import net.minecraft.block.ContainerBlock;
-import net.minecraft.block.RedstoneDiodeBlock;
-import net.minecraft.block.TrapDoorBlock;
 import net.minecraft.block.CraftingTableBlock;
+import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.LeverBlock;
-import net.minecraft.block.DoorBlock;
-import net.minecraft.block.BedBlock;
-import net.minecraft.block.CakeBlock;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.RedstoneDiodeBlock;
+import net.minecraft.block.TrapDoorBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.texture.TextureManager;
+//import net.minecraft.client.renderer.ItemRenderer;
+//import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -34,18 +27,24 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.stream.Stream;
 
 /**
  * General utility class for ZyinHUD.
  */
 public class ZyinHUDUtil {
-	protected static Minecraft mc = Minecraft.getInstance();
-	protected static final ItemRenderer itemRenderer = mc.getItemRenderer();
-	protected static final TextureManager textureManager = mc.getTextureManager();
+//	private static final ItemRenderer itemRenderer = mc.getItemRenderer();
+//	private static final TextureManager textureManager = mc.getTextureManager();
 	private static final Method itemUseMethod =     // the private method: rightClickMouse()
 		ObfuscationReflectionHelper.findMethod(Minecraft.class, "func_147121_ag");
+	private static Minecraft mc = Minecraft.getInstance();
 
-	public static boolean doesScreenShowHUD(Screen screen){
+	public static boolean doesScreenShowHUD(Screen screen) {
 		return (screen == null || screen instanceof ChatScreen);
 	}
 
@@ -218,9 +217,9 @@ public class ZyinHUDUtil {
 		}
 	}
 
-	public static <T> boolean objectEqualsAnyOf(Object object, T[] possibilities){
-		for (T thing : possibilities){
-			if (object.equals(thing)){ return true; }
+	public static <T> boolean objectEqualsAnyOf(Object object, T[] possibilities) {
+		for (T thing : possibilities) {
+			if (object.equals(thing)) { return true; }
 		}
 		return false;
 	}
@@ -229,7 +228,6 @@ public class ZyinHUDUtil {
 	 * Extremely minimal Object for holding a <tt>double[]</tt> that must always contain exactly 3 values
 	 * The only available methods are the static <tt>create</tt> method, whose parameters cannot be null,
 	 * and the <tt>get</tt> method, which returns the internal double[].
-	 * This class is totally unnecessary, but I wanted to do it this way, so I did.
 	 */
 	@ParametersAreNonnullByDefault
 	public static final class Array3d {

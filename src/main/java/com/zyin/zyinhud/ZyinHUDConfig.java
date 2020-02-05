@@ -26,6 +26,8 @@ public class ZyinHUDConfig {
 	public static ForgeConfigSpec SPEC_OVERRIDE;
 	public static Builder BUILDER_OVERRIDE;
 
+	public static final String CATEGORY_DEBUG = "debug options";
+
 	public static final String CATEGORY_ANIMALINFO = "animalinfo";
 	public static final String CATEGORY_CLOCK = "clock";
 	public static final String CATEGORY_COMPASS = "compass";
@@ -46,6 +48,14 @@ public class ZyinHUDConfig {
 	public static final String CATEGORY_SAFEOVERLAY = "safeoverlay";
 	public static final String CATEGORY_TORCHAID = "torchaid";
 	public static final String CATEGORY_WEAPONSWAP = "weaponswap";
+
+	// ######################################################################
+	// Mod Debugging Options
+	// ######################################################################
+	// Enable/Disable logging whenever any of the mod's keybindings receive input, and what key they are bound to
+	public static BooleanValue EnableLoggingKeybindInputs;
+	// Enable/Disable logging every entity found by any module that deals with entities in the world.
+	public static BooleanValue EnableLoggingAllEntitiesFound;
 
 	// ######################################################################
 	// Animal(Mainly Horse) Info Module
@@ -344,6 +354,28 @@ public class ZyinHUDConfig {
 	//      add configurable lists of namespaced items(/?tags?) for quickdeposit to treat as tools, weapons, torches, or arrows
 	//          or just provide a data Tag in the zyinhud namespace for each, and let the end user deal with it?
 	private static void configure(Builder builder, Builder builder_override) {
+		// ######################################################################
+		// Mod Debugging Options
+		// ######################################################################
+		builder.comment(
+			"These options control certain logging/debugging code for this mod.",
+			"NOTE: these options may result in decreased performance, very large log files, and/or console spam.",
+			"You probably shouldn't change these unless you know what you're doing."
+		).push(CATEGORY_DEBUG);
+		{
+			EnableLoggingKeybindInputs = builder
+				.comment(
+					"Enable/Disable logging whenever any of the mod's keybindings receive input, and what key they are bound to"
+				)
+				.define("EnableLoggingKeybindInputs", false);
+			EnableLoggingAllEntitiesFound = builder
+				.comment(
+					"Enable/Disable logging every entity found by any module that deals with entities in the world."
+				)
+				.define("EnableLoggingAllEntitiesFound", false);
+		}
+		builder.pop();
+
 		// ######################################################################
 		// Animal(Mainly Horse) Info Module
 		// ######################################################################
@@ -931,7 +963,6 @@ public class ZyinHUDConfig {
 		// ######################################################################
 		// Weapon Swap Module
 		// ######################################################################
-
 		builder.comment(
 			"Weapon Swap allows you to quickly select your sword and bow."
 		).push(CATEGORY_WEAPONSWAP);
@@ -954,6 +985,10 @@ public class ZyinHUDConfig {
 	@SubscribeEvent
 	public static void onFileChange(final ModConfig.ConfigReloading configEvent) {
 		ZyinHUD.ZyinLogger.fatal("Zyin's HUD config just got changed on the file system!");
+//		ModConfig config = configEvent.getConfig();
+//		if (config.getModId().equals(MODID)){
+//			do stuff??
+//		}
 	}
 
 	public static ForgeConfigSpec getConfigSpec() {

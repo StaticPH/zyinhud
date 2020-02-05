@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourcePackInfo;
 import net.minecraft.resources.ResourcePackList;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextComponent;
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -48,6 +50,11 @@ public class CommandDev implements ICommandBase {
 			packNames(getResourcepacks(srcContext).getEnabledPacks()), suggestionBuilder
 		);
 	};
+	private static final SuggestionProvider<CommandSource> SUGGEST_TAGS = (srcContext, suggestionBuilder) -> {
+		return ISuggestionProvider.suggest(
+			ItemTags.getCollection().getTagMap().values().stream().map(Object::toString), suggestionBuilder
+		);
+	};
 
 	private static ResourcePackList<ResourcePackInfo> getResourcepacks(CommandContext<CommandSource> ctx) {
 		return ctx.getSource().getServer().getResourcePacks();
@@ -57,9 +64,38 @@ public class CommandDev implements ICommandBase {
 		return packs.stream().map(ResourcePackInfo::getName).map(StringArgumentType::escapeIfRequired);
 	}
 
+	private static String tryFindWithTag(String itemTagName) {
+		Collection<Tag<Item>> allItemTags = ItemTags.getCollection().getTagMap().values();
+
+		// We don't care about tags that don't match
+		allItemTags.removeIf(tag -> {
+			if (itemTagName.contains(":")) {
+				return !(tag.toString().equals(itemTagName));
+			}
+			else {
+				// If itemTagName lacks a namespace, assume it is part of the "minecraft" namespace
+				return !(tag.toString().equals("minecraft:" + itemTagName));
+			}
+		});
+
+		if (allItemTags.isEmpty()) {return "";} // If no tags matched, return a zero-length string
+
+		else {
+			//Return a comma-separated list of all items tagged with itemTagName
+			return allItemTags.stream()
+			                  .flatMap(itemTag -> itemTag.getAllElements().stream())
+			                  .map(Item::toString)
+			                  .collect(Collectors.joining(", "));
+		}
+	}
+
+	static <T extends Tag<?>> T getTagFromResource(Function<ResourceLocation, T> creator, ResourceLocation tag) {
+		return creator.apply(tag);
+	}
+
 	private static class SubCommands {
 		public static final ArgumentBuilder<CommandSource, ?> t2_showTagsOnHeldItem = showTagsOnHeldItem();
-		//		public static final ArgumentBuilder<CommandSource, ?> t2_showItemsWithTag;
+		public static final ArgumentBuilder<CommandSource, ?> t2_showItemsWithTag = showItemsWithTag();
 		public static final ArgumentBuilder<CommandSource, ?> t2_listKnownItemTags = listKnownItemTags();
 		public static final ArgumentBuilder<CommandSource, ?> t2_listKnownBlockTags = listKnownBlockTags();
 		public static final ArgumentBuilder<CommandSource, ?> t1_Tags = cmd_t1_Tags();
@@ -72,20 +108,20 @@ public class CommandDev implements ICommandBase {
 		public static ArgumentBuilder<CommandSource, ?> cmd_t1_Tags() {
 			return Commands.literal("tags")
 			               .then(t2_showTagsOnHeldItem)
-//		                .then(t2_showItemsWithTag)
-                           .then(t2_listKnownBlockTags)
-                           .then(t2_listKnownItemTags);
+			               .then(t2_showItemsWithTag)
+			               .then(t2_listKnownBlockTags)
+			               .then(t2_listKnownItemTags);
 		}
 
 		public static ArgumentBuilder<CommandSource, ?> cmd_t1_TestWorldRules() {
 			return Commands.literal("world_rules")
 			               .requires(src -> src.hasPermissionLevel(2))
 			               .executes(ctx -> {
-			               	    for (String cmd: firstCommandsInTestWorld){
+				               for (String cmd : firstCommandsInTestWorld) {
 //				                    ctx.getSource().asPlayer().getServer().sendMessage(new StringTextComponent(cmd));
-				                    Minecraft.getInstance().player.sendChatMessage(cmd);
-			                    }
-			               	    return 0;
+					               Minecraft.getInstance().player.sendChatMessage(cmd);
+				               }
+				               return 0;
 			               });
 		}
 
@@ -97,36 +133,37 @@ public class CommandDev implements ICommandBase {
 				Set tags = heldItem.getTags();
 
 				if (tags.isEmpty()) {
-					respond(heldItem + " has 0 DataTags", source);
+					respond(source, heldItem + " has 0 DataTags");
 				}
 				else {
-					respond(heldItem + " has " + tags.size() + " DataTags:\n" + tags, source);
+					respond(source, heldItem + " has " + tags.size() + " DataTags:\n" + tags);
 				}
 				return 0;
 			});
 		}
 
-/*  WIP
 		private static ArgumentBuilder<CommandSource, ?> showItemsWithTag() {
 			return Commands.literal("withTag")
 			               .then(tagNameArg())
 			               .executes(ctx -> {
-				               respond("No TagName provided", ctx.getSource());
+				               respond(ctx.getSource(), "No ItemTag name provided");
 				               return 1;
 			               });
 		}
 
-		private static ArgumentBuilder<CommandSource, ?> tagNameArg(){
-			return Commands.argument("Tagname", StringArgumentType.string())
-			               .suggests()
-			//			ForgeRegistries.ITEMS.
-			//getResourceNamespaces ??
-			//getAllResources   ??
-			//getAllResourceLocations   ??
-			//Minecraft.getInstance().getConnection().networkTagManager.*.tagMap[INDEX] ---> ResourceLocation for individual tag
-			//      ->  .value.taggedItems ---> Collection of all Items with that tag!!
+		private static ArgumentBuilder<CommandSource, ?> tagNameArg() {
+			return Commands.argument("ItemTagName", StringArgumentType.string())
+			               .suggests(SUGGEST_TAGS)
+			               .executes(ctx -> {
+				               String argument = StringArgumentType.getString(ctx, "ItemTagName");
+				               String results = tryFindWithTag(argument);
+				               String reply = results.isEmpty() ?
+				                              "Unable to find Items with Tag \"" + argument + "\"" :
+				                              "Found " + results.length() + " Items tagged with \"" + argument + "\"  :  " + results;
+				               respond(ctx.getSource(), reply);
+				               return results.length();
+			               });
 		}
-		*/
 
 		private static ArgumentBuilder<CommandSource, ?> listKnownItemTags() {
 			return Commands.literal("allItemTags").executes(ctx -> {
@@ -135,7 +172,7 @@ public class CommandDev implements ICommandBase {
 					        .map(ResourceLocation::toString)
 					        .collect(Collectors.joining(", "))
 				);
-				respond(response, ctx.getSource());
+				respond(ctx.getSource(), response);
 				return 0;
 			});
 		}
@@ -147,7 +184,7 @@ public class CommandDev implements ICommandBase {
 					         .map(ResourceLocation::toString)
 					         .collect(Collectors.joining(", "))
 				);
-				respond(response, ctx.getSource());
+				respond(ctx.getSource(), response);
 				return 0;
 			});
 		}
@@ -185,7 +222,7 @@ public class CommandDev implements ICommandBase {
                     .then(SubCommands.t1_Tags)
                     .then(SubCommands.t1_firstThingInTestWorld)
                     .executes((command) -> {
-	                    respond("No operation provided.", command.getSource());
+	                    respond(command.getSource(), "No operation provided.");
 	                    return 1;
                     })
 		);
@@ -196,19 +233,19 @@ public class CommandDev implements ICommandBase {
 		);
 	}
 
-	private static <T extends TextComponent> void respond(T component, CommandSource source) {
+	private static <T extends TextComponent> void respond(CommandSource source, T component) {
 		source.sendFeedback(component, true);
 	}
 
-	private static <T extends TextComponent> void respond(T component, PlayerEntity player) {
+	private static <T extends TextComponent> void respond(PlayerEntity player, T component) {
 		player.sendMessage(component);
 	}
 
-	private static void respond(String component, CommandSource source) {
-		respond(new StringTextComponent(component), source);
+	private static void respond(CommandSource source, String component) {
+		respond(source, new StringTextComponent(component));
 	}
 
-	private static void respond(String component, PlayerEntity player) {
-		respond(new StringTextComponent(component), player);
+	private static void respond(PlayerEntity player, String component) {
+		respond(player, new StringTextComponent(component));
 	}
 }

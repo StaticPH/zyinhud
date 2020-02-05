@@ -6,7 +6,6 @@ import com.zyin.zyinhud.modules.ZyinHUDModuleModes.LocatorOptions;
 import com.zyin.zyinhud.util.Localization;
 import net.minecraft.client.entity.player.RemoteClientPlayerEntity;
 //import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -31,6 +30,8 @@ import org.lwjgl.opengl.GL11;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Iterator;
 import java.util.Objects;
+
+import static com.zyin.zyinhud.util.ZyinHUDUtil.doesScreenShowHUD;
 
 //TODO: Tamed cats, maybe birds and other creatures?
 
@@ -123,9 +124,11 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 		//if the player is in the world
 		//and not looking at a menu
 		//and F3 not pressed
-		if (PlayerLocator.Enabled && Mode == LocatorOptions.LocatorModes.ON &&
-		    (mc.mouseHelper.isMouseGrabbed() || mc.currentScreen == null || mc.currentScreen instanceof ChatScreen) &&
-		    !mc.gameSettings.showDebugInfo) {
+		if (
+			PlayerLocator.Enabled && Mode == LocatorOptions.LocatorModes.ON &&
+			(mc.mouseHelper.isMouseGrabbed() || doesScreenShowHUD(mc.currentScreen)) &&
+			!mc.gameSettings.showDebugInfo
+		) {
 
 			//only show entities that are close by
 			float distanceFromMe = mc.player.getDistance(entity);
@@ -262,7 +265,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	/**
 	 * If the horse is wearing anything at all in its armor slot, render that Item's icon.
 	 * If the horse is saddled, but the armor slot is empty, render the icon for a saddle.
-	 * If both the horse's saddle slot and armor slot are empty, do nothing 
+	 * If both the horse's saddle slot and armor slot are empty, do nothing
 	 *
 	 * @param horse the HorseEntity for which to render the icon
 	 * @param x
@@ -274,16 +277,16 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 		if (armorIter.hasNext()) {
 			itemRenderer.renderItemIntoGUI(armorIter.next(), x, y - 4);
 		}
-		else if (horse.isHorseSaddled()){
+		else if (horse.isHorseSaddled()) {
 			itemRenderer.renderItemIntoGUI(new ItemStack(Items.SADDLE), x, y - 4);
 		}
-		else{ return; }
+		else { return; }
 		GL11.glDisable(GL11.GL_LIGHTING);
 	}
 
 	//TODO: May want to look at condensing all of the myriad "RenderItemIcon" methods into a static final Map
 //      Or better yet, just create a single method that takes the Item to render as a parameter
-	
+
 	//FIXME?: this doesnt seem correct
 	private static boolean PlayerIsWolfsOwner(WolfEntity wolf) {
 		return wolf.isOnSameTeam(mc.player);
@@ -357,7 +360,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 		itemRenderer.renderItemIntoGUI(new ItemStack(Items.MINECART), x, y - 4);
 		GL11.glDisable(GL11.GL_LIGHTING);
 	}
-	
+
 	private static void RenderSaddleIcon(int x, int y) {
 		itemRenderer.renderItemIntoGUI(new ItemStack(Items.SADDLE), x, y - 4);
 		GL11.glDisable(GL11.GL_LIGHTING);

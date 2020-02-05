@@ -33,9 +33,13 @@ import com.zyin.zyinhud.modules.TorchAid;
 
 import javax.annotation.Nonnull;
 
+import static java.util.Arrays.stream;
+import static com.zyin.zyinhud.ZyinHUDConfig.EnableLoggingKeybindInputs;
+
 public class ZyinHUDKeyHandlers {
-	private final static Minecraft mc = Minecraft.getInstance();
+	private static final Minecraft mc = Minecraft.getInstance();
 	private static final MouseHelper mouseHelper = new MouseHelper(mc);
+	private static boolean doLogKeybindInputs = EnableLoggingKeybindInputs.get();
 	public static final Logger logger = LogManager.getLogger(ZyinHUDKeyHandlers.class);
 
 	/**
@@ -126,8 +130,13 @@ public class ZyinHUDKeyHandlers {
 	public void KeyInputEvent(KeyInputEvent event) {
 		//KeyInputEvent will not fire when looking at a GuiScreen - 1.7.2
 
-		//if 2 KeyBindings have the same hotkey, only 1 will be flagged as "pressed" in getIsKeyPressed(),
-		//which one ends up getting pressed in that scenario is undetermined
+		if (doLogKeybindInputs) {
+			stream(KEY_BINDINGS)
+				.filter(KeyBinding::isKeyDown)
+				.forEach(key -> logger.debug(
+					"Keybinding {} (bound to '{}') is being held", key.getLocalizedName(), key.getKeyDescription()
+				));
+		}
 
 		if (KEY_BINDINGS[0].isKeyDown()) { AnimalInfoKeyHandler.Pressed(event); }
 		else if (KEY_BINDINGS[1].isKeyDown()) { CoordinatesKeyHandler.Pressed(event); } //THIS WILL NOT FIRE ON A Screen

@@ -3,17 +3,14 @@ package com.zyin.zyinhud.helper;
 import com.zyin.zyinhud.modules.PlayerLocator;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.LocatorOptions;
 import com.zyin.zyinhud.util.ZyinHUDUtil;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.RemoteClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.WitherSkeletonEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
@@ -22,6 +19,10 @@ import org.lwjgl.opengl.GL11;
 import javax.annotation.Nonnull;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.function.Predicate;
+
+import static com.zyin.zyinhud.helper.EntityTrackerHelper.findEntities;
+import static com.zyin.zyinhud.util.ZyinHUDUtil.doesScreenShowHUD;
 
 /**
  * The EntityTrackerHUDHelper calculates the (x,y) position on the HUD for
@@ -29,11 +30,12 @@ import java.nio.IntBuffer;
  */
 public class HUDEntityTrackerHelper {
 	private static final Minecraft mc = Minecraft.getInstance();
-	private static final double pi = Math.PI;
-	private static final double twoPi = 2 * Math.PI;
+	private static final Logger logger = LogManager.getLogger(HUDEntityTrackerHelper.class);
 	private static FloatBuffer modelMatrix = BufferUtils.createFloatBuffer(16);
 	private static FloatBuffer projMatrix = BufferUtils.createFloatBuffer(16);
-	public static final Logger logger = LogManager.getLogger(HUDEntityTrackerHelper.class);
+	private static final Predicate<Entity> maybeTrack = (entity) -> (entity instanceof RemoteClientPlayerEntity ||
+	                                                                 entity instanceof WolfEntity ||
+	                                                                 entity instanceof WitherSkeletonEntity);
 
 	/**
 	 * Stores world render transform matrices for later use when rendering HUD.
@@ -51,7 +53,7 @@ public class HUDEntityTrackerHelper {
 	 * <p>
 	 * Place new rendering methods for modules in this function.
 	 *
-	 * @param entity
+	 * @param entity which entity the information is about
 	 * @param x      location on the HUD
 	 * @param y      location on the HUD
 	 */
@@ -80,12 +82,11 @@ public class HUDEntityTrackerHelper {
 	public static void RenderEntityInfo(float partialTickTime) {
 		PlayerLocator.numOverlaysRendered = 0;
 
-		if (PlayerLocator.Enabled && PlayerLocator.Mode == LocatorOptions.LocatorModes.ON && mc.isGameFocused()) {
+		if (
+			PlayerLocator.Enabled && PlayerLocator.Mode == LocatorOptions.LocatorModes.ON &&
+			mc.isGameFocused() && doesScreenShowHUD(mc.currentScreen)
+		) {
 			PlayerEntity player = mc.player;
-
-			double meX = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTickTime;
-			double meY = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTickTime;
-			double meZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTickTime;
 
 			// direction the player is facing
 			Vec3d lookDir = player.getLook(partialTickTime);
@@ -99,42 +100,20 @@ public class HUDEntityTrackerHelper {
 			IntBuffer viewport = BufferUtils.createIntBuffer(16);
 			GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
 
-			// Best guess at a way to iterate through all loaded entities
-			// if unmapped name doesnt work, try entitiesById
-			//_CHECK: ClientWorld or ServerWorld?
-			Int2ObjectMap<Entity> entitiesById =
-				ObfuscationReflectionHelper.getPrivateValue(ClientWorld.class, mc.world, "field_217429_b");
-			if (entitiesById == null) { return; }
-
-			//iterate over all the loaded Entity objects and find just the entities we are tracking
-			for (Entity entity : entitiesById.values()) {
-				//???: RESEMBLES https://github.com/Vazkii/Neat/blob/master/src/main/java/vazkii/neat/HealthBarRenderer.java#L105
-
-//				if (object == null) { continue; }   already covered by subsequent instanceof checks
-
-				//only track entities that we are tracking (i.e. other players/wolves/witherskeletons)
-				//TODO: consider replacing this check and the loop as a whole with
-				//      entitiesById.values().stream().filter(STUFF_HERE).forEach(MORE_STUFF);
-				if (!(entity instanceof RemoteClientPlayerEntity ||
-				      entity instanceof WolfEntity ||
-				      entity instanceof WitherSkeletonEntity)) { continue; }
-
-				double entityX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTickTime;
-				double entityY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTickTime;
-				double entityZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTickTime;
+			//iterate over all the loaded Entity objects and find just the entities we are tracking (i.e. other players/wolves/witherskeletons)
+			for (Entity entity : findEntities(mc.world, maybeTrack, logger)) {
+				// This shouldn't be necessary, given that the predicate will always fails for null values...
+				// But the inspector is being obnoxious, and this shuts it up
+				if (entity == null) {continue;}
 
 				// direction to target entity
-				Vec3d toEntity = new Vec3d(entityX - meX, entityY - meY, entityZ - meZ);
-
-				float x = (float) toEntity.x;
-				float y = (float) toEntity.y;
-				float z = (float) toEntity.z;
+				Vec3d toEntity = entity.getPositionVec().subtract(player.getPositionVec());
 
 				double dist = Math.sqrt(toEntity.lengthSquared());
-				toEntity = toEntity.normalize();
-				ZyinHUDUtil.Array3d coords = (lookDir.dotProduct(toEntity) <= 0.02) ?
-				                             createDummyTargetLocation(lookDir, toEntity, dist) :
-				                             ZyinHUDUtil.Array3d.create(x, y, z);
+				Vec3d toEntityNormal = toEntity.normalize();
+				Vec3d targetVec = (lookDir.dotProduct(toEntityNormal) <= 0.02) ?
+				                  createDummyTargetLocation(lookDir, toEntityNormal, dist) :
+				                  toEntity;
 
 				FloatBuffer screenCoords = BufferUtils.createFloatBuffer(3);
 
@@ -143,8 +122,8 @@ public class HUDEntityTrackerHelper {
 
 				// map target's entity coordinates into window coordinates
 				// using world render transform matrices stored by StoreMatrices()
-				ZyinHUDUtil.ProjectionHelper.mapTargetCoordsToWindowCoords(
-					coords, modelMatrix, projMatrix, viewport, screenCoords
+				ZyinHUDUtil.ProjectionHelper.mapTargetVecToWindowCoords(
+					targetVec, modelMatrix, projMatrix, viewport, screenCoords
 				);
 
 				renderHudAtScaledCoordinates(entity, screenCoords);
@@ -153,15 +132,12 @@ public class HUDEntityTrackerHelper {
 	}
 
 	@Nonnull
-	private static ZyinHUDUtil.Array3d createDummyTargetLocation(Vec3d lookDir, Vec3d toEntity, double dist) {
-		float x;
-		float y;
-		float z;
-		ZyinHUDUtil.Array3d coords;// angle between vectors is greater than about 89 degrees, so
+	private static Vec3d createDummyTargetLocation(Vec3d lookDir, Vec3d toEntity, double dist) {
+		// angle between vectors is greater than about 89 degrees, so
 		// create a dummy target location that is 89 degrees away from look direction
 		// along the arc between look direction and direction to target entity
 
-		final double angle = 89.0 * pi / 180;
+		final double angle = 89.0 * Math.PI / 180;
 		final double sin = Math.sin(angle);
 		final double cos = Math.cos(angle);
 
@@ -185,11 +161,11 @@ public class HUDEntityTrackerHelper {
 
 		// transform (multiply) look direction vector with rotation matrix and scale by distance to target entity;
 		// this produces the coordinates for the dummy target
-		x = (float) (dist * (m00 * lookDir.x + m01 * lookDir.y + m02 * lookDir.z));
-		y = (float) (dist * (m10 * lookDir.x + m11 * lookDir.y + m12 * lookDir.z));
-		z = (float) (dist * (m20 * lookDir.x + m21 * lookDir.y + m22 * lookDir.z));
-		coords = ZyinHUDUtil.Array3d.create(x, y, z);
-		return coords;
+		return new Vec3d(
+			(float) (dist * (m00 * lookDir.x + m01 * lookDir.y + m02 * lookDir.z)), //x
+			(float) (dist * (m10 * lookDir.x + m11 * lookDir.y + m12 * lookDir.z)), //y
+			(float) (dist * (m20 * lookDir.x + m21 * lookDir.y + m22 * lookDir.z))  //z
+		);
 	}
 
 	private static void renderHudAtScaledCoordinates(Entity entity, FloatBuffer screenCoords) {

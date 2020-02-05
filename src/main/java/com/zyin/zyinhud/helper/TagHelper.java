@@ -9,6 +9,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.ShearsItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
@@ -36,7 +37,7 @@ public class TagHelper {
 		}
 
 		static Tag<Block> tag(String namespace, String name) {
-			return tag(net.minecraft.tags.BlockTags.Wrapper::new, namespace, name);
+			return tag(BlockTags.Wrapper::new, namespace, name);
 		}
 	}
 

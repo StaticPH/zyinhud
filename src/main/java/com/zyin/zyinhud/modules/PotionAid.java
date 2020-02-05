@@ -1,5 +1,17 @@
 package com.zyin.zyinhud.modules;
 
+import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.ZyinHUDRenderer;
+import com.zyin.zyinhud.util.InventoryUtil;
+import com.zyin.zyinhud.util.Localization;
+import com.zyin.zyinhud.util.ZyinHUDUtil;
+import net.minecraft.inventory.container.Slot;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.PotionItem;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.PotionUtils;
+
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.awt.event.InputEvent;
@@ -7,19 +19,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import com.zyin.zyinhud.ZyinHUDConfig;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.Item;
-import net.minecraft.item.PotionItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.PotionUtils;
-
-import com.zyin.zyinhud.ZyinHUDRenderer;
-import com.zyin.zyinhud.util.InventoryUtil;
-import com.zyin.zyinhud.util.Localization;
-import com.zyin.zyinhud.util.ZyinHUDUtil;
 
 /**
  * Potion Aid allows the player to drink potions in their inventory by calling its Drink() method.
