@@ -133,7 +133,7 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 						GL11.glScalef(DurabilityIconScale, DurabilityIconScale, DurabilityIconScale);
 
 						if (ShowIndividualArmorIcons) {
-							RenderItemIcon(itemStack, xPos, (yPos + (numArmors * toolIconHeight)));
+							RenderItemIconWithDurability(itemStack, xPos, (yPos + (numArmors * toolIconHeight)));
 							numArmors++;
 						}
 						else {
@@ -149,7 +149,7 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 						GL11.glScalef(DurabilityIconScale, DurabilityIconScale, DurabilityIconScale);
 
 						//Render the item icon, pushing it to the right if armor is also being rendered
-						RenderItemIcon(
+						RenderItemIconWithDurability(
 							itemStack,
 							(armorExists && ShowArmorDurability) ? xPos : (xPos + toolIconWidth),
 							(yPos + (numTools * toolIconHeight))
@@ -171,7 +171,7 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 	 * @param x         the x
 	 * @param y         the y
 	 */
-	protected static void RenderItemIcon(ItemStack itemStack, int x, int y) {
+	protected static void RenderItemIconWithDurability(ItemStack itemStack, int x, int y) {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);    //so the enchanted item effect is rendered properly
 
 		//render the item with enchant effect

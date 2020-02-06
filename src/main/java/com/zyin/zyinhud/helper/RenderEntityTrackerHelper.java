@@ -3,13 +3,10 @@ package com.zyin.zyinhud.helper;
 import com.zyin.zyinhud.modules.AnimalInfo;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.function.Predicate;
-
+import static com.zyin.zyinhud.helper.EntityTrackerHelper.animalInfoMaybeTrack;
 import static com.zyin.zyinhud.helper.EntityTrackerHelper.findEntities;
 import static com.zyin.zyinhud.modules.ZyinHUDModuleModes.AnimalInfoOptions.AnimalInfoModes;
 import static com.zyin.zyinhud.util.ZyinHUDUtil.doesScreenShowHUD;
@@ -20,9 +17,6 @@ import static com.zyin.zyinhud.util.ZyinHUDUtil.doesScreenShowHUD;
 public class RenderEntityTrackerHelper {
 	private static Minecraft mc = Minecraft.getInstance();
 	public static final Logger logger = LogManager.getLogger(RenderEntityTrackerHelper.class);
-	private static final Predicate<Entity> maybeTrack = (entity) -> (
-		entity instanceof LivingEntity && !(entity instanceof PlayerEntity)
-	);
 
 	/**
 	 * Send information about the positions of entities to modules that need this information.
@@ -48,7 +42,7 @@ public class RenderEntityTrackerHelper {
 			//        And consider renaming this class to AnimalTrackerHelper,
 			//        or even just merging it into AnimalInfo
 			//Iterate over all the loaded Entity objects and find just the non-player creatures
-			findEntities(mc.world, maybeTrack, logger).forEach(
+			findEntities(mc.world, animalInfoMaybeTrack, logger).forEach(
 				entity -> RenderEntityInfoInWorld(entity, partialTickTime)
 			);
 		}

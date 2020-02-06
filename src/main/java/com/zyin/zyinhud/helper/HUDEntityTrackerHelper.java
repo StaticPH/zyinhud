@@ -5,10 +5,7 @@ import com.zyin.zyinhud.modules.ZyinHUDModuleModes.LocatorOptions;
 import com.zyin.zyinhud.util.ZyinHUDUtil;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.RemoteClientPlayerEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.monster.WitherSkeletonEntity;
-import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import org.apache.logging.log4j.LogManager;
@@ -19,9 +16,9 @@ import org.lwjgl.opengl.GL11;
 import javax.annotation.Nonnull;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.function.Predicate;
 
 import static com.zyin.zyinhud.helper.EntityTrackerHelper.findEntities;
+import static com.zyin.zyinhud.helper.EntityTrackerHelper.playerLocatorMaybeTrack;
 import static com.zyin.zyinhud.util.ZyinHUDUtil.doesScreenShowHUD;
 
 /**
@@ -33,9 +30,6 @@ public class HUDEntityTrackerHelper {
 	private static final Logger logger = LogManager.getLogger(HUDEntityTrackerHelper.class);
 	private static FloatBuffer modelMatrix = BufferUtils.createFloatBuffer(16);
 	private static FloatBuffer projMatrix = BufferUtils.createFloatBuffer(16);
-	private static final Predicate<Entity> maybeTrack = (entity) -> (entity instanceof RemoteClientPlayerEntity ||
-	                                                                 entity instanceof WolfEntity ||
-	                                                                 entity instanceof WitherSkeletonEntity);
 
 	/**
 	 * Stores world render transform matrices for later use when rendering HUD.
@@ -101,7 +95,7 @@ public class HUDEntityTrackerHelper {
 			GL11.glGetIntegerv(GL11.GL_VIEWPORT, viewport);
 
 			//iterate over all the loaded Entity objects and find just the entities we are tracking (i.e. other players/wolves/witherskeletons)
-			for (Entity entity : findEntities(mc.world, maybeTrack, logger)) {
+			for (Entity entity : findEntities(mc.world, playerLocatorMaybeTrack, logger)) {
 				// This shouldn't be necessary, given that the predicate will always fails for null values...
 				// But the inspector is being obnoxious, and this shuts it up
 				if (entity == null) {continue;}

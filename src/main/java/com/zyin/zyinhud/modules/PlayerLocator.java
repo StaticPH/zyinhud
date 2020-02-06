@@ -6,7 +6,6 @@ import com.zyin.zyinhud.modules.ZyinHUDModuleModes.LocatorOptions;
 import com.zyin.zyinhud.util.Localization;
 import net.minecraft.client.entity.player.RemoteClientPlayerEntity;
 //import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.BoatEntity;
@@ -27,10 +26,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.Iterator;
-import java.util.Objects;
 
+import static com.zyin.zyinhud.helper.EntityTrackerHelper.getLocalizedEntityType;
+import static com.zyin.zyinhud.helper.EntityTrackerHelper.playerLocatorMaybeTrack;
 import static com.zyin.zyinhud.util.ZyinHUDUtil.doesScreenShowHUD;
 
 //TODO: Tamed cats, maybe birds and other creatures?
@@ -71,8 +72,6 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 
 	private static final ResourceLocation iconsResourceLocation = new ResourceLocation("textures/gui/icons.png");
 
-	private static final double pi = Math.PI;
-
 	private static final String sprintingMessagePrefix = "";
 	private static final String sneakingMessagePrefix = TextFormatting.ITALIC.toString();
 	private static final String ridingMessagePrefix = "    ";    //space for the saddle/minecart/boat/horse armor icon
@@ -111,15 +110,11 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	 * @param x      location on the HUD
 	 * @param y      location on the HUD
 	 */
-	@SuppressWarnings("ConstantConditions")
 	public static void RenderEntityInfoOnHUD(Entity entity, int x, int y) {
 		if (numOverlaysRendered > maxNumberOfOverlays) { return; }
 
-		if (!(entity instanceof RemoteClientPlayerEntity ||
-		      entity instanceof WolfEntity ||
-		      entity instanceof WitherSkeletonEntity)) {
-			return;    //we only care about other players and wolves( and wither skeletons)
-		}
+		//we only care about other players and wolves( and wither skeletons)
+		if (!(playerLocatorMaybeTrack.test(entity))) { return; }
 
 		//if the player is in the world
 		//and not looking at a menu
@@ -137,14 +132,15 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 			if (distanceFromMe > maxViewDistanceCutoff || distanceFromMe < viewDistanceCutoff || distanceFromMe == 0) {
 				return;
 			}
+			//make room for any icons we will need space to render later
+			String overlayMessage = entity.getRidingEntity() != null ? "    " : "";
 
-			String overlayMessage = "";
 			int rgb = 0xFFFFFF;
 			//calculate the color of the overlayMessage based on the distance from me
 			int alpha = (int) (0x55 + 0xAA * ((maxViewDistanceCutoff - distanceFromMe) / maxViewDistanceCutoff));
 
 			if (entity instanceof RemoteClientPlayerEntity) {
-				overlayMessage = GetOverlayMessageForOtherPlayer((RemoteClientPlayerEntity) entity, distanceFromMe);
+				overlayMessage = getOverlayMessageForEntity(entity, distanceFromMe);
 
 				//format the string to be the same color as that persons team color
 				ScorePlayerTeam team = (ScorePlayerTeam) entity.getTeam();
@@ -153,7 +149,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 			else if (entity instanceof WolfEntity) {
 				if (!ShowWolves || !PlayerIsWolfsOwner((WolfEntity) entity)) { return; }
 
-				overlayMessage = GetOverlayMessageForWolf((WolfEntity) entity, distanceFromMe);
+				overlayMessage = getOverlayMessageForEntity(entity, distanceFromMe);
 
 				if (UseWolfColors) {
 					DyeColor collarColor = ((WolfEntity) entity).getCollarColor();
@@ -173,17 +169,12 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 			else if (entity instanceof WitherSkeletonEntity) {
 				if (!ShowWitherSkeletons) { return; }
 
-				overlayMessage = GetOverlayMessageForWitherSkeleton((WitherSkeletonEntity) entity, distanceFromMe);
+				overlayMessage = getOverlayMessageForEntity(entity, distanceFromMe);
 
 				rgb = 0x555555;
 				alpha = alpha / 6;
 			}
 			//Else some kind of hacky nonsense is taking place
-
-			//make room for any icons we render
-			if (entity.getRidingEntity() != null) {
-				overlayMessage = "    " + overlayMessage;
-			}
 
 			//the width in pixels of the message
 			int overlayMessageWidth = mc.fontRenderer.getStringWidth(overlayMessage);
@@ -219,17 +210,8 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 			mc.fontRenderer.drawStringWithShadow(overlayMessage, x, y, color);
 
 			//also render whatever the player is currently riding on
-			if (entity.getRidingEntity() instanceof HorseEntity) {
-				renderHorseArmorOrSaddleIcon((HorseEntity) (entity.getRidingEntity()), x, y);
-			}
-			if (entity.getRidingEntity() instanceof PigEntity) {
-				RenderSaddleIcon(x, y);
-			}
-			else if (entity.getRidingEntity() instanceof AbstractMinecartEntity) {
-				RenderMinecartIcon(x, y);
-			}
-			else if (entity.getRidingEntity() instanceof BoatEntity) {
-				RenderBoatIcon(x, y, ((BoatEntity) entity.getRidingEntity()).getItemBoat());
+			if (entity.isPassenger()) {
+				renderRidingIcon(entity, x, y);
 			}
 			else if (entity instanceof PlayerEntity && ((PlayerEntity) entity).isElytraFlying()) {
 				RenderElytraIcon(x, y);
@@ -238,34 +220,55 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 			//if showing player health is turned on, render the hp and a heart icon under their name
 			//but don't show health for mobs, such as Wither Skeletons
 			if (ShowPlayerHealth && !(entity instanceof MonsterEntity)) {
-				int numHearts = (int) ((((LivingEntity) entity).getHealth() + 1) / 2);
-				String hpOverlayMessage = numHearts + "";
-
-				int hpOverlayMessageWidth = mc.fontRenderer.getStringWidth(hpOverlayMessage);
-				int offsetX = (overlayMessageWidth - hpOverlayMessageWidth - 9) / 2;
-
-				mc.fontRenderer.drawStringWithShadow(hpOverlayMessage, x + offsetX, y + 10, (alpha << 24) + 0xFFFFFF);
-
-				GL11.glColor4f(1f, 1f, 1f, ((float) alpha) / 0xFF);
-				//black outline of the heart icon
-				ZyinHUDRenderer.RenderCustomTexture(
-					x + offsetX + hpOverlayMessageWidth + 1, y + 9, 16, 0, 9, 9, iconsResourceLocation, 1f
-				);
-				//red interior of the heart icon
-				ZyinHUDRenderer.RenderCustomTexture(
-					x + offsetX + hpOverlayMessageWidth + 1, y + 9, 52, 0, 9, 9, iconsResourceLocation, 1f
-				);
-				GL11.glColor4f(1f, 1f, 1f, 1f);
+				showOtherPlayerHealth((LivingEntity) entity, x, y, alpha, overlayMessageWidth);
 			}
 
 			numOverlaysRendered++;
 		}
 	}
 
+	private static void showOtherPlayerHealth(LivingEntity entity, int x, int y, int alpha, int overlayMessageWidth) {
+		int numHearts = (int) ((entity.getHealth() + 1) / 2);
+		String hpOverlayMessage = numHearts + "";
+
+		int hpOverlayMessageWidth = mc.fontRenderer.getStringWidth(hpOverlayMessage);
+		int offsetX = (overlayMessageWidth - hpOverlayMessageWidth - 9) / 2;
+
+		mc.fontRenderer.drawStringWithShadow(hpOverlayMessage, x + offsetX, y + 10, (alpha << 24) + 0xFFFFFF);
+
+		GL11.glColor4f(1f, 1f, 1f, ((float) alpha) / 0xFF);
+		//black outline of the heart icon
+		ZyinHUDRenderer.RenderCustomTexture(
+			x + offsetX + hpOverlayMessageWidth + 1, y + 9, 16, 0, 9, 9, iconsResourceLocation, 1f
+		);
+		//red interior of the heart icon
+		ZyinHUDRenderer.RenderCustomTexture(
+			x + offsetX + hpOverlayMessageWidth + 1, y + 9, 52, 0, 9, 9, iconsResourceLocation, 1f
+		);
+		GL11.glColor4f(1f, 1f, 1f, 1f);
+	}
+
+	private static void renderRidingIcon(Entity entity, int x, int y) {
+		if (entity.getRidingEntity() instanceof HorseEntity) {
+			renderHorseArmorOrSaddleIcon((HorseEntity) (entity.getRidingEntity()), x, y);
+		}
+		if (entity.getRidingEntity() instanceof PigEntity) {
+			RenderSaddleIcon(x, y);
+		}
+		else if (entity.getRidingEntity() instanceof AbstractMinecartEntity) {
+			renderItemIconIntoGUI(
+				((AbstractMinecartEntity) entity.getRidingEntity()).getCartItem(), x, y
+			);
+		}
+		else if (entity.getRidingEntity() instanceof BoatEntity) {
+			renderItemIconIntoGUI(((BoatEntity) entity.getRidingEntity()).getItemBoat(), x, y);
+		}
+	}
+
 	/**
 	 * If the horse is wearing anything at all in its armor slot, render that Item's icon.
 	 * If the horse is saddled, but the armor slot is empty, render the icon for a saddle.
-	 * If both the horse's saddle slot and armor slot are empty, do nothing
+	 * If both the horse's saddle slot and armor slot are empty, do nothing.
 	 *
 	 * @param horse the HorseEntity for which to render the icon
 	 * @param x
@@ -275,67 +278,41 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	private static void renderHorseArmorOrSaddleIcon(HorseEntity horse, int x, int y) {
 		Iterator<ItemStack> armorIter = horse.getArmorInventoryList().iterator();
 		if (armorIter.hasNext()) {
-			itemRenderer.renderItemIntoGUI(armorIter.next(), x, y - 4);
+			renderItemIconIntoGUI(armorIter.next(), x, y);
 		}
 		else if (horse.isHorseSaddled()) {
-			itemRenderer.renderItemIntoGUI(new ItemStack(Items.SADDLE), x, y - 4);
+			RenderSaddleIcon(x, y);
 		}
-		else { return; }
-		GL11.glDisable(GL11.GL_LIGHTING);
 	}
-
-	//TODO: May want to look at condensing all of the myriad "RenderItemIcon" methods into a static final Map
-//      Or better yet, just create a single method that takes the Item to render as a parameter
 
 	//FIXME?: this doesnt seem correct
 	private static boolean PlayerIsWolfsOwner(WolfEntity wolf) {
 		return wolf.isOnSameTeam(mc.player);
 	}
 
+	@Nonnull
+	private static String getOverlayMessageForEntity(Entity entity, float distanceFromMe) {
+		String overlayMessage = "";
 
-	private static String GetOverlayMessageForWitherSkeleton(
-		WitherSkeletonEntity witherSkeleton, float distanceFromMe
-	) {
-		String overlayMessage;
-		if (witherSkeleton.hasCustomName()) {
-			overlayMessage = witherSkeleton.getName().getString();
-			overlayMessage += '(' + I18n.format("entity.minecraft.wither_skeleton") + ')';
-		}
-		else { overlayMessage = I18n.format("entity.minecraft.wither_skeleton"); }
-
-		//add distance to this wither skeleton into the message
+		//add distance to this entity into the message
 		if (ShowDistanceToPlayers) {
-			overlayMessage = TextFormatting.GRAY + "[" + (int) distanceFromMe + "] " + TextFormatting.RESET + overlayMessage;
+			overlayMessage = TextFormatting.GRAY + "[" + (int) distanceFromMe + "] " + TextFormatting.RESET;
 		}
 
-		return overlayMessage;
+		if (entity instanceof RemoteClientPlayerEntity) {
+			return finishOverlayForOtherPlayer((RemoteClientPlayerEntity) entity, overlayMessage);
+		}
+		else if (entity.hasCustomName()) {
+			assert entity.getCustomName() != null;
+			return overlayMessage + entity.getCustomName().getString() + '(' + getLocalizedEntityType(entity) + ')';
+		}
+		else {
+			return overlayMessage + getLocalizedEntityType(entity);
+		}
 	}
 
-	private static String GetOverlayMessageForWolf(WolfEntity wolf, float distanceFromMe) {
-		String overlayMessage;
-
-		if (wolf.hasCustomName()) {
-			overlayMessage = Objects.requireNonNull(wolf.getCustomName()).getString() +
-			                 '(' + Localization.get("entity.minecraft.wolf") + ')';
-		}
-		else { overlayMessage = Localization.get("entity.minecraft.wolf"); }
-
-		//add distance to this wolf into the message
-		if (ShowDistanceToPlayers) {
-			overlayMessage = TextFormatting.GRAY + "[" + (int) distanceFromMe + "] " + TextFormatting.RESET + overlayMessage;
-		}
-
-		return overlayMessage;
-	}
-
-
-	private static String GetOverlayMessageForOtherPlayer(RemoteClientPlayerEntity otherPlayer, float distanceFromMe) {
-		String overlayMessage = otherPlayer.getDisplayName().getString();
-
-		//add distance to this player into the message
-		if (ShowDistanceToPlayers) {
-			overlayMessage = TextFormatting.GRAY + "[" + (int) distanceFromMe + "] " + TextFormatting.RESET + overlayMessage;
-		}
+	private static String finishOverlayForOtherPlayer(RemoteClientPlayerEntity otherPlayer, String baseMsg) {
+		String overlayMessage = baseMsg + otherPlayer.getDisplayName().getString();
 
 		//add special effects based on what the other player is doing
 		if (otherPlayer.isSprinting()) {
@@ -345,33 +322,29 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 			overlayMessage = sneakingMessagePrefix + overlayMessage;    //italics
 		}
 		if (otherPlayer.isPassenger() || otherPlayer.isElytraFlying()) {   //this doesn't work on some servers
-			overlayMessage = ridingMessagePrefix + overlayMessage;        //space for the saddle and horse armor icons
+			overlayMessage = ridingMessagePrefix + overlayMessage;        //space for the saddle and other icons
 		}
 
 		return overlayMessage;
 	}
 
-	private static void RenderBoatIcon(int x, int y, Item boat) {
-		itemRenderer.renderItemIntoGUI(new ItemStack(boat), x, y - 4);
+	private static void renderItemIconIntoGUI(ItemStack itemStack, int x, int y) {
+		itemRenderer.renderItemIntoGUI(itemStack, x, y - 4);
 		GL11.glDisable(GL11.GL_LIGHTING);
 	}
 
-	private static void RenderMinecartIcon(int x, int y) {
-		itemRenderer.renderItemIntoGUI(new ItemStack(Items.MINECART), x, y - 4);
-		GL11.glDisable(GL11.GL_LIGHTING);
+	private static void renderItemIconIntoGUI(Item item, int x, int y) {
+		renderItemIconIntoGUI(new ItemStack(item), x, y);
 	}
 
 	private static void RenderSaddleIcon(int x, int y) {
-		itemRenderer.renderItemIntoGUI(new ItemStack(Items.SADDLE), x, y - 4);
-		GL11.glDisable(GL11.GL_LIGHTING);
+		renderItemIconIntoGUI(new ItemStack(Items.SADDLE), x, y);
 	}
 
 	private static void RenderElytraIcon(int x, int y) {
-		itemRenderer.renderItemIntoGUI(new ItemStack(Items.ELYTRA), x, y - 4);
-		GL11.glDisable(GL11.GL_LIGHTING);
+		renderItemIconIntoGUI(new ItemStack(Items.ELYTRA), x, y);
 	}
-    
-	
+
     /*
     public static double AngleBetweenTwoVectors(Vec3 a, Vec3 b)
     {
@@ -394,7 +367,6 @@ public class PlayerLocator extends ZyinHUDModuleBase {
     	return sign * angle;
     }
     */
-
 
 	/**
 	 * Gets the status of the Player Locator
@@ -453,5 +425,4 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	public static boolean ToggleShowWitherSkeletons() {
 		return ShowWitherSkeletons = !ShowWitherSkeletons;
 	}
-
 }

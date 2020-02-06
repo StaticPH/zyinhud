@@ -93,10 +93,6 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 	private static final int goodHorseHPThreshold = 24;
 	private static final int badHorseHPThreshold = 20;            //min: 15
 
-	//UNUSED?
-//	private static final int verticalSpaceBetweenLines = 10;    //space between the overlay lines (because it is more than one line)
-//	public static final int maxNumberOfOverlays = 200;    //render only the first nearest 50 overlays
-
 	private static DecimalFormat decimalFormat = GetDecimalFormat();
 	private static DecimalFormat twoDigitFormat = new DecimalFormat("00");
 
@@ -301,7 +297,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		) {
 			Item item = getBreedingItem(animal);
 			if (item != null) {
-				ZyinHUDRenderer.RenderFloatingItemIcon(x, y + animal.getHeight(), z, item, partialTickTime);
+				ZyinHUDRenderer.RenderFloatingItemIcon(x, y, z, item, partialTickTime);
 			}
 		}
 		

@@ -83,7 +83,10 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 				//single chest, double chest, donkey/mules, hopper, dropper, dispenser
 				InventoryUtil.DepositAllMatchingItemsInContainer(onlyDepositMatchingItems, IgnoreItemsInHotbar);
 
-				if (CloseChestAfterDepositing) { mc.player.closeScreen(); }
+				if (CloseChestAfterDepositing) {
+//					mc.currentScreen.onClose();
+					mc.player.closeScreen();
+				}
 			}
 
 			ZyinHUDSound.PlayButtonPress();

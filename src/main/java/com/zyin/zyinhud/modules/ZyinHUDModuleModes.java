@@ -407,9 +407,9 @@ public class ZyinHUDModuleModes {
 		public static final boolean defaultEnabled = true;
 		public static LocatorModes locatorMode;
 
-		public static final int minViewDistanceCutoff = 0;
+		public static final int minViewDistanceCutoff = 1;
 		public static final int maxViewDistanceCutoff = 130;    //realistic max distance the game will render entities: up to ~115 blocks away
-		public static final int defaultViewDistanceCutoff = 0;
+		public static final int defaultViewDistanceCutoff = 1;
 		public static final boolean defaultShowDistanceToPlayers = false;
 		public static final boolean defaultShowPlayerHealth = false;
 		public static final boolean defaultShowWitherSkeletons = false;

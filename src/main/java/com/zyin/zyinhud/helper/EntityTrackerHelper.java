@@ -1,12 +1,21 @@
 package com.zyin.zyinhud.helper;
 
+import com.zyin.zyinhud.util.Localization;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import net.minecraft.client.entity.player.RemoteClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.monster.WitherSkeletonEntity;
+import net.minecraft.entity.passive.WolfEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -15,6 +24,15 @@ import java.util.stream.Collectors;
 import static com.zyin.zyinhud.ZyinHUDConfig.EnableLoggingAllEntitiesFound;
 
 public class EntityTrackerHelper {
+	public static final Predicate<Entity> playerLocatorMaybeTrack = (entity) -> (
+		entity instanceof RemoteClientPlayerEntity ||
+		entity instanceof WolfEntity ||
+		entity instanceof WitherSkeletonEntity
+	);
+	public static final Predicate<Entity> animalInfoMaybeTrack = (entity) -> (
+		entity instanceof LivingEntity && !(entity instanceof PlayerEntity)
+	);
+
 	@Nonnull
 	public static Collection<Entity> findEntities(ClientWorld clientWorld) {
 		return findEntities(clientWorld, (entity -> true), null);
@@ -51,5 +69,23 @@ public class EntityTrackerHelper {
 			                   })
 			                   .collect(Collectors.toList());
 		}
+	}
+
+	@ParametersAreNonnullByDefault
+	public static String getUnlocalizedName(Entity entity) {
+		return entity.getType().getTranslationKey();
+	}
+
+	@ParametersAreNonnullByDefault
+	public static String getLocalizedEntityType(Entity entity) {
+		return Localization.get(entity.getType().getTranslationKey());
+	}
+
+	@CheckForNull
+	@ParametersAreNonnullByDefault
+	public static String getRegistryName(Entity entity) {
+		//TODO:decide between Try-catch or null check
+		ResourceLocation registryName = entity.getType().getRegistryName();
+		return registryName != null ? registryName.toString() : null;
 	}
 }
