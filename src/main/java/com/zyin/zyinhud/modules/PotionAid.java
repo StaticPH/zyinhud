@@ -27,7 +27,7 @@ public class PotionAid extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled = ZyinHUDConfig.EnablePotionAid.get();
+	public static boolean isEnabled = ZyinHUDConfig.enablePotionAid.get();
 	/**
 	 * Use this instance for all instance method calls.
 	 */
@@ -60,38 +60,38 @@ public class PotionAid extends ZyinHUDModuleBase {
 	 *
 	 * @return The state the module was changed to
 	 */
-	public static boolean ToggleEnabled() {
-		ZyinHUDConfig.EnablePotionAid.set(!Enabled);
-		ZyinHUDConfig.EnablePotionAid.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return Enabled = !Enabled;
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enablePotionAid.set(!isEnabled);
+		ZyinHUDConfig.enablePotionAid.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
 	/**
 	 * Makes the player drink a potion item on their hotbar or in their inventory.
 	 */
-	public void Drink() {
+	public void drinkPotion() {
 		//make sure we're not about to click on a right-clickable thing
-		if (ZyinHUDUtil.IsMouseoveredBlockRightClickable()) { return; }
+		if (ZyinHUDUtil.isMouseoveredBlockRightClickable()) { return; }
 
 		if (isCurrentlyDrinking) {
 			//if we're drinking and we try to drink again, then cancel whatever we're drinking
 			//by releasing right click, and swapping the potion back to its correct position
-			StopDrinking();
+			stopDrinking();
 			return;
 		}
 		else {
-			potionItemIndex = GetMostAppropriatePotionItemIndexFromInventory();
+			potionItemIndex = getMostAppropriatePotionItemIndexFromInventory();
 			if (potionItemIndex < 0) {
-				ZyinHUDRenderer.DisplayNotification(Localization.get("potionaid.noappropriatepotions"));
+				ZyinHUDRenderer.displayNotification(Localization.get("potionaid.noappropriatepotions"));
 				return;
 			}
 
 			if (potionItemIndex > 35 && potionItemIndex < 45) {
-				StartDrinkingFromHotbar(potionItemIndex);//on the hotbar
+				startDrinkingFromHotbar(potionItemIndex);//on the hotbar
 			}
 			else {
 				//if(potionItemIndex  > 8 && potionItemIndex < 36)	//in the inventory
-				StartDrinkingFromInventory(potionItemIndex);
+				startDrinkingFromInventory(potionItemIndex);
 			}
 		}
 	}
@@ -101,11 +101,11 @@ public class PotionAid extends ZyinHUDModuleBase {
 	 *
 	 * @param potionHotbarIndex 36-44
 	 */
-	private void StartDrinkingFromHotbar(int potionHotbarIndex) {
+	private void startDrinkingFromHotbar(int potionHotbarIndex) {
 		if (potionHotbarIndex < 36 | potionHotbarIndex > 44) { return; }
 
 		currentItemHotbarIndex = mc.player.inventory.currentItem;
-		potionHotbarIndex = InventoryUtil.TranslateInventoryIndexToHotbarIndex(potionHotbarIndex);
+		potionHotbarIndex = InventoryUtil.translateInventoryIndexToHotbarIndex(potionHotbarIndex);
 
 		int previouslySelectedHotbarSlotIndex = mc.player.inventory.currentItem;
 		mc.player.inventory.currentItem = potionHotbarIndex;
@@ -116,7 +116,7 @@ public class PotionAid extends ZyinHUDModuleBase {
 
 		//after this timer runs out we'll release right click to stop eating and select the previously selected item
 		drinkTimerTask = new StopDrinkingTimerTask(r, previouslySelectedHotbarSlotIndex);
-		timer.schedule(drinkTimerTask, potionDrinkDuration + InventoryUtil.GetSuggestedItemSwapDelay());
+		timer.schedule(drinkTimerTask, potionDrinkDuration + InventoryUtil.getSuggestedItemSwapDelay());
 	}
 
 	/**
@@ -124,11 +124,11 @@ public class PotionAid extends ZyinHUDModuleBase {
 	 *
 	 * @param potionInventoryIndex 9-35
 	 */
-	private void StartDrinkingFromInventory(int potionInventoryIndex) {
+	private void startDrinkingFromInventory(int potionInventoryIndex) {
 		if (potionInventoryIndex < 9 | potionInventoryIndex > 35) { return; }
 
-		currentItemInventoryIndex = InventoryUtil.GetCurrentlySelectedItemInventoryIndex();
-		InventoryUtil.Swap(currentItemInventoryIndex, potionInventoryIndex);
+		currentItemInventoryIndex = InventoryUtil.getCurrentlySelectedItemInventoryIndex();
+		InventoryUtil.swap(currentItemInventoryIndex, potionInventoryIndex);
 
 		r.mousePress(InputEvent.BUTTON3_MASK); //perform a right click
 		isCurrentlyDrinking = true;
@@ -138,8 +138,9 @@ public class PotionAid extends ZyinHUDModuleBase {
 		drinkTimerTask = new StopDrinkingTimerTask(r);
 		timer.schedule(drinkTimerTask, potionDrinkDuration);
 		swapTimerTask = InventoryUtil.instance
-			.SwapWithDelay(currentItemInventoryIndex, potionInventoryIndex,
-			               potionDrinkDuration + InventoryUtil.GetSuggestedItemSwapDelay()
+			.swapWithDelay(
+				currentItemInventoryIndex, potionInventoryIndex,
+				potionDrinkDuration + InventoryUtil.getSuggestedItemSwapDelay()
 			);
 	}
 
@@ -147,20 +148,20 @@ public class PotionAid extends ZyinHUDModuleBase {
 	/**
 	 * Stops eating by releasing right click and moving the food back to its original position.
 	 */
-	public void StopDrinking() {
-		if (previousDrinkFromHotbar) { StopDrinkingFromHotbar(); }
-		else { StopDrinkingFromInventory(); }
+	public void stopDrinking() {
+		if (previousDrinkFromHotbar) { stopDrinkingFromHotbar(); }
+		else { stopDrinkingFromInventory(); }
 	}
 
-	private void StopDrinkingFromInventory() {
+	private void stopDrinkingFromInventory() {
 		r.mouseRelease(InputEvent.BUTTON3_MASK); //release right click
 		drinkTimerTask.cancel();
 		swapTimerTask.cancel();
-		InventoryUtil.Swap(currentItemInventoryIndex, potionItemIndex);
+		InventoryUtil.swap(currentItemInventoryIndex, potionItemIndex);
 		isCurrentlyDrinking = false;
 	}
 
-	private void StopDrinkingFromHotbar() {
+	private void stopDrinkingFromHotbar() {
 		r.mouseRelease(InputEvent.BUTTON3_MASK); //release right click
 		drinkTimerTask.cancel();
 		mc.player.inventory.currentItem = currentItemHotbarIndex;
@@ -189,7 +190,7 @@ public class PotionAid extends ZyinHUDModuleBase {
 	 *
 	 * @return the index in your inventory that has the most appropriate potion to drink (9-34), or -1 if no appropriate potions found.
 	 */
-	public int GetMostAppropriatePotionItemIndexFromInventory() {//_CHECK that i dont actually want to use container.inventorySlots instead
+	public int getMostAppropriatePotionItemIndexFromInventory() {//_CHECK that i dont actually want to use container.inventorySlots instead
 		List inventorySlots = mc.player.inventory.mainInventory;
 
 		//indexes of potions in the player's inventory

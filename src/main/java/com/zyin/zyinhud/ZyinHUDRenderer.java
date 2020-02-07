@@ -42,21 +42,21 @@ public class ZyinHUDRenderer {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void RenderGameOverlayEvent(RenderGameOverlayEvent event) {
+	public void onRenderGameOverlayEvent(RenderGameOverlayEvent event) {
 		//render everything onto the screen
 		if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
-			InfoLine.RenderOntoHUD();
-			DistanceMeasurer.RenderOntoHUD();
-			DurabilityInfo.RenderOntoHUD();
-//            PotionTimers.RenderOntoHUD();
+			InfoLine.renderOntoHUD();
+			DistanceMeasurer.renderOntoHUD();
+			DurabilityInfo.renderOntoHUD();
+//            PotionTimers.renderOntoHUD();
 
 			//Call other modules that need to render things on the HUD near entities
-			HUDEntityTrackerHelper.RenderEntityInfo(event.getPartialTicks());
+			HUDEntityTrackerHelper.renderEntityInfo(event.getPartialTicks());
 
-			ItemSelector.RenderOntoHUD(event.getPartialTicks());
+			ItemSelector.renderOntoHUD(event.getPartialTicks());
 		}
 		else if (event.getType() == RenderGameOverlayEvent.ElementType.DEBUG) {
-			AnimalInfo.RenderOntoDebugMenu();
+			AnimalInfo.renderOntoDebugMenu();
 		}
 
 
@@ -75,15 +75,15 @@ public class ZyinHUDRenderer {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void RenderWorldLastEvent(RenderWorldLastEvent event) {
+	public void onRenderWorldLastEvent(RenderWorldLastEvent event) {
 		//render unsafe positions (cache calculations are done from this render method)
-		SafeOverlay.instance.RenderAllUnsafePositionsMultithreaded(event.getPartialTicks());
+		SafeOverlay.instance.renderAllUnsafePositionsMultithreaded(event.getPartialTicks());
 
 		//calls other modules that need to render things in the game world nearby other entities
-		RenderEntityTrackerHelper.RenderEntityInfo(event.getPartialTicks());
+		RenderEntityTrackerHelper.renderEntityInfo(event.getPartialTicks());
 
 		//store world render transform matrices for later use when rendering HUD
-		HUDEntityTrackerHelper.StoreMatrices();
+		HUDEntityTrackerHelper.storeMatrices();
 	}
 
 
@@ -96,20 +96,20 @@ public class ZyinHUDRenderer {
 	 * @param item            the item
 	 * @param partialTickTime the partial tick time
 	 */
-	public static void RenderFloatingItemIcon(float x, float y, float z, Item item, float partialTickTime) {
-		GL11BeforeDrawInWorld(x, y, z, 0.025f, 0.75f, partialTickTime);
+	public static void renderFloatingItemIcon(float x, float y, float z, Item item, float partialTickTime) {
+		beforeGL11DrawInWorld(x, y, z, 0.025f, 0.75f, partialTickTime);
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-		RenderItemTexture(-8, -8, new ItemStack(item), 16, 16);
+		renderItemTexture(-8, -8, new ItemStack(item), 16, 16);
 
-		GL11AfterDrawInWorld();
+		afterGL11DrawInWorld();
 	}
 
    /* @SubscribeEvent
     public void RenderGameOverlay(RenderGameOverlayEvent.Pre event) {
-        if (event.getType().equals(RenderGameOverlayEvent.ElementType.POTION_ICONS) && !PotionTimers.ShowVanillaStatusEffectHUD) {
+        if (event.getType().equals(RenderGameOverlayEvent.ElementType.POTION_ICONS) && !PotionTimers.showVanillaStatusEffectHUD) {
             event.setCanceled(true);
         }
     }*/
@@ -123,12 +123,12 @@ public class ZyinHUDRenderer {
 	 * @param width  the width
 	 * @param height the height
 	 */
-	public static void RenderItemTexture(int x, int y, Item item, int width, int height) {
+	public static void renderItemTexture(int x, int y, Item item, int width, int height) {
 		// Don't use the deprecated IBakedModel.getParticleTexture method
 //        IBakedModel iBakedModel = mc.getItemRenderer().getItemModelMesher().getItemModel(new ItemStack(item));
 //        TextureAtlasSprite textureAtlasSprite = mc.getTextureMap().getAtlasSprite(iBakedModel.getParticleTexture().getName().toString());
 
-		RenderItemTexture(x, y, new ItemStack(item), width, height);
+		renderItemTexture(x, y, new ItemStack(item), width, height);
 	}
 
 	/**
@@ -141,11 +141,11 @@ public class ZyinHUDRenderer {
 	 * @param width     the width
 	 * @param height    the height
 	 */
-	public static void RenderItemTexture(int x, int y, ItemStack itemStack, int width, int height) {
+	public static void renderItemTexture(int x, int y, ItemStack itemStack, int width, int height) {
 		TextureAtlasSprite textureAtlasSprite = mc.getItemRenderer().getItemModelMesher().getParticleIcon(itemStack);
 		mc.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
 
-		RenderTexture(x, y, textureAtlasSprite, width, height, 0);
+		renderTexture(x, y, textureAtlasSprite, width, height, 0);
 	}
 
 	/**
@@ -156,7 +156,7 @@ public class ZyinHUDRenderer {
 	 * @param width
 	 * @param height
 	 */
-    /*public static void RenderBlockTexture(int x, int y, Block block, int width, int height)
+    /*public static void renderBlockTexture(int x, int y, Block block, int width, int height)
     {
         TextureAtlasSprite textureAtlasSprite = mc.getBlockRendererDispatcher().func_175023_a().func_178122_a(block.getDefaultState());
         mc.getTextureManager().bindTexture(TextureMap.locationBlocksTexture);
@@ -177,7 +177,7 @@ public class ZyinHUDRenderer {
 	 * @param resourceLocation A reference to the texture's ResourceLocation. If null, it'll use the last used resource.
 	 * @param scale            How much to scale the texture by when rendering it
 	 */
-	public static void RenderCustomTexture(
+	public static void renderCustomTexture(
 		int x, int y, int u, int v, int width, int height,
 		ResourceLocation resourceLocation, float scale
 	) {
@@ -204,8 +204,8 @@ public class ZyinHUDRenderer {
 	 * @param height
 	 * @param zLevel
 	 */
-	@SuppressWarnings("SameParameterValue")
-	private static void RenderTexture(
+	@SuppressWarnings({"SameParameterValue"})
+	private static void renderTexture(
 		int x, int y, TextureAtlasSprite textureAtlasSprite,
 		int width, int height, double zLevel
 	) {
@@ -217,17 +217,17 @@ public class ZyinHUDRenderer {
 			DefaultVertexFormats.POSITION_TEX
 		);    //I have no clue what the DefaultVertexFormats are, but POSITION_TEX(=field_181707_g) works
 
-		worldrenderer.pos((double) (x), (double) (y + height), (double) zLevel)
-		             .tex((double) textureAtlasSprite.getMaxU(), (double) textureAtlasSprite.getMaxV())
+		worldrenderer.pos(x, y + height, zLevel)
+		             .tex(textureAtlasSprite.getMaxU(), textureAtlasSprite.getMaxV())
 		             .endVertex();
-		worldrenderer.pos((double) (x + width), (double) (y + height), (double) zLevel)
-		             .tex((double) textureAtlasSprite.getMinU(), (double) textureAtlasSprite.getMaxV())
+		worldrenderer.pos(x + width, y + height, zLevel)
+		             .tex(textureAtlasSprite.getMinU(), textureAtlasSprite.getMaxV())
 		             .endVertex();
-		worldrenderer.pos((double) (x + width), (double) (y), (double) zLevel)
-		             .tex((double) textureAtlasSprite.getMinU(), (double) textureAtlasSprite.getMinV())
+		worldrenderer.pos(x + width, y, zLevel)
+		             .tex(textureAtlasSprite.getMinU(), textureAtlasSprite.getMinV())
 		             .endVertex();
-		worldrenderer.pos((double) (x), (double) (y), (double) zLevel)
-		             .tex((double) textureAtlasSprite.getMaxU(), (double) textureAtlasSprite.getMinV())
+		worldrenderer.pos(x, y, zLevel)
+		             .tex(textureAtlasSprite.getMaxU(), textureAtlasSprite.getMinV())
 		             .endVertex();
 
 		tessellator.draw();
@@ -245,10 +245,10 @@ public class ZyinHUDRenderer {
 	 * @param renderBlackBackground render a pretty black border behind the text?
 	 * @param partialTickTime       Usually taken from RenderWorldLastEvent.partialTicks variable
 	 */
-	public static void RenderFloatingText(
+	public static void renderFloatingText(
 		String text, float x, float y, float z, int color, boolean renderBlackBackground, float partialTickTime
 	) {
-		RenderFloatingText(new String[]{text}, x, y, z, color, renderBlackBackground, partialTickTime);
+		renderFloatingText(new String[]{text}, x, y, z, color, renderBlackBackground, partialTickTime);
 	}
 
 	/**
@@ -262,13 +262,13 @@ public class ZyinHUDRenderer {
 	 * @param renderBlackBackground render a pretty black border behind the text?
 	 * @param partialTickTime       Usually taken from RenderWorldLastEvent.partialTicks variable
 	 */
-	public static void RenderFloatingText(
+	public static void renderFloatingText(
 		String[] text, float x, float y, float z, int color, boolean renderBlackBackground, float partialTickTime
 	) {
 		//TODO: See how much of this can be replaced with EntityRenderer:renderLivingLabel and GameRenderer.drawNameplate
 		//Thanks to Electric-Expansion mod for the majority of this code
 		//https://github.com/Alex-hawks/Electric-Expansion/blob/master/src/electricexpansion/client/render/RenderFloatingText.java
-		GL11BeforeDrawInWorld(x, y, z, 0.03f, 0.5f, partialTickTime);
+		beforeGL11DrawInWorld(x, y, z, 0.03f, 0.5f, partialTickTime);
 		GlStateManager.disableDepthTest();
 		GlStateManager.disableTexture();
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -306,16 +306,16 @@ public class ZyinHUDRenderer {
 
 			//This code taken from 1.8.8 net.minecraft.client.renderer.entity.Render.renderLivingLabel()
 			worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-			worldrenderer.pos((double) (-stringMiddle - 1), (double) -1, 0.0D)
+			worldrenderer.pos(-stringMiddle - 1, -1, 0.0D)
 			             .color(0.0F, 0.0F, 0.0F, 0.25F)
 			             .endVertex();
-			worldrenderer.pos((double) (-stringMiddle - 1), (double) (8 + lineHeight * (text.length - 1)), 0.0D)
+			worldrenderer.pos(-stringMiddle - 1, 8 + lineHeight * (text.length - 1), 0.0D)
 			             .color(0.0F, 0.0F, 0.0F, 0.25F)
 			             .endVertex();
-			worldrenderer.pos((double) (stringMiddle + 1), (double) (8 + lineHeight * (text.length - 1)), 0.0D)
+			worldrenderer.pos(stringMiddle + 1, 8 + lineHeight * (text.length - 1), 0.0D)
 			             .color(0.0F, 0.0F, 0.0F, 0.25F)
 			             .endVertex();
-			worldrenderer.pos((double) (stringMiddle + 1), (double) -1, 0.0D)
+			worldrenderer.pos(stringMiddle + 1, -1, 0.0D)
 			             .color(0.0F, 0.0F, 0.0F, 0.25F)
 			             .endVertex();
 			tessellator.draw();
@@ -332,7 +332,7 @@ public class ZyinHUDRenderer {
 		GlStateManager.enableTexture();
 		GlStateManager.enableLighting();
 		GlStateManager.disableBlend();
-		GL11AfterDrawInWorld();
+		afterGL11DrawInWorld();
 	}
 
 
@@ -341,11 +341,11 @@ public class ZyinHUDRenderer {
 	 *
 	 * @param message the message to be displayed
 	 */
-	public static void DisplayNotification(String message) {
+	public static void displayNotification(String message) {
 		mc.ingameGUI.setOverlayMessage(message, false);
 	}
 
-	private static void GL11BeforeDrawInWorld(
+	private static void beforeGL11DrawInWorld(
 		float x, float y, float z, float scale, float alpha, float partialTickTime
 	) {
 		EntityRendererManager renderManager = mc.getRenderManager();
@@ -364,7 +364,7 @@ public class ZyinHUDRenderer {
 		GL11.glDepthMask(false);
 	}
 
-	private static void GL11AfterDrawInWorld() {
+	private static void afterGL11DrawInWorld() {
 		GL11.glColor4f(1f, 1f, 1f, 1f);
 		GL11.glDepthMask(true);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);

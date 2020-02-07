@@ -54,14 +54,14 @@ public class ZyinHUDSound {
 	/**
 	 * Plays the sound that a GuiButton makes.
 	 */
-	public static void PlayButtonPress() {
+	public static void playButtonPress() {
 		mc.getSoundHandler().play(SimpleSound.master(SoundEvents.UI_BUTTON_CLICK, 1.0F));
 	}
 
 	/**
 	 * Plays the "plop" sound that a chicken makes when laying an egg.
 	 */
-	public static void PlayPlopSound() {
+	public static void playPlopSound() {
 		mc.getSoundHandler().play(SimpleSound.master(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F));
 	}
 }

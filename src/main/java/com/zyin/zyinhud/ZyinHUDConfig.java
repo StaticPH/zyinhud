@@ -53,289 +53,291 @@ public class ZyinHUDConfig {
 	// Mod Debugging Options
 	// ######################################################################
 	// Enable/Disable logging whenever any of the mod's keybindings receive input, and what key they are bound to
-	public static BooleanValue EnableLoggingKeybindInputs;
+	public static BooleanValue enableLoggingKeybindInputs;
 	// Enable/Disable logging every entity found by any module that deals with entities in the world.
-	public static BooleanValue EnableLoggingAllEntitiesFound;
+	public static BooleanValue enableLoggingAllEntitiesFound;
 
 	// ######################################################################
 	// Animal(Mainly Horse) Info Module
 	// ######################################################################
 	// Enable/Disable Animal Info
-	public static BooleanValue EnableAnimalInfo;
+	public static BooleanValue enableAnimalInfo;
 	// How far away animal info will be rendered on the screen (distance measured in blocks). Range [1, 64]
-	public static IntValue AnimalInfoMaxViewDistance;
+	public static IntValue animalInfoMaxViewDistance;
 	// Sets the Animal Info mode. Valid modes are ON and OFF
-	public static EnumValue<AnimalInfoOptions.AnimalInfoModes> AnimalInfoMode;
+	public static EnumValue<AnimalInfoOptions.AnimalInfoModes> animalInfoMode;
 	// How many decimal places will be used when displaying horse stats
-	public static IntValue AnimalInfoNumberOfDecimalsDisplayed;
+	public static IntValue animalInfoNumberOfDecimalsDisplayed;
 	// Enable/Disable showing an icon if the animal is ready to breed
-	public static BooleanValue ShowBreedingIcons;
+	public static BooleanValue showBreedingIcons;
 	// Enable/Disable showing the stats of the horse you're riding on the F3 screen
-	public static BooleanValue ShowHorseStatsOnF3Menu;
+	public static BooleanValue showHorseStatsOnF3Menu;
 	// Enable/Disable showing the stats of horses on screen
-	public static BooleanValue ShowHorseStatsOverlay;
+	public static BooleanValue showHorseStatsOverlay;
 	// Enable/Disable showing a black background behind text
-	public static BooleanValue ShowTextBackgrounds;
+	public static BooleanValue showTextBackgrounds;
 
 	// ######################################################################
 	// Clock Module
 	// ######################################################################
 	// Enable/Disable showing the clock
-	public static BooleanValue EnableClock;
+	public static BooleanValue enableClock;
 	// Sets the clock mode. Valid modes are STANDARD, COUNTDOWN, and GRAPHIC
-	public static EnumValue<ClockOptions.ClockModes> ClockMode;
+	public static EnumValue<ClockOptions.ClockModes> clockMode;
 
 	// ######################################################################
 	//Compass Module
 	// ######################################################################
 	// Enable/Disable showing the compass
-	public static BooleanValue EnableCompass;
+	public static BooleanValue enableCompass;
+	// Renders the compass text in the center of the screen instead of on the side
+	public static BooleanValue renderCompassTextInMiddle;
 
 	// ######################################################################
 	// Coordinates Module
 	// ######################################################################
 	// Enable/Disable showing your coordinates
-	public static BooleanValue EnableCoordinates;
+	public static BooleanValue enableCoordinates;
 	// The format used when sending your coordinates in a chat message by pressing the keybind
 	// {x}{y}{z} are replaced with actual coordinates
-	public static ConfigValue<String> CoordinatesChatStringFormat;
+	public static ConfigValue<String> coordinatesChatStringFormat;
 	// Sets the coordinates mode. Valid modes are XYZ and XZY
-	public static EnumValue<CoordinateOptions.CoordinateModes> CoordinatesMode;
+	public static EnumValue<CoordinateOptions.CoordinateModes> coordinatesMode;
 	// Shows how far into the 16x16 chunk you're in
-	public static BooleanValue ShowChunkCoordinates;
+	public static BooleanValue showChunkCoordinates;
 	// Color code the Y (height) coordinate based on what ores can spawn at that level
-	public static BooleanValue UseYCoordinateColors;
+	public static BooleanValue useYCoordinateColors;
 
 	// ######################################################################
 	// Distance Measurer Module
 	// ######################################################################
 	// Enable/Disable the distance measurer
-	public static BooleanValue EnableDistanceMeasurer;
+	public static BooleanValue enableDistanceMeasurer;
 	// Sets the Distance Measurer mode. Valid modes are OFF, SIMPLE, and COORDINATE
-	public static EnumValue<DistanceMeasurerOptions.DistanceMeasurerModes> DistanceMeasurerMode;
+	public static EnumValue<DistanceMeasurerOptions.DistanceMeasurerModes> distanceMeasurerMode;
 
 	// ######################################################################
 	// Durability Info Module
 	// ######################################################################
 	// Enable/Disable showing all durability info
-	public static BooleanValue EnableDurabilityInfo;
+	public static BooleanValue enableDurabilityInfo;
 	// Enable/Disable automatically unequipping armor before it breaks.
-	public static BooleanValue AutoUnequipArmor;
+	public static BooleanValue autoUnequipArmor;
 	// Enable/Disable automatically unequipping tools before they breaks
-	public static BooleanValue AutoUnequipTools;
+	public static BooleanValue autoUnequipTools;
 	// Display when armor gets damaged less than this fraction of its durability
-	public static DoubleValue DurabilityDisplayThresholdForArmor;
+	public static DoubleValue armorDurabilityDisplayThreshold;
 	// Display when an item gets damaged less than this fraction of its durability
-	public static DoubleValue DurabilityDisplayThresholdForItem;
+	public static DoubleValue itemDurabilityDisplayThreshold;
 	// Sets Durability Info's number display mode. Valid modes are NONE, TEXT, and PERCENTAGE
-	public static EnumValue<DurabilityInfoOptions.DurabilityInfoTextModes> DurabilityInfoTextMode;
+	public static EnumValue<DurabilityInfoOptions.DurabilityInfoTextModes> durabilityInfoTextMode;
 	// The horizontal position of the durability icons. 0 is left, 400 is far right
-	public static IntValue DurabilityLocationHorizontal;
+	public static IntValue durabilityHorizontalPos;
 	// The vertical position of the durability icons. 0 is top, 200 is very bottom
-	public static IntValue DurabilityLocationVertical;
+	public static IntValue durabilityVerticalPos;
 	// How large the durability icons are rendered, 1.0 being the normal size
-	public static DoubleValue DurabilityScale;
+	public static DoubleValue durabilityScale;
 	// Enable/Disable showing breaking armor
-	public static BooleanValue ShowArmorDurability;
+	public static BooleanValue showArmorDurability;
 	// Enable/Disable showing armor peices instead of the big broken armor icon
-	public static BooleanValue ShowIndividualArmorIcons;
+	public static BooleanValue showIndividualArmorIcons;
 	// Enable/Disable showing breaking items
-	public static BooleanValue ShowItemDurability;
+	public static BooleanValue showItemDurability;
 	// Toggle using colored numbering
-	public static BooleanValue UseColoredNumbers;
+	public static BooleanValue useColoredNumbers;
 
-	//HideDurabilityInfoInChat, boolean, default true
+	//hideDurabilityInfoInChat, boolean, default true
 
 	// ######################################################################
 	// Eating Aid Module
 	// ######################################################################
 	// Enables pressing the eating aid keybind to eat food even if it is  in your inventory and not your hotbar
-//	public static BooleanValue EnableEatingAid;
+//	public static BooleanValue enableEatingAid;
 	// Enable/Disable using golden apples and golden carrots as food
-//	public static BooleanValue EatGoldenFood;
+//	public static BooleanValue eatGoldenFood;
 	// Enable/Disable eating raw chicken, beef, and porkchops
-//	public static BooleanValue EatRawFood;
+//	public static BooleanValue eatRawFood;
 	// Sets the Eating Aid mode. Valid modes are BASIC and INTELLIGENT
-//	public static EnumValue<EatingAid.DistanceMeasurerModes> EatingAidMode;
+//	public static EnumValue<EatingAidOptions.EatingAidModes> eatingAidMode;
 	// Use food that is in your hotbar before looking for food in your main inventory
-//	public static BooleanValue PrioritizeFoodInHotbar;
+//	public static BooleanValue prioritizeFoodInHotbar;
 	// If you are connected to a Bukkit server that uses PvP Soup or Fast Soup (mushroom stew) with this enabled,
 	// Eating Aid will use it instead of other foods
-//	public static BooleanValue UsePvPSoup;
+//	public static BooleanValue usePvPSoup;
 
 	// ######################################################################
 	// Ender Pearl Aid Module
 	// ######################################################################
 	// Enables pressing the Ender Pearl Aid hotkey to use an ender pearl even
 	// if it is in your main inventory and not your hotbar
-	public static BooleanValue EnableEnderPearlAid;
+	public static BooleanValue enableEnderPearlAid;
 
 	// ######################################################################
 	// FPS Module
 	// ######################################################################
 	// Enable/Disable showing your FPS at the end of the Info Line
-	public static BooleanValue EnableFPS;
+	public static BooleanValue enableFPS;
 
 	// ######################################################################
 	// Health Monitor Module
 	// ######################################################################
 	// Enable/Disable using the Health Monitor.
-	public static BooleanValue EnableHealthMonitor;
+	public static BooleanValue enableHealthMonitor;
 	// Sets the Health Monitor sound mode. Valid modes are OOT, LTTP, ORACLE, LA, LOZ, and AOL
-	public static EnumValue<HealthMonitorOptions.HealthMonitorModes> HealthMonitorMode;
+	public static EnumValue<HealthMonitorOptions.HealthMonitorModes> healthMonitorMode;
 	// Set the volume of the beeps. Range [0.0, 1.0]
-	public static DoubleValue HealthMonitorVolume;
+	public static DoubleValue healthMonitorVolume;
 	// A sound will start playing when you have less than this much health left
-	public static IntValue LowHealthSoundThreshold;
+	public static IntValue lowHealthSoundThreshold;
 	// Play the warning sounds quicker the closer you get to dieing
-	public static BooleanValue PlayFasterNearDeath;
+	public static BooleanValue playFasterNearDeath;
 
 	// ######################################################################
 	// Info Line Module
 	// ######################################################################
 	// Enable/Disable the entire info line in the top left part of the screen.
 	// This includes the clock, coordinates, compass, module status, etc
-	public static BooleanValue EnableInfoLine;
+	public static BooleanValue enableInfoLine;
 	// The horizontal position of the info line. 1 is left, 400 is far right
-	public static IntValue InfoLineLocationHorizontal;
+	public static IntValue infoLineHorizontalPos;
 	// The vertical position of the info line. 1 is top, 200 is very bottom
-	public static IntValue InfoLineLocationVertical;
+	public static IntValue infoLineVerticalPos;
 	// Enable/Disable showing what biome you are in on the Info Line
-	public static BooleanValue ShowBiome;
+	public static BooleanValue showBiome;
 	// Enable/Disable showing if it can snow at the player's feet on the Info Line
-	public static BooleanValue ShowCanSnow;
+	public static BooleanValue showCanSnow;
 	// Enable/Disable showing the player's ping while on a multiplayer server
-	public static BooleanValue ShowPing;
+	public static BooleanValue showPing;
 
 	// ######################################################################
 	// Item Selector Module
 	// ######################################################################
 	// Enables/Disable using mouse wheel scrolling whilst holding the 
 	// Item Selector hotkey to swap the selected item with an inventory item
-	public static BooleanValue EnableItemSelector;
+	public static BooleanValue enableItemSelector;
 	// Sets the Item Selector mode. Valid modes are ALL and SAME_COLUMN
-	public static EnumValue<ItemSelectorOptions.ItemSelectorModes> ItemSelectorMode;
+	public static EnumValue<ItemSelectorOptions.ItemSelectorModes> itemSelectorMode;
 	// Enable/disable use of side buttons for item selection
-	public static BooleanValue ItemSelectorSideButtons;
+	public static BooleanValue itemSelectorSideButtons;
 	// Specifies how many ticks until the item selector confirms your choice and performs the item swap
-	public static IntValue ItemSelectorTimeout;
+	public static IntValue itemSelectorTimeout;
 
 	// ######################################################################
 	// Miscellaneous Module
 	// ######################################################################
 	// Enable/Disable showing the repair count on items while using the anvil
-	public static BooleanValue ShowAnvilRepairs;
+	public static BooleanValue showAnvilRepairs;
 	// Enable/Disable being able to place a sign with no text by sneaking while placing a sign
-	public static BooleanValue UseQuickPlaceSign;
+	public static BooleanValue useQuickPlaceSign;
 	// Enable/Disable overriding the default sprint behavior and run forever
-	public static BooleanValue UseUnlimitedSprintingSP;
+	public static BooleanValue useUnlimitedSprintingSP;
 
 	// ######################################################################
 	// Player Locator Module
 	// ######################################################################
 	// Enable/Disable the Player Locator.
-	public static BooleanValue EnablePlayerLocator;
+	public static BooleanValue enablePlayerLocator;
 	// Stop showing player names when they are this close (distance measured in blocks).
-	public static IntValue PlayerLocatorMinViewDistance;
+	public static IntValue playerLocatorMinViewDistance;
 	// Sets the Player Locator mode. Valid modes are OFF and ON
-	public static EnumValue<LocatorOptions.LocatorModes> PlayerLocatorMode;
+	public static EnumValue<LocatorOptions.LocatorModes> playerLocatorMode;
 	// Show how far away you are from the other players next to their name.
-	public static BooleanValue ShowDistanceToPlayers;
+	public static BooleanValue showDistanceToPlayers;
 	// Show how much health players have by their name.
-	public static BooleanValue ShowPlayerHealth;
+	public static BooleanValue showPlayerHealth;
 	// Show wither skeletons in addition to other players.
-	public static BooleanValue ShowWitherSkeletons;
+	public static BooleanValue showWitherSkeletons;
 	// Show your tamed wolves in addition to other players.
-	public static BooleanValue ShowWolves;
+	public static BooleanValue showWolves;
 	// Use the color of your wolf's collar to colorize their name.
-	public static BooleanValue UseWolfColors;
+	public static BooleanValue useWolfColors;
 
 	// ######################################################################
 	// Potion Aid Module
 	// ######################################################################
 	// Enables pressing potion aid keybind to drink a potion even if it is in 
 	// your main inventory and not your hotbar.
-	public static BooleanValue EnablePotionAid;
+	public static BooleanValue enablePotionAid;
 
 	// ######################################################################
 	// Potion Timers Module
 	// ######################################################################
 	// Enable/Disable showing the time remaining on potions.
-//    public static BooleanValue EnablePotionTimers;
+//	public static BooleanValue enablePotionTimers;
 	// Sets Potion Timer's text display mode. Valid modes are WHITE, COLORED, and NONE
-//    public static EnumValue<PotionTimerOptions.PotionTimerModes> PotionTimerMode;
+//	public static EnumValue<PotionTimerOptions.PotionTimerModes> potionTimerMode;
 	// Enable/Disable hiding the default potion effects when you open your inventory.
-//    public static BooleanValue HidePotionEffectsInInventory;
+//	public static BooleanValue hidePotionEffectsInInventory;
 	// How large the potion timers are rendered, 1.0 being the normal size. Range [0.25, 5.0]
-//    public static DoubleValue PotionScale;
+//	public static DoubleValue potionScale;
 	// The horizontal position of the potion timers. 0 is left, 400 is far right.
-//    public static IntValue PotionTimersLocationHorizontal;
+//	public static IntValue potionTimersHorizontalPos;
 	// The vertical position of the potion timers. 0 is top, 200 is very bottom.
-//    public static IntValue PotionTimersLocationVertical;
+//	public static IntValue potionTimersVerticalPos;
 	// Enable/Disable showing the status effect of potions next to the timers.
-//    public static BooleanValue ShowPotionIcons;
+//	public static BooleanValue showPotionIcons;
 	//TODO?
-	// HideBeaconPotionEffects, boolean, default false
-	// ShowVanillaStatusEffectHUD, boolean, default true
-	// ShowEffectName, boolean, default true
-	// ShowEffectLevel, boolean, default true
+	// hideBeaconPotionEffects, boolean, default false
+	// showVanillaStatusEffectHUD, boolean, default true
+	// showEffectName, boolean, default true
+	// showEffectLevel, boolean, default true
 
 	// ######################################################################
 	// Quick Deposit Module
 	// ######################################################################
 	// Enables Quick Deposit.
-	public static BooleanValue EnableQuickDeposit;
+	public static BooleanValue enableQuickDeposit;
 	// Stop Quick Deposit from putting arrows in chests?
-	public static BooleanValue BlacklistArrow;
+	public static BooleanValue blacklistArrow;
 	// Stop Quick Deposit from putting clocks and compasses in chests?
-	public static BooleanValue BlacklistClockCompass;
+	public static BooleanValue blacklistClockCompass;
 	// Stop Quick Deposit from putting ender pearls in chests?
-	public static BooleanValue BlacklistEnderPearl;
+	public static BooleanValue blacklistEnderPearl;
 	// Stop Quick Deposit from putting food in chests?
-	public static BooleanValue BlacklistFood;
+	public static BooleanValue blacklistFood;
 	// Stop Quick Deposit from putting tools (picks, axes, shovels, shears) in chests?
-	public static BooleanValue BlacklistTools;
+	public static BooleanValue blacklistTools;
 	// Stop Quick Deposit from putting torches in chests?
-	public static BooleanValue BlacklistTorch;
+	public static BooleanValue blacklistTorch;
 	// Stop Quick Deposit from putting water buckets in chests?
-	public static BooleanValue BlacklistWaterBucket;
+	public static BooleanValue blacklistWaterBucket;
 	// Stop Quick Deposit from putting swords and bows in chests?
-	public static BooleanValue BlacklistWeapons;
+	public static BooleanValue blacklistWeapons;
 	// Closes the chest GUI after you deposit your items in it. 
 	// Allows quick and easy depositing of all your items into multiple chests.
-	public static BooleanValue CloseChestAfterDepositing;
+	public static BooleanValue closeChestAfterDepositing;
 	// Determines if items in your hotbar will be deposited into chests when 
 	// the Quick Deposit hotkey is pressed.
-	public static BooleanValue IgnoreItemsInHotbar;
+	public static BooleanValue ignoreItemsInHotbar;
 
 	// ######################################################################
 	// Safe Overlay Module
 	// ######################################################################
 	// Enable/Disable the Safe Overlay.
-	public static BooleanValue EnableSafeOverlay;
+	public static BooleanValue enableSafeOverlay;
 	// Enable/Disable showing unsafe areas in the Nether.
-	public static BooleanValue SafeOverlayDisplayInNether;
+	public static BooleanValue safeOverlayDisplayInNether;
 	// How far away unsafe spots should be rendered around the player measured in blocks. 
 	// This can be changed in game with - + <hotkey> and + + <hotkey>.
-	public static IntValue SafeOverlayDrawDistance;
+	public static IntValue safeOverlayDrawDistance;
 	// Sets the Safe Overlay mode. Valid modes are OFF and On
-	public static EnumValue<SafeOverlayOptions.SafeOverlayModes> SafeOverlayMode;
+	public static EnumValue<SafeOverlayOptions.safeOverlayModes> safeOverlayMode;
 	// Enable/Disable showing unsafe areas through walls. Toggle in game with Ctrl + <hotkey>.
-	public static BooleanValue SafeOverlaySeeThroughWalls;
+	public static BooleanValue safeOverlaySeeThroughWalls;
 	// The transparency of the unsafe marks. Range [0.11, 1.0].
-	public static DoubleValue SafeOverlayTransparency;
+	public static DoubleValue safeOverlayTransparency;
 
 	// ######################################################################
 	// Torch Aid Module
 	// ######################################################################
 	// Enable/Disable using Torch Aid to help you place torches more easily.
-	public static BooleanValue EnableTorchAid;
+	public static BooleanValue enableTorchAid;
 
 	// ######################################################################
 	// Weapon Swap Module
 	// ######################################################################
 	// Enables pressing your weapon-swap keybind to swap between your sword and bow.
-	public static BooleanValue EnableWeaponSwap;
+	public static BooleanValue enableWeaponSwap;
 
 
 	static {
@@ -363,16 +365,16 @@ public class ZyinHUDConfig {
 			"You probably shouldn't change these unless you know what you're doing."
 		).push(CATEGORY_DEBUG);
 		{
-			EnableLoggingKeybindInputs = builder
+			enableLoggingKeybindInputs = builder
 				.comment(
 					"Enable/Disable logging whenever any of the mod's keybindings receive input, and what key they are bound to"
 				)
-				.define("EnableLoggingKeybindInputs", false);
-			EnableLoggingAllEntitiesFound = builder
+				.define("enableLoggingKeybindInputs", false);
+			enableLoggingAllEntitiesFound = builder
 				.comment(
 					"Enable/Disable logging every entity found by any module that deals with entities in the world."
 				)
-				.define("EnableLoggingAllEntitiesFound", false);
+				.define("enableLoggingAllEntitiesFound", false);
 		}
 		builder.pop();
 
@@ -383,36 +385,36 @@ public class ZyinHUDConfig {
 			"Animal Info gives you information about horse(also mule, donkey, and llama) stats, such as speed and jump height."
 		).push(CATEGORY_ANIMALINFO);
 		{
-			EnableAnimalInfo = builder
+			enableAnimalInfo = builder
 				.comment("Enable/Disable Animal Info")
-				.define("EnableAnimalInfo", AnimalInfoOptions.defaultEnabled);
-			AnimalInfoMaxViewDistance = builder
+				.define("enableAnimalInfo", AnimalInfoOptions.defaultEnabled);
+			animalInfoMaxViewDistance = builder
 				.comment("How far away animal info will be rendered on the screen (distance measured in blocks).")
 				.defineInRange(
-					"AnimalInfoMaxViewDistance", AnimalInfoOptions.defaultViewDistanceCutoff,
+					"animalInfoMaxViewDistance", AnimalInfoOptions.defaultViewDistanceCutoff,
 					AnimalInfoOptions.minViewDistanceCutoff, AnimalInfoOptions.maxViewDistanceCutoff
 				);
-			AnimalInfoMode = builder
+			animalInfoMode = builder
 				.comment("Sets the Animal Info mode.")
-				.defineEnum("AnimalInfoMode", AnimalInfoOptions.AnimalInfoModes.OFF, EnumGetMethod.NAME_IGNORECASE);
-			AnimalInfoNumberOfDecimalsDisplayed = builder
+				.defineEnum("animalInfoMode", AnimalInfoOptions.AnimalInfoModes.OFF, EnumGetMethod.NAME_IGNORECASE);
+			animalInfoNumberOfDecimalsDisplayed = builder
 				.comment("How many decimal places will be used when displaying horse stats.")
 				.defineInRange(
-					"AnimalInfoNumberOfDecimalsDisplayed", AnimalInfoOptions.defautNumberOfDecimalsDisplayed,
+					"animalInfoNumberOfDecimalsDisplayed", AnimalInfoOptions.defautNumberOfDecimalsDisplayed,
 					AnimalInfoOptions.minDecimalsDisplayed, AnimalInfoOptions.maxDecimalsDisplayed
 				);
-			ShowBreedingIcons = builder
+			showBreedingIcons = builder
 				.comment("Enable/Disable showing an icon if the animal is ready to breed")
-				.define("ShowBreedingIcons", AnimalInfoOptions.defaultShowBreedingIcons);
-			ShowHorseStatsOnF3Menu = builder
+				.define("showBreedingIcons", AnimalInfoOptions.defaultShowBreedingIcons);
+			showHorseStatsOnF3Menu = builder
 				.comment("Enable/Disable showing the stats of the horse you're riding on the F3 screen")
-				.define("ShowHorseStatsOnF3Menu", AnimalInfoOptions.defaultShowHorseStatsOnF3Menu);
-			ShowHorseStatsOverlay = builder
+				.define("showHorseStatsOnF3Menu", AnimalInfoOptions.defaultShowHorseStatsOnF3Menu);
+			showHorseStatsOverlay = builder
 				.comment("Enable/Disable showing the stats of horses on screen")
-				.define("ShowHorseStatsOverlay", AnimalInfoOptions.defaultShowHorseStatsOverlay);
-			ShowTextBackgrounds = builder
+				.define("showHorseStatsOverlay", AnimalInfoOptions.defaultShowHorseStatsOverlay);
+			showTextBackgrounds = builder
 				.comment("Enable/Disable showing a black background behind text")
-				.define("ShowTextBackgrounds", AnimalInfoOptions.defaultShowTextBackgrounds);
+				.define("showTextBackgrounds", AnimalInfoOptions.defaultShowTextBackgrounds);
 		}
 		builder.pop();
 
@@ -423,12 +425,12 @@ public class ZyinHUDConfig {
 			"Clock shows you time relevant to Minecraft time."
 		).push(CATEGORY_CLOCK);
 		{
-			EnableClock = builder
+			enableClock = builder
 				.comment("Enable/Disable showing the clock")
-				.define("EnableClock", ClockOptions.defaultEnabled);
-			ClockMode = builder
+				.define("enableClock", ClockOptions.defaultEnabled);
+			clockMode = builder
 				.comment("Sets the clock mode.")
-				.defineEnum("ClockMode", ClockOptions.ClockModes.STANDARD, EnumGetMethod.NAME_IGNORECASE);
+				.defineEnum("clockMode", ClockOptions.ClockModes.STANDARD, EnumGetMethod.NAME_IGNORECASE);
 		}
 		builder.pop();
 
@@ -439,9 +441,12 @@ public class ZyinHUDConfig {
 			"Compass displays a text compass."
 		).push(CATEGORY_COMPASS);
 		{
-			EnableCompass = builder
+			enableCompass = builder
 				.comment("Enable/Disable showing the compass")
-				.define("EnableCompass", CompassOptions.defaultEnabled);
+				.define("enableCompass", CompassOptions.defaultEnabled);
+			renderCompassTextInMiddle = builder
+				.comment("Renders the compass text in the center of the screen instead of on the side")
+				.define("renderCompassTextInMiddle", CompassOptions.defaultRenderCompassTextInMiddle);
 		}
 		builder.pop();
 
@@ -452,25 +457,25 @@ public class ZyinHUDConfig {
 			"Coordinates displays your coordinates. Nuff said."
 		).push(CATEGORY_COORDINATES);
 		{
-			EnableCoordinates = builder
+			enableCoordinates = builder
 				.comment("Enable/Disable showing your coordinates")
-				.define("EnableCoordinates", CoordinateOptions.defaultEnabled);
-			CoordinatesChatStringFormat = builder
+				.define("enableCoordinates", CoordinateOptions.defaultEnabled);
+			coordinatesChatStringFormat = builder
 				.comment(
 					"The format used when sending your coordinates in a chat message by pressing the " +
 					CATEGORY_COORDINATES + " keybind (default: 'F4')."
 				)
 				.comment("{x}{y}{z} are replaced with actual coordinates")
-				.define("CoordinatesChatStringFormat", CoordinateOptions.defaultChatStringFormat);
-			CoordinatesMode = builder
+				.define("coordinatesChatStringFormat", CoordinateOptions.defaultChatStringFormat);
+			coordinatesMode = builder
 				.comment("Sets the coordinates mode.")
-				.defineEnum("CoordinatesMode", CoordinateOptions.CoordinateModes.XYZ, EnumGetMethod.NAME_IGNORECASE);
-			ShowChunkCoordinates = builder
+				.defineEnum("coordinatesMode", CoordinateOptions.CoordinateModes.XYZ, EnumGetMethod.NAME_IGNORECASE);
+			showChunkCoordinates = builder
 				.comment("Shows how far into the 16x16 chunk you're in")
-				.define("ShowChunkCoordinates", CoordinateOptions.defaultShowChunkCoordinates);
-			UseYCoordinateColors = builder
+				.define("showChunkCoordinates", CoordinateOptions.defaultShowChunkCoordinates);
+			useYCoordinateColors = builder
 				.comment("Color code the Y (height) coordinate based on what ores can spawn at that level")
-				.define("UseYCoordinateColors", CoordinateOptions.defaultUseYCoordinateColors);
+				.define("useYCoordinateColors", CoordinateOptions.defaultUseYCoordinateColors);
 		}
 		builder.pop();
 
@@ -481,13 +486,13 @@ public class ZyinHUDConfig {
 			"Distance Measurer can calculate distances between you and blocks that you aim at."
 		).push(CATEGORY_DISTANCEMEASURER);
 		{
-			EnableDistanceMeasurer = builder
+			enableDistanceMeasurer = builder
 				.comment("Enable/Disable the distance measurer")
-				.define("EnableDistanceMeasurer", DistanceMeasurerOptions.defaultEnabled);
-			DistanceMeasurerMode = builder
+				.define("enableDistanceMeasurer", DistanceMeasurerOptions.defaultEnabled);
+			distanceMeasurerMode = builder
 				.comment("Sets the Distance Measurer mode.")
 				.defineEnum(
-					"DistanceMeasurerMode",
+					"distanceMeasurerMode",
 					DistanceMeasurerOptions.DistanceMeasurerModes.OFF,
 					EnumGetMethod.NAME_IGNORECASE
 				);
@@ -501,75 +506,75 @@ public class ZyinHUDConfig {
 			"Durability Info will display your breaking armor and equipment."
 		).push(CATEGORY_DURABILITYINFO);
 		{
-			EnableDurabilityInfo = builder
+			enableDurabilityInfo = builder
 				.comment("Enable/Disable showing all durability info")
-				.define("EnableDurabilityInfo", DurabilityInfoOptions.defaultEnabled);
-			AutoUnequipArmor = builder
+				.define("enableDurabilityInfo", DurabilityInfoOptions.defaultEnabled);
+			autoUnequipArmor = builder
 				.comment("Enable/Disable automatically unequipping armor before it breaks")
-				.define("AutoUneqipArmor", DurabilityInfoOptions.defaultAutoUnequipArmor);
-			AutoUnequipTools = builder
+				.define("autoUneqipArmor", DurabilityInfoOptions.defaultAutoUnequipArmor);
+			autoUnequipTools = builder
 				.comment("Enable/Disable automatically unequipping tools before they breaks")
-				.define("AutoUnequipTools", DurabilityInfoOptions.defaultAutoUnequipTools);
-			DurabilityDisplayThresholdForArmor = builder
+				.define("autoUnequipTools", DurabilityInfoOptions.defaultAutoUnequipTools);
+			armorDurabilityDisplayThreshold = builder
 				.comment("Display when armor has less than this fraction of its durability")
 				.defineInRange(
-					"DurabilityDisplayThresholdForArmor",
+					"armorDurabilityDisplayThreshold",
 					DurabilityInfoOptions.defaultDurabilityDisplayThreshold,
 					DurabilityInfoOptions.minDurabilityDisplayThreshold,
 					DurabilityInfoOptions.maxDurabilityDisplayThreshold
 				);
-			DurabilityDisplayThresholdForItem = builder
+			itemDurabilityDisplayThreshold = builder
 				.comment("Display when an item has less than this fraction of its durability")
 				.defineInRange(
-					"DurabilityDisplayThresholdForItem",
+					"itemDurabilityDisplayThreshold",
 					DurabilityInfoOptions.defaultDurabilityDisplayThreshold,
 					DurabilityInfoOptions.minDurabilityDisplayThreshold,
 					DurabilityInfoOptions.maxDurabilityDisplayThreshold
 				);
-			DurabilityInfoTextMode = builder
+			durabilityInfoTextMode = builder
 				.comment("Sets Durability Info's number display mode.")
 				.defineEnum(
-					"DurabilityInfoTextMode", DurabilityInfoOptions.DurabilityInfoTextModes.NONE,
+					"durabilityInfoTextMode", DurabilityInfoOptions.DurabilityInfoTextModes.NONE,
 					EnumGetMethod.NAME_IGNORECASE
 				);
-			DurabilityLocationHorizontal = builder
+			durabilityHorizontalPos = builder
 				.comment(
 					"The horizontal position of the durability icons. The far left is at " +
 					DurabilityInfoOptions.minArmorPosXY + ", and " +
 					DurabilityInfoOptions.maxArmorIconPosX + " is the far right."
 				)
 				.defineInRange(
-					"DurabilityLocationHorizontal", DurabilityInfoOptions.defaultArmorIconPosX,
+					"durabilityHorizontalPos", DurabilityInfoOptions.defaultArmorIconPosX,
 					DurabilityInfoOptions.minArmorPosXY, DurabilityInfoOptions.maxArmorIconPosX
 				);
-			DurabilityLocationVertical = builder
+			durabilityVerticalPos = builder
 				.comment(
 					"The vertical position of the durability icons. The top is at " +
 					DurabilityInfoOptions.minArmorPosXY + ", and " +
 					DurabilityInfoOptions.maxArmorIconPosY + " is the very bottom."
 				)
 				.defineInRange(
-					"DurabilityLocationVertical", DurabilityInfoOptions.defaultArmorIconPosY,
+					"durabilityVerticalPos", DurabilityInfoOptions.defaultArmorIconPosY,
 					DurabilityInfoOptions.minArmorPosXY, DurabilityInfoOptions.maxArmorIconPosY
 				);
-			DurabilityScale = builder
+			durabilityScale = builder
 				.comment("How large the durability icons are rendered, 1.0 being the normal size")
 				.defineInRange(
-					"DurabilityScale", DurabilityInfoOptions.defaultDurabilityIconScale,
+					"durabilityScale", DurabilityInfoOptions.defaultDurabilityIconScale,
 					DurabilityInfoOptions.minIconScale, DurabilityInfoOptions.maxIconScale
 				);
-			ShowArmorDurability = builder
+			showArmorDurability = builder
 				.comment("Enable/Disable showing breaking armor")
-				.define("ShowArmorDurability", DurabilityInfoOptions.defaultShowArmorDurability);
-			ShowIndividualArmorIcons = builder
+				.define("showArmorDurability", DurabilityInfoOptions.defaultShowArmorDurability);
+			showIndividualArmorIcons = builder
 				.comment("Enable/Disable showing armor peices instead of the big broken armor icon")
-				.define("ShowIndividualArmorIcons", DurabilityInfoOptions.defaultShowIndividualArmorIcons);
-			ShowItemDurability = builder
+				.define("showIndividualArmorIcons", DurabilityInfoOptions.defaultShowIndividualArmorIcons);
+			showItemDurability = builder
 				.comment("Enable/Disable showing breaking items")
-				.define("ShowItemDurability", DurabilityInfoOptions.defaultShowItemDurability);
-			UseColoredNumbers = builder
+				.define("showItemDurability", DurabilityInfoOptions.defaultShowItemDurability);
+			useColoredNumbers = builder
 				.comment("Toggle using colored numbering")
-				.define("UseColoredNumbers", DurabilityInfoOptions.defaultUseColoredNumbers);
+				.define("useColoredNumbers", DurabilityInfoOptions.defaultUseColoredNumbers);
 		}
 		builder.pop();
 
@@ -580,30 +585,30 @@ public class ZyinHUDConfig {
 //			"Eating Aid makes eating food quick and easy."
 //		).push(CATEGORY_EATINGAID);
 //		{
-//			EnableEatingAid = builder
+//			enableEatingAid = builder
 //				.comment(
-//					"Enables pressing the " CATEGORY_EATINGAID + " keybind (default: 'G')" +
+//					"Enables pressing the " + CATEGORY_EATINGAID + " keybind (default: 'G')" +
 //					" to eat food even if it is in your main inventory and not your hotbar"
 //				)
-//				.define("EnableEatingAid", true);
-//			EatGoldenFood = builder
+//				.define("enableEatingAid", EatingAidOptions.defaultEnabled);
+//			eatGoldenFood = builder
 //				.comment("Enable/Disable using golden apples and golden carrots as food")
-//				.define("EatGoldenFood", false);
-//			EatRawFood = builder
+//				.define("eatGoldenFood", EatingAidOptions.defaultEatGoldenFood);
+//			eatRawFood = builder
 //				.comment("Enable/Disable eating raw chicken, beef, and porkchops")
-//				.define("EatRawFood", false);
-//			EatingAidMode = builder
+//				.define("eatRawFood", EatingAidOptions.defaultEatRawFood);
+//			eatingAidMode = builder
 //				.comment("Sets the Eating Aid mode.")
-//				.defineEnum("EatingAidMode", EatingAid.Modes.INTELLIGENT, EnumGetMethod.NAME_IGNORECASE);
-//			PrioritizeFoodInHotbar = builder
+//				.defineEnum("eatingAidMode", EatingAidOptions.EatingAidModes.INTELLIGENT, EnumGetMethod.NAME_IGNORECASE);
+//			prioritizeFoodInHotbar = builder
 //				.comment("Use food that is in your hotbar before looking for food in your main inventory")
-//				.define("PrioritizeFoodInHotbar", false);
-//			UsePvPSoup = builder
+//				.define("prioritizeFoodInHotbar", EatingAidOptions.defaultPrioritizeFoodInHotbar);
+//			usePvPSoup = builder
 //				.comment(
 //					"If you are connected to a Bukkit server that uses PvP Soup or Fast Soup (mushroom stew) with this enabled, " +
 //					"Eating Aid will use it instead of other foods"
 //				)
-//				.define("UsePvPSoup", false);
+//				.define("usePvPSoup", EatingAidOptions.defaultUsePvPSoup);
 //		}
 //		builder.pop();
 
@@ -614,12 +619,12 @@ public class ZyinHUDConfig {
 			"Ender Pearl Aid makes it easier to quickly throw ender pearls."
 		).push(CATEGORY_ENDERPEARLAID);
 		{
-			EnableEnderPearlAid = builder
+			enableEnderPearlAid = builder
 				.comment(
 					"Enables pressing the " + CATEGORY_ENDERPEARLAID + " keybind (default: 'C')" +
 					" to use an enderpearl even if it is in your main inventory and not your hotbar"
 				)
-				.define("EnableEnderPearlAid", EnderPearlAidOptions.defaultEnabled);
+				.define("enableEnderPearlAid", EnderPearlAidOptions.defaultEnabled);
 		}
 		builder.pop();
 
@@ -630,9 +635,9 @@ public class ZyinHUDConfig {
 			"FPS shows your frames per second without having to go into the F3 menu."
 		).push(CATEGORY_FPS);
 		{
-			EnableFPS = builder
+			enableFPS = builder
 				.comment("Enable/Disable showing your FPS at the end of the Info Line")
-				.define("EnableFPS", FpsOptions.defaultEnabled);
+				.define("enableFPS", FpsOptions.defaultEnabled);
 		}
 		builder.pop();
 
@@ -643,33 +648,33 @@ public class ZyinHUDConfig {
 			"Plays warning beeps when you are low on health."
 		).push(CATEGORY_HEALTHMONITOR);
 		{
-			EnableHealthMonitor = builder
+			enableHealthMonitor = builder
 				.comment("Enable/Disable using the Health Monitor")
-				.define("EnableHealthMonitor", HealthMonitorOptions.defaultEnabled);
-			HealthMonitorMode = builder
+				.define("enableHealthMonitor", HealthMonitorOptions.defaultEnabled);
+			healthMonitorMode = builder
 				.comment("Sets the Health Monitor sound.")
 				.defineEnum(
-					"HealthMonitorMode", HealthMonitorOptions.HealthMonitorModes.OOT,
+					"healthMonitorMode", HealthMonitorOptions.HealthMonitorModes.OOT,
 					EnumGetMethod.NAME_IGNORECASE
 				);
-			HealthMonitorVolume = builder
+			healthMonitorVolume = builder
 				.comment("Set the volume of the beeps")
 				.defineInRange(
-					"HealthMonitorVolume", (float) HealthMonitorOptions.defaultSoundVolume,
+					"healthMonitorVolume", (float) HealthMonitorOptions.defaultSoundVolume,
 					HealthMonitorOptions.minSoundVolume, HealthMonitorOptions.maxSoundVolume
 				);
-			LowHealthSoundThreshold = builder
+			lowHealthSoundThreshold = builder
 				.comment("A sound will start playing when you have less than this much health left")
 				// Apparently the max number of regular (non-absorption) hearts is 1024. Don't know why you'd ever want to
 				// be warned when your health is 1 less than max, but I'll allow it
 				// 4 health (2 hearts) is when the health bar starts to shake
 				.defineInRange(
-					"LowHealthSoundThreshold", HealthMonitorOptions.defaultLowHealthSoundThreshold,
+					"lowHealthSoundThreshold", HealthMonitorOptions.defaultLowHealthSoundThreshold,
 					HealthMonitorOptions.minLowHealthSoundThreshold, HealthMonitorOptions.maxLowHealthSoundThreshold
 				);
-			PlayFasterNearDeath = builder
+			playFasterNearDeath = builder
 				.comment("Play the warning sounds quicker the closer you get to dieing")
-				.define("PlayFasterNearDeath", HealthMonitorOptions.defaultPlayFasterNearDeath);
+				.define("playFasterNearDeath", HealthMonitorOptions.defaultPlayFasterNearDeath);
 		}
 		builder.pop();
 
@@ -680,39 +685,39 @@ public class ZyinHUDConfig {
 			"Info Line displays the status of other features in the top left corner of the screen."
 		).push(CATEGORY_INFOLINE);
 		{
-			EnableInfoLine = builder
+			enableInfoLine = builder
 				.comment(
 					"Enable/Disable the entire info line in the top left part of the screen. " +
 					"This includes the clock, coordinates, compass, module status, etc"
 				)
-				.define("EnableInfoLine", InfoLineOptions.defaultEnabled);
-			InfoLineLocationHorizontal = builder
+				.define("enableInfoLine", InfoLineOptions.defaultEnabled);
+			infoLineHorizontalPos = builder
 				.comment(
 					"The horizontal position of the info line. The far left is at " +
 					InfoLineOptions.minLeftOffset + ", and " + InfoLineOptions.maxLeftOffset + " is the far right"
 				)
 				.defineInRange(
-					"InfoLineLocationHorizontal", InfoLineOptions.defaultLeftOffset,
+					"infoLineHorizontalPos", InfoLineOptions.defaultLeftOffset,
 					InfoLineOptions.minLeftOffset, InfoLineOptions.maxLeftOffset
 				);
-			InfoLineLocationVertical = builder
+			infoLineVerticalPos = builder
 				.comment(
 					"The vertical position of the info line. The top is at " +
 					InfoLineOptions.minTopOffset + ", and the bottom is at " + InfoLineOptions.maxTopOffset
 				)
 				.defineInRange(
-					"InfoLineLocationVertical", InfoLineOptions.defaultTopOffset,
+					"infoLineVerticalPos", InfoLineOptions.defaultTopOffset,
 					InfoLineOptions.minTopOffset, InfoLineOptions.maxTopOffset
 				);
-			ShowBiome = builder
+			showBiome = builder
 				.comment("Enable/Disable showing what biome you are in on the Info Line")
-				.define("ShowBiome", InfoLineOptions.defaultShowBiome);
-			ShowCanSnow = builder
+				.define("showBiome", InfoLineOptions.defaultShowBiome);
+			showCanSnow = builder
 				.comment("Enable/Disable showing if it can snow at the player's feet on the Info Line")
-				.define("ShowCanSnow", InfoLineOptions.defaultShowCanSnow);
-			ShowPing = builder
+				.define("showCanSnow", InfoLineOptions.defaultShowCanSnow);
+			showPing = builder
 				.comment("Enable/Disable showing the player's ping while on a multiplayer server")
-				.define("ShowPing", InfoLineOptions.defaultShowPing);
+				.define("showPing", InfoLineOptions.defaultShowPing);
 		}
 		builder.pop();
 
@@ -723,26 +728,26 @@ public class ZyinHUDConfig {
 			"Item Selector allows you to conveniently swap your currently selected hotbar item with something in your inventory."
 		).push(CATEGORY_ITEMSELECTOR);
 		{
-			EnableItemSelector = builder
+			enableItemSelector = builder
 				.comment(
 					"Enables/Disable using mouse wheel scrolling whilst holding the " + CATEGORY_ITEMSELECTOR +
 					" keybind (default: Left Alt) to swap the selected item with an inventory item"
 				)
-				.define("EnableItemSelector", ItemSelectorOptions.defaultEnabled);
-			ItemSelectorMode = builder
+				.define("enableItemSelector", ItemSelectorOptions.defaultEnabled);
+			itemSelectorMode = builder
 				.comment("Sets the Item Selector mode.")
 				.defineEnum(
-					"ItemSelectorMode", ItemSelectorOptions.ItemSelectorModes.ALL, EnumGetMethod.NAME_IGNORECASE
+					"itemSelectorMode", ItemSelectorOptions.ItemSelectorModes.ALL, EnumGetMethod.NAME_IGNORECASE
 				);
-			ItemSelectorSideButtons = builder
+			itemSelectorSideButtons = builder
 				.comment("Enable/disable use of side buttons for item selection")
-				.define("ItemSelectorSideButtons", ItemSelectorOptions.defaultUseMouseSideButtons);
-			ItemSelectorTimeout = builder
+				.define("itemSelectorSideButtons", ItemSelectorOptions.defaultUseMouseSideButtons);
+			itemSelectorTimeout = builder
 				.comment(
 					"Specifies how many ticks until the item selector confirms your choice and performs the item swap"
 				)
 				.defineInRange(
-					"ItemSelectorTimeout", ItemSelectorOptions.defaultTimeout,
+					"itemSelectorTimeout", ItemSelectorOptions.defaultTimeout,
 					ItemSelectorOptions.minTimeout, ItemSelectorOptions.maxTimeout
 				);
 		}
@@ -755,15 +760,15 @@ public class ZyinHUDConfig {
 			"Other settings not related to any specific functionality."
 		).push(CATEGORY_MISCELLANEOUS);
 		{
-			ShowAnvilRepairs = builder
+			showAnvilRepairs = builder
 				.comment("Enable/Disable showing the repair count on items while using the anvil")
-				.define("ShowAnvilRepairs", MiscOptions.ShowAnvilRepairs);
-			UseQuickPlaceSign = builder
+				.define("showAnvilRepairs", MiscOptions.showAnvilRepairs);
+			useQuickPlaceSign = builder
 				.comment("Enable/Disable being able to place a sign with no text by sneaking while placing a sign")
-				.define("UseQuickPlaceSign", MiscOptions.UseQuickPlaceSign);
-			UseUnlimitedSprintingSP = builder
+				.define("useQuickPlaceSign", MiscOptions.useQuickPlaceSign);
+			useUnlimitedSprintingSP = builder
 				.comment("Enable/Disable overriding the default sprint behavior and run forever. SINGLEPLAYER ONLY.")
-				.define("UseUnlimitedSprintingSP", MiscOptions.UseUnlimitedSprintingSP);
+				.define("useUnlimitedSprintingSP", MiscOptions.useUnlimitedSprintingSP);
 		}
 		builder.pop();
 
@@ -774,35 +779,35 @@ public class ZyinHUDConfig {
 			"Player Locator gives you a radar-like ability to easily see where other people are."
 		).push(CATEGORY_PLAYERLOCATOR);
 		{
-			EnablePlayerLocator = builder
+			enablePlayerLocator = builder
 				.comment("Enable/Disable the Player Locator")
-				.define("EnablePlayerLocator", LocatorOptions.defaultEnabled);
-			PlayerLocatorMinViewDistance = builder
+				.define("enablePlayerLocator", LocatorOptions.defaultEnabled);
+			playerLocatorMinViewDistance = builder
 				.comment("Stop showing player names when they are this close (distance measured in blocks)")
 				.defineInRange(
-					"PlayerLocatorMinViewDistance", LocatorOptions.defaultViewDistanceCutoff,
+					"playerLocatorMinViewDistance", LocatorOptions.defaultViewDistanceCutoff,
 					LocatorOptions.minViewDistanceCutoff, LocatorOptions.maxViewDistanceCutoff
 				);
-			PlayerLocatorMode = builder
+			playerLocatorMode = builder
 				.comment("Sets the Player Locator mode.")
 				.defineEnum(
-					"PlayerLocatorMode", LocatorOptions.LocatorModes.OFF, EnumGetMethod.NAME_IGNORECASE
+					"playerLocatorMode", LocatorOptions.LocatorModes.OFF, EnumGetMethod.NAME_IGNORECASE
 				);
-			ShowDistanceToPlayers = builder
+			showDistanceToPlayers = builder
 				.comment("Show how far away you are from the other players next to their name")
-				.define("ShowDistanceToPlayers", LocatorOptions.defaultShowDistanceToPlayers);
-			ShowPlayerHealth = builder
+				.define("showDistanceToPlayers", LocatorOptions.defaultShowDistanceToPlayers);
+			showPlayerHealth = builder
 				.comment("Show how much health players have by their name")
-				.define("ShowPlayerHealth", LocatorOptions.defaultShowPlayerHealth);
-			ShowWitherSkeletons = builder
+				.define("showPlayerHealth", LocatorOptions.defaultShowPlayerHealth);
+			showWitherSkeletons = builder
 				.comment("Show your tamed wolves in addition to other players")
-				.define("ShowWitherSkeletons", LocatorOptions.defaultShowWitherSkeletons);
-			ShowWolves = builder
+				.define("showWitherSkeletons", LocatorOptions.defaultShowWitherSkeletons);
+			showWolves = builder
 				.comment("Show your tamed wolves in addition to other players")
-				.define("ShowWolves", LocatorOptions.defaultShowWolves);
-			UseWolfColors = builder
+				.define("showWolves", LocatorOptions.defaultShowWolves);
+			useWolfColors = builder
 				.comment("Use the color of your wolf's collar to colorize their name")
-				.define("UseWolfColors", LocatorOptions.defaultUseWolfColors);
+				.define("useWolfColors", LocatorOptions.defaultUseWolfColors);
 		}
 		builder.pop();
 
@@ -813,12 +818,12 @@ public class ZyinHUDConfig {
 			"Potion Aid helps you quickly drink potions based on your circumstance."
 		).push(CATEGORY_POTIONAID);
 		{
-			EnablePotionAid = builder
+			enablePotionAid = builder
 				.comment(
 					"Enables pressing " + CATEGORY_POTIONAID + " keybind (default: 'V')" +
 					" to drink a potion even if it is in your main inventory and not your hotbar"
 				)
-				.define("EnablePotionAid", PotionAidOptions.defaultEnabled);
+				.define("enablePotionAid", PotionAidOptions.defaultEnabled);
 		}
 		builder.pop();
 
@@ -829,27 +834,36 @@ public class ZyinHUDConfig {
 //			"Potion Timers shows the duration remaining on potions that you drink."
 //		).push(CATEGORY_POTIONTIMERS);
 //		{
-//			EnablePotionTimers = builder
+//			enablePotionTimers = builder
 //				.comment("Enable/Disable showing the time remaining on potions")
-//				.define("EnablePotionTimers", true);
-//			PotionTimerMode = builder
+//				.define("enablePotionTimers", PotionTimerOptions.defaultEnabled);
+//			potionTimerMode = builder
 //				.comment("Sets Potion Timer's text display mode.")
-//				.defineEnum("PotionTimerMode", PotionTimers.PotionTimerModes.COLORED, EnumGetMethod.NAME_IGNORECASE);
-//			HidePotionEffectsInInventory = builder
+//				.defineEnum("potionTimerMode", PotionTimers.PotionTimerModes.COLORED, EnumGetMethod.NAME_IGNORECASE);
+//			hidePotionEffectsInInventory = builder
 //				.comment("Enable/Disable hiding the default potion effects when you open your inventory")
-//				.define("HidePotionEffectsInInventory", false);
-//			PotionScale = builder
+//				.define("hidePotionEffectsInInventory", PotionTimerOptions.defaultHidePotionEffectsInInventory);
+//			potionScale = builder
 //				.comment("How large the potion timers are rendered, 1.0 being the normal size")
-//				.defineInRange("PotionScale", 1.0d, 0.25d, 5.0d);
-//			PotionTimersLocationHorizontal = builder
+//				.defineInRange(
+//					"potionScale", PotionTimerOptions.defaultPotionScale,
+//					PotionTimerOptions.minPotionScale, PotionTimerOptions.maxPotionScale
+//				);
+//			potionTimersHorizontalPos = builder
 //				.comment("The horizontal position of the potion timers. 0 is left, 400 is far right")
-//				.defineInRange("PotionTimersLocationHorizontal", 1, 0, 400);
-//			PotionTimersLocationVertical = builder
+//				.defineInRange(
+//					"potionTimersHorizontalPos", PotionTimerOptions.defaultPotionTimersHorizontalPos,
+//					PotionTimerOptions.minPotionTimersHorizontalPos, PotionTimerOptions.maxPotionTimersHorizontalPos
+//				);
+//			potionTimersVerticalPos = builder
 //				.comment("The vertical position of the potion timers. 0 is top, 200 is very bottom")
-//				.defineInRange("PotionTimersLocationVertical", 16, 0, 200);
-//			ShowPotionIcons = builder
+//				.defineInRange(
+//					"potionTimersVerticalPos", PotionTimerOptions.defaultPotionTimersVerticalPos,
+//					PotionTimerOptions.minPotionTimersVerticalPos, PotionTimerOptions.maxPotionTimersVerticalPos
+//				);
+//			showPotionIcons = builder
 //				.comment("Enable/Disable showing the status effect of potions next to the timers")
-//				.define("ShowPotionIcons", true);
+//				.define("showPotionIcons", PotionTimerOptions.defaultShowPotionIcons);
 //		}
 //		builder.pop();
 
@@ -860,45 +874,45 @@ public class ZyinHUDConfig {
 			"Quick Stack allows you to intelligently deposit every item in your inventory quickly into a chest."
 		).push(CATEGORY_QUICKDEPOSIT);
 		{
-			EnableQuickDeposit = builder
+			enableQuickDeposit = builder
 				.comment("Enables Quick Deposit.")
-				.define("EnableQuickDeposit", QuickDepositOptions.defaultEnabled);
-			BlacklistArrow = builder
+				.define("enableQuickDeposit", QuickDepositOptions.defaultEnabled);
+			blacklistArrow = builder
 				.comment("Stop Quick Deposit from putting arrows in chests?")
-				.define("BlacklistArrows", QuickDepositOptions.BlacklistArrow);
-			BlacklistClockCompass = builder
+				.define("blacklistArrows", QuickDepositOptions.blacklistArrow);
+			blacklistClockCompass = builder
 				.comment("Stop Quick Deposit from putting clocks and compasses in chests?")
-				.define("BlacklistClockCompass", QuickDepositOptions.BlacklistClockCompass);
-			BlacklistEnderPearl = builder
+				.define("blacklistClockCompass", QuickDepositOptions.blacklistClockCompass);
+			blacklistEnderPearl = builder
 				.comment("Stop Quick Deposit from putting ender pearls in chests?")
-				.define("BlacklistEnderPearl", QuickDepositOptions.BlacklistEnderPearl);
-			BlacklistFood = builder
+				.define("blacklistEnderPearl", QuickDepositOptions.blacklistEnderPearl);
+			blacklistFood = builder
 				.comment("Stop Quick Deposit from putting food in chests?")
-				.define("BlacklistFood", QuickDepositOptions.BlacklistFood);
-			BlacklistTools = builder
+				.define("blacklistFood", QuickDepositOptions.blacklistFood);
+			blacklistTools = builder
 				.comment("Stop Quick Deposit from putting tools (picks, axes, shovels, shears) in chests?")
-				.define("BlacklistTools", QuickDepositOptions.BlacklistTools);
-			BlacklistTorch = builder
+				.define("blacklistTools", QuickDepositOptions.blacklistTools);
+			blacklistTorch = builder
 				.comment("Stop Quick Deposit from putting torches in chests?")
-				.define("BlacklistTorches", QuickDepositOptions.BlacklistTorch);
-			BlacklistWaterBucket = builder
+				.define("blacklistTorches", QuickDepositOptions.blacklistTorch);
+			blacklistWaterBucket = builder
 				.comment("Stop Quick Deposit from putting water buckets in chests?")
-				.define("BlacklistWaterBucket", QuickDepositOptions.BlacklistWaterBucket);
-			BlacklistWeapons = builder
+				.define("blacklistWaterBucket", QuickDepositOptions.blacklistWaterBucket);
+			blacklistWeapons = builder
 				.comment("Stop Quick Deposit from putting swords and bows in chests?")
-				.define("BlacklistWeapons", QuickDepositOptions.BlacklistWeapons);
-			CloseChestAfterDepositing = builder
+				.define("blacklistWeapons", QuickDepositOptions.blacklistWeapons);
+			closeChestAfterDepositing = builder
 				.comment(
 					"Closes the chest GUI after you deposit your items in it. " +
 					"Allows quick and easy depositing of all your items into multiple chests"
 				)
-				.define("CloseChestAfterDepositing", QuickDepositOptions.CloseChestAfterDepositing);
-			IgnoreItemsInHotbar = builder
+				.define("closeChestAfterDepositing", QuickDepositOptions.closeChestAfterDepositing);
+			ignoreItemsInHotbar = builder
 				.comment(
 					"Determines if items in your hotbar will be deposited into chests when the " +
 					CATEGORY_QUICKDEPOSIT + " keybind (default: 'X') is pressed"
 				)
-				.define("IgnoreItemsInHotbar", QuickDepositOptions.IgnoreItemsInHotbar);
+				.define("ignoreItemsInHotbar", QuickDepositOptions.ignoreItemsInHotbar);
 		}
 		builder.pop();
 
@@ -909,38 +923,38 @@ public class ZyinHUDConfig {
 			"Safe Overlay shows you which blocks are dark enough to spawn mobs."
 		).push(CATEGORY_SAFEOVERLAY);
 		{
-			EnableSafeOverlay = builder
+			enableSafeOverlay = builder
 				.comment("Enable/Disable the Safe Overlay")
-				.define("EnableSafeOverlay", SafeOverlayOptions.defaultEnabled);
-			SafeOverlayDisplayInNether = builder
+				.define("enableSafeOverlay", SafeOverlayOptions.defaultEnabled);
+			safeOverlayDisplayInNether = builder
 				.comment("Enable/Disable showing unsafe areas in the Nether")
-				.define("SafeOverlayDisplayInNether", SafeOverlayOptions.defaultDisplayInNether);
-			SafeOverlayDrawDistance = builder
+				.define("safeOverlayDisplayInNether", SafeOverlayOptions.defaultDisplayInNether);
+			safeOverlayDrawDistance = builder
 				.comment(
 					"How far away unsafe spots should be rendered around the player measured in blocks. " +
 					"This can be changed in game by pressing the " + CATEGORY_SAFEOVERLAY + " keybind (default: 'L') " +
 					"in combination with the '-' and '+' keys"
 				)
 				.defineInRange(
-					"SafeOverlayDrawDistance", SafeOverlayOptions.defaultDrawDistance,
+					"safeOverlayDrawDistance", SafeOverlayOptions.defaultDrawDistance,
 					SafeOverlayOptions.minDrawDistance, SafeOverlayOptions.maxDrawDistance
 				);
-			SafeOverlayMode = builder
+			safeOverlayMode = builder
 				.comment("Sets the Safe Overlay mode.")
 				.defineEnum(
-					"SafeOverlayMode", SafeOverlayOptions.SafeOverlayModes.OFF,
+					"safeOverlayMode", SafeOverlayOptions.safeOverlayModes.OFF,
 					EnumGetMethod.NAME_IGNORECASE
 				);
-			SafeOverlaySeeThroughWalls = builder
+			safeOverlaySeeThroughWalls = builder
 				.comment(
 					"Enable/Disable showing unsafe areas through walls. Toggle in game with 'Ctrl' + the " +
 					CATEGORY_SAFEOVERLAY + " keybind (default: 'L')"
 				)
-				.define("SafeOverlaySeeThroughWalls", SafeOverlayOptions.defaultRenderThroughWalls);
-			SafeOverlayTransparency = builder
+				.define("safeOverlaySeeThroughWalls", SafeOverlayOptions.defaultRenderThroughWalls);
+			safeOverlayTransparency = builder
 				.comment("The transparency of the unsafe marks")
 				.defineInRange(
-					"SafeOverlayTransparency", SafeOverlayOptions.defaultUnsafeOverlayTransparency,
+					"safeOverlayTransparency", SafeOverlayOptions.defaultUnsafeOverlayTransparency,
 					SafeOverlayOptions.minUnsafeOverlayTransparency,
 					SafeOverlayOptions.maxUnsafeOverlayTransparency
 				);
@@ -954,9 +968,9 @@ public class ZyinHUDConfig {
 			"Torch Aid lets you right click while holding an axe, pickaxe, shovel, or when you have nothing in your hand to place a torch."
 		).push(CATEGORY_TORCHAID);
 		{
-			EnableTorchAid = builder
+			enableTorchAid = builder
 				.comment("Enable/Disable using Torch Aid to help you place torches more easily")
-				.define("EnableTorchAid", TorchAidOptions.defaultEnabled);
+				.define("enableTorchAid", TorchAidOptions.defaultEnabled);
 		}
 		builder.pop();
 
@@ -967,11 +981,11 @@ public class ZyinHUDConfig {
 			"Weapon Swap allows you to quickly select your sword and bow."
 		).push(CATEGORY_WEAPONSWAP);
 		{
-			EnableWeaponSwap = builder
+			enableWeaponSwap = builder
 				.comment(
 					"Enables pressing the " + CATEGORY_WEAPONSWAP + " keybind (default: 'F') to swap between your sword and bow"
 				)
-				.define("EnableWeaponSwap", WeaponSwapOptions.defaultEnabled);
+				.define("enableWeaponSwap", WeaponSwapOptions.defaultEnabled);
 		}
 		builder.pop();
 	}

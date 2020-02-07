@@ -20,25 +20,25 @@ import com.zyin.zyinhud.util.ZyinHUDUtil;
 public class Miscellaneous extends ZyinHUDModuleBase {
 	public static final Miscellaneous instance = new Miscellaneous();
 
-	public static boolean UseQuickPlaceSign = ZyinHUDConfig.UseQuickPlaceSign.get();
-	public static boolean UseUnlimitedSprintingSP = ZyinHUDConfig.UseUnlimitedSprintingSP.get();
-	public static boolean ShowAnvilRepairs = ZyinHUDConfig.ShowAnvilRepairs.get();
+	public static boolean useQuickPlaceSign = ZyinHUDConfig.useQuickPlaceSign.get();
+	public static boolean useUnlimitedSprintingSP = ZyinHUDConfig.useUnlimitedSprintingSP.get();
+	public static boolean showAnvilRepairs = ZyinHUDConfig.showAnvilRepairs.get();
 
 	private static final int maxRepairTimes = 6;
 
 
 	@SubscribeEvent
-	public void GuiOpenEvent(GuiOpenEvent event) {
-		if (UseQuickPlaceSign && event.getGui() instanceof EditSignScreen && mc.player.isSneaking()) {
+	public void onGuiOpenEvent(GuiOpenEvent event) {
+		if (useQuickPlaceSign && event.getGui() instanceof EditSignScreen && mc.player.isSneaking()) {
 			event.setCanceled(true);
 			event.getGui().onClose();
 		}
 	}
 
 	@SubscribeEvent
-	public void DrawScreenEvent(DrawScreenEvent.Post event) {
-		if (ShowAnvilRepairs && event.getGui() instanceof AnvilScreen) {
-			DrawGuiRepairCounts((AnvilScreen) event.getGui());
+	public void onDrawScreenEvent(DrawScreenEvent.Post event) {
+		if (showAnvilRepairs && event.getGui() instanceof AnvilScreen) {
+			drawGuiRepairCounts((AnvilScreen) event.getGui());
 		}
 	}
 
@@ -47,15 +47,15 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	 *
 	 * @param guiRepair the gui repair
 	 */
-	public void DrawGuiRepairCounts(AnvilScreen guiRepair) {
+	public void drawGuiRepairCounts(AnvilScreen guiRepair) {
 		RepairContainer anvil = guiRepair.getContainer();
-		IInventory inputSlots = ZyinHUDUtil.GetFieldByReflection(
+		IInventory inputSlots = ZyinHUDUtil.getFieldByReflection(
 			RepairContainer.class, anvil, "inputSlots", "field_82853_g"
 		); //Not sure if this should/can be saved in a static final field...
 
 		//_CHECK: verify that reflection is not in fact needed for the RepairContainer Object itself
-//		RepairContainer anvil = ZyinHUDUtil.GetFieldByReflection(AnvilScreen.class, guiRepair, "anvil", "field_147002_h"); // WAS field_147092_v in ContainerScreen.class
-//    	IInventory inputSlots = ZyinHUDUtil.GetFieldByReflection(RepairContainer.class, anvil, "inputSlots", "field_82853_g");
+//		RepairContainer anvil = ZyinHUDUtil.getFieldByReflection(AnvilScreen.class, guiRepair, "anvil", "field_147002_h"); // WAS field_147092_v in ContainerScreen.class
+//    	IInventory inputSlots = ZyinHUDUtil.getFieldByReflection(RepairContainer.class, anvil, "inputSlots", "field_82853_g");
 
 		int xSize = guiRepair.getXSize();
 		int ySize = guiRepair.getYSize();
@@ -67,8 +67,9 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 		ItemStack rightItemStack = inputSlots.getStackInSlot(1);
 		ItemStack finalItemStack = inputSlots.getStackInSlot(2);
 
+		//TODO: These look like they could be refactored into a method
 		if (!leftItemStack.isEmpty()) {
-			int timesRepaired = GetTimesRepaired(leftItemStack);
+			int timesRepaired = getTimesRepaired(leftItemStack);
 			String leftItemRepairCost;
 
 			if (timesRepaired >= maxRepairTimes) {
@@ -80,7 +81,7 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 			mc.fontRenderer.drawString(leftItemRepairCost, guiRepairXOrigin + 26, guiRepairYOrigin + 37, 0xffffff);
 		}
 		if (!rightItemStack.isEmpty()) {
-			int timesRepaired = GetTimesRepaired(rightItemStack);
+			int timesRepaired = getTimesRepaired(rightItemStack);
 			String rightItemRepairCost;
 
 			if (timesRepaired >= maxRepairTimes) {
@@ -92,7 +93,7 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 			mc.fontRenderer.drawString(rightItemRepairCost, guiRepairXOrigin + 76, guiRepairYOrigin + 37, 0xffffff);
 		}
 		if (!leftItemStack.isEmpty() && !rightItemStack.isEmpty()) {
-			int timesRepaired = GetTimesRepaired(leftItemStack) + GetTimesRepaired(rightItemStack) + 1;
+			int timesRepaired = getTimesRepaired(leftItemStack) + getTimesRepaired(rightItemStack) + 1;
 			String finalItemRepairCost = TextFormatting.DARK_GRAY.toString() + timesRepaired + '/' + maxRepairTimes;
 
 			if (timesRepaired <= maxRepairTimes) {
@@ -109,7 +110,7 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	 * @param itemStack the item stack
 	 * @return int
 	 */
-	protected static int GetTimesRepaired(ItemStack itemStack) {//_CHECK: I vaguely recall the repair costs being adjusted in some update
+	protected static int getTimesRepaired(ItemStack itemStack) {//_CHECK: I vaguely recall the repair costs being adjusted in some update
 		/*
     	times repaired: repair cost, xp
     	0: 0, 2
@@ -143,9 +144,9 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	 * @param event the event
 	 */
 	@SubscribeEvent()
-	public void ClientTickEvent(ClientTickEvent event) {
-		if (mc.isSingleplayer() && UseUnlimitedSprintingSP) {
-			MakeSprintingUnlimited();
+	public void onClientTickEvent(ClientTickEvent event) {
+		if (mc.isSingleplayer() && useUnlimitedSprintingSP) {
+			makeSprintingUnlimited();
 		}
 	}
 
@@ -153,7 +154,7 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	/**
 	 * Lets the player sprint longer than 30 seconds at a time. Needs to be called on every game tick to be effective.
 	 */
-	public static void MakeSprintingUnlimited() {
+	public static void makeSprintingUnlimited() {
 		if (mc.player == null) { return; }
 
 		//sprintingTicksLeft is set to 600 when EntityPlayerSP.setSprinting() is called
@@ -166,8 +167,8 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleUseQuickPlaceSign() {
-		return UseQuickPlaceSign = !UseQuickPlaceSign;
+	public static boolean toggleUseQuickPlaceSign() {
+		return useQuickPlaceSign = !useQuickPlaceSign;
 	}
 
 	/**
@@ -175,8 +176,8 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleUseUnlimitedSprinting() {
-		return UseUnlimitedSprintingSP = !UseUnlimitedSprintingSP;
+	public static boolean toggleUseUnlimitedSprinting() {
+		return useUnlimitedSprintingSP = !useUnlimitedSprintingSP;
 	}
 
 	/**
@@ -184,7 +185,7 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleShowAnvilRepairs() {
-		return ShowAnvilRepairs = !ShowAnvilRepairs;
+	public static boolean toggleShowAnvilRepairs() {
+		return showAnvilRepairs = !showAnvilRepairs;
 	}
 }

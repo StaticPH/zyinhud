@@ -8,21 +8,21 @@ import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import org.lwjgl.glfw.GLFW;
 
 public class CoordinatesKeyHandler implements ZyinHUDKeyHandlerBase {
-	public static final String HotkeyDescription = "key.zyinhud.coordinates";
+	public static final String hotkeyDescription = "key.zyinhud.coordinates";
 	private static boolean keyDown = false;
 
-	public static void Pressed(KeyInputEvent event) {
-		Coordinates.PasteCoordinatesIntoChat();
+	public static void onPressed(KeyInputEvent event) {
+		Coordinates.shareCoordinatesInChat();
 	}
 
-	public static void ClientTickEvent(ClientTickEvent event) {
+	public static void onClientTickEvent(ClientTickEvent event) {
 		long handle = mc.mainWindow.getHandle();
 		int keyState = GLFW.glfwGetKey(handle, ZyinHUDKeyHandlers.KEY_BINDINGS[1].getKey().getKeyCode());
 
 		if (mc.currentScreen instanceof ChatScreen) {
 			if (keyState == GLFW.GLFW_PRESS || keyState == GLFW.GLFW_RELEASE) {
 				if (keyState == GLFW.GLFW_PRESS) {
-					if (!keyDown) { OnKeyDown(); }
+					if (!keyDown) { onKeyDown(); }
 					keyDown = true;
 				}
 				else {
@@ -35,7 +35,7 @@ public class CoordinatesKeyHandler implements ZyinHUDKeyHandlerBase {
 		}
 	}
 
-	private static void OnKeyDown() {
-		Pressed(null);
+	private static void onKeyDown() {
+		onPressed(null);
 	}
 }

@@ -7,13 +7,13 @@ import com.zyin.zyinhud.modules.ZyinHUDModuleModes.AnimalInfoOptions.AnimalInfoM
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
 public class AnimalInfoKeyHandler implements ZyinHUDKeyHandlerBase {
-	public static final String HotkeyDescription = "key.zyinhud.animalinfo";
+	public static final String hotkeyDescription = "key.zyinhud.animalinfo";
 
-	public static void Pressed(KeyInputEvent event) {
+	public static void onPressed(KeyInputEvent event) {
 		//don't activate if the user is looking at a GUI
-		if (mc.currentScreen == null && AnimalInfo.Enabled) {
-			AnimalInfo.Mode = (AnimalInfoModes) AnimalInfo.Mode.next();
-			ZyinHUDSound.PlayButtonPress();
+		if (mc.currentScreen == null && AnimalInfo.isEnabled) {
+			AnimalInfo.mode = (AnimalInfoModes) AnimalInfo.mode.next();
+			ZyinHUDSound.playButtonPress();
 		}
 	}
 }

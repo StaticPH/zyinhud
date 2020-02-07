@@ -10,22 +10,22 @@
 //public class EatingAidKeyHandler implements ZyinHUDKeyHandlerBase
 //{
 //    /**
-//     * The constant HotkeyDescription.
+//     * The constant hotkeyDescription.
 //     */
-//    public static final String HotkeyDescription = "key.zyinhud.eatingaid";
+//    public static final String hotkeyDescription = "key.zyinhud.eatingaid";
 //
 //    /**
-//     * Pressed.
+//     * onPressed.
 //     *
 //     * @param event the event
 //     */
-//    public static void Pressed(KeyInputEvent event) {
+//    public static void onPressed(KeyInputEvent event) {
 //        if (mc.currentScreen != null)
 //        {
 //            return;    //don't activate if the user is looking at a GUI
 //        }
 //
-//		if (EatingAid.Enabled)
-//            EatingAid.instance.Eat();
+//		if (EatingAid.isEnabled)
+//            EatingAid.instance.eatFood();
 //	}
 //}

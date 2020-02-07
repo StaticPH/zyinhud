@@ -16,23 +16,23 @@ public class Clock extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled = ZyinHUDConfig.EnableClock.get();
+	public static boolean isEnabled = ZyinHUDConfig.enableClock.get();
 
 	/**
 	 * Toggles this module on or off
 	 *
 	 * @return The state the module was changed to
 	 */
-	public static boolean ToggleEnabled() {
-		ZyinHUDConfig.EnableClock.set(!Enabled);
-		ZyinHUDConfig.EnableClock.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return Enabled = !Enabled;
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableClock.set(!isEnabled);
+		ZyinHUDConfig.enableClock.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
 	/**
 	 * The current mode for this module
 	 */
-	public static ClockOptions.ClockModes Mode = ZyinHUDConfig.ClockMode.get();
+	public static ClockOptions.ClockModes mode = ZyinHUDConfig.clockMode.get();
 
 	private static final long mobSpawningStartTime = 13187;
 
@@ -50,9 +50,9 @@ public class Clock extends ZyinHUDModuleBase {
 	 * @param infoLineMessageUpToThisPoint the info line message up to this point
 	 * @return time if the Clock is enabled, otherwise "".
 	 */
-	public static String CalculateMessageForInfoLine(String infoLineMessageUpToThisPoint) {
-		if (Clock.Enabled) {
-			if (Clock.Mode == ClockOptions.ClockModes.STANDARD) {
+	public static String calculateMessageForInfoLine(String infoLineMessageUpToThisPoint) {
+		if (Clock.isEnabled) {
+			if (Clock.mode == ClockOptions.ClockModes.STANDARD) {
 				long time = (mc.world.getGameTime()) % 24000;
 
 				//0 game time is 6am, so add 6000
@@ -60,7 +60,7 @@ public class Clock extends ZyinHUDModuleBase {
 				if (hours >= 24) { hours = hours - 24;}
 				long seconds = (long) (((time + 6000) % 1000) * (60.0 / 1000.0));
 
-				if (IsNight()) {
+				if (isNight()) {
 					//night time
 					return TextFormatting.GRAY + String.format("%02d:%02d", hours, seconds);
 				}
@@ -70,10 +70,10 @@ public class Clock extends ZyinHUDModuleBase {
 					       String.format("%02d:%02d", hours, seconds);
 				}
 			}
-			else if (Clock.Mode == ClockOptions.ClockModes.COUNTDOWN) {
+			else if (Clock.mode == ClockOptions.ClockModes.COUNTDOWN) {
 				long time = (mc.world.getGameTime()) % 24000;
 
-				if (IsNight()) {
+				if (isNight()) {
 					//night time
 					long secondsTillDay = (mobSpawningStopTime - time) / 20;
 					long minutes = secondsTillDay / 60;
@@ -93,13 +93,13 @@ public class Clock extends ZyinHUDModuleBase {
 					       String.format("%02d:%02d", minutes, seconds);
 				}
 			}
-			else if (Clock.Mode == ClockOptions.ClockModes.GRAPHIC) {
+			else if (Clock.mode == ClockOptions.ClockModes.GRAPHIC) {
 				int infoLineWidth = mc.fontRenderer.getStringWidth(infoLineMessageUpToThisPoint);
 
 				itemRenderer.renderItemAndEffectIntoGUI(
 					new ItemStack(Items.CLOCK),
-					infoLineWidth + InfoLine.GetHorizontalLocation(),
-					InfoLine.GetVerticalLocation()
+					infoLineWidth + InfoLine.getHorizontalLocation(),
+					InfoLine.getVerticalLocation()
 				);
 
 				//this is needed because the RenderItem.renderItem() methods enable lighting
@@ -115,7 +115,7 @@ public class Clock extends ZyinHUDModuleBase {
 	/**
 	 * @return true if it is currently night in-game, false otherwise
 	 */
-	public static boolean IsNight() {
+	public static boolean isNight() {
 		long time = (mc.world.getGameTime()) % 24000;
 		return time >= mobSpawningStartTime && time < mobSpawningStopTime;
 	}

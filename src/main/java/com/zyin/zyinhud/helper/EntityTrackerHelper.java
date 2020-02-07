@@ -21,7 +21,7 @@ import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static com.zyin.zyinhud.ZyinHUDConfig.EnableLoggingAllEntitiesFound;
+import static com.zyin.zyinhud.ZyinHUDConfig.enableLoggingAllEntitiesFound;
 
 public class EntityTrackerHelper {
 	public static final Predicate<Entity> playerLocatorMaybeTrack = (entity) -> (
@@ -59,7 +59,7 @@ public class EntityTrackerHelper {
 			return entitiesById.values().parallelStream()
 			                   .filter(matching)
 			                   .peek(entity -> {
-				                   if (EnableLoggingAllEntitiesFound.get() && logger != null) {
+				                   if (enableLoggingAllEntitiesFound.get() && logger != null) {
 					                   logger.info(
 						                   "Found entity UUID:{}  other:{}",
 						                   entity.getCachedUniqueIdString(),

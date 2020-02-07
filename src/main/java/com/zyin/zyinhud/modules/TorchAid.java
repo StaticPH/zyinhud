@@ -22,17 +22,17 @@ public class TorchAid extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled = ZyinHUDConfig.EnableTorchAid.get();
+	public static boolean isEnabled = ZyinHUDConfig.enableTorchAid.get();
 
 	/**
 	 * Toggles this module on or off
 	 *
 	 * @return The state the module was changed to
 	 */
-	public static boolean ToggleEnabled() {
-		ZyinHUDConfig.EnableTorchAid.set(!Enabled);
-		ZyinHUDConfig.EnableTorchAid.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return Enabled = !Enabled;
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableTorchAid.set(!isEnabled);
+		ZyinHUDConfig.enableTorchAid.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
 	/**
@@ -49,23 +49,23 @@ public class TorchAid extends ZyinHUDModuleBase {
 	 */
 	private static int previousTorchIndex = -1;
 
-	public void Pressed() {
-		if (TorchAid.Enabled) { EquipTorchIfToolIsEquipped(); }
+	public void onPressed() {
+		if (TorchAid.isEnabled) { equipTorchIfToolIsEquipped(); }
 	}
 
-	public void Released() {
-		if (TorchAid.Enabled) { UnequipTorch(); }
+	public void onReleased() {
+		if (TorchAid.isEnabled) { unequipTorch(); }
 	}
 
 	/**
 	 * Makes the player place a Torch if they are currently using a tool.
 	 */
-	public void EquipTorchIfToolIsEquipped() {
+	public void equipTorchIfToolIsEquipped() {
 		if (mc.currentScreen == null && mc.mouseHelper.isMouseGrabbed()) {
 			ItemStack currentItemStack = mc.player.getHeldItemMainhand();
 			if (currentItemStack.isEmpty()) { return; }
 			else if (canItemPlaceTorches(currentItemStack.getItem())) {
-				UseTorch();
+				useTorch();
 			}
 		}
 	}
@@ -73,21 +73,21 @@ public class TorchAid extends ZyinHUDModuleBase {
 	/**
 	 * Makes the player place a Torch if they have one by selecting a Torch in their inventory then right clicking.
 	 */
-	public void UseTorch() {
+	public void useTorch() {
 //        if (EatingAid.instance.isEating())
 //        {
-//            EatingAid.instance.StopEating();    //it's not good if we have a torch selected and hold right click down...
+//            EatingAid.instance.stopEating();    //it's not good if we have a torch selected and hold right click down...
 //        }
 
 		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.BLOCK) {
-			int torchHotbarIndex = InventoryUtil.GetItemIndexFromHotbar(Blocks.TORCH, ItemLike::isTorchLike);
+			int torchHotbarIndex = InventoryUtil.getItemIndexFromHotbar(Blocks.TORCH, ItemLike::isTorchLike);
 
 			if (torchHotbarIndex < 0) {
-				int torchInventoryIndex = InventoryUtil.GetItemIndexFromInventory(Blocks.TORCH, ItemLike::isTorchLike);
+				int torchInventoryIndex = InventoryUtil.getItemIndexFromInventory(Blocks.TORCH, ItemLike::isTorchLike);
 
 				if (torchInventoryIndex >= 0) {
 					previousTorchIndex = torchInventoryIndex;
-					EquipItemFromInventory(torchInventoryIndex);
+					equipItemFromInventory(torchInventoryIndex);
 				}
 				//player has no torches
 				//don't display a notification because the player may be trying to interact with a usable block
@@ -95,8 +95,8 @@ public class TorchAid extends ZyinHUDModuleBase {
 			}
 			else {
 				previousTorchIndex =
-					InventoryUtil.TranslateHotbarIndexToInventoryIndex(mc.player.inventory.currentItem);
-				EquipItemFromHotbar(torchHotbarIndex);
+					InventoryUtil.translateHotbarIndexToInventoryIndex(mc.player.inventory.currentItem);
+				equipItemFromHotbar(torchHotbarIndex);
 			}
 			useItem();
 
@@ -108,12 +108,12 @@ public class TorchAid extends ZyinHUDModuleBase {
 	 *
 	 * @param inventoryIndex 9-35
 	 */
-	private void EquipItemFromInventory(int inventoryIndex) {
+	private void equipItemFromInventory(int inventoryIndex) {
 		if (inventoryIndex < 9 || inventoryIndex > 35) { return; }
 
-		int currentItemInventoryIndex = InventoryUtil.GetCurrentlySelectedItemInventoryIndex();
+		int currentItemInventoryIndex = InventoryUtil.getCurrentlySelectedItemInventoryIndex();
 
-		InventoryUtil.Swap(currentItemInventoryIndex, inventoryIndex);
+		InventoryUtil.swap(currentItemInventoryIndex, inventoryIndex);
 	}
 
 	/**
@@ -121,10 +121,10 @@ public class TorchAid extends ZyinHUDModuleBase {
 	 *
 	 * @param hotbarIndex 36-44
 	 */
-	private void EquipItemFromHotbar(int hotbarIndex) {
+	private void equipItemFromHotbar(int hotbarIndex) {
 		if (hotbarIndex < 36 || hotbarIndex > 44) { return; }
 
-		hotbarIndex = InventoryUtil.TranslateInventoryIndexToHotbarIndex(hotbarIndex);
+		hotbarIndex = InventoryUtil.translateInventoryIndexToHotbarIndex(hotbarIndex);
 
 		mc.player.inventory.currentItem = hotbarIndex;
 	}
@@ -133,16 +133,16 @@ public class TorchAid extends ZyinHUDModuleBase {
 	 * Uses the <code>previousTorchIndex</code> variable to determine how to unequip the currently held torch.
 	 * after placing one.
 	 */
-	private void UnequipTorch() {
+	private void unequipTorch() {
 		if (previousTorchIndex < 0) { return; }
 		else {
 			if (previousTorchIndex >= 36 && previousTorchIndex <= 44) {    //on the hotbar
-				mc.player.inventory.currentItem = InventoryUtil.TranslateInventoryIndexToHotbarIndex(
+				mc.player.inventory.currentItem = InventoryUtil.translateInventoryIndexToHotbarIndex(
 					previousTorchIndex);
 			}
 			else {
-				InventoryUtil.Swap(
-					InventoryUtil.TranslateHotbarIndexToInventoryIndex(mc.player.inventory.currentItem),
+				InventoryUtil.swap(
+					InventoryUtil.translateHotbarIndexToInventoryIndex(mc.player.inventory.currentItem),
 					previousTorchIndex
 				);
 			}

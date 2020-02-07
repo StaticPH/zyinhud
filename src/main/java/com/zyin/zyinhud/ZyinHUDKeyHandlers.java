@@ -34,12 +34,12 @@ import com.zyin.zyinhud.modules.TorchAid;
 import javax.annotation.Nonnull;
 
 import static java.util.Arrays.stream;
-import static com.zyin.zyinhud.ZyinHUDConfig.EnableLoggingKeybindInputs;
+import static com.zyin.zyinhud.ZyinHUDConfig.enableLoggingKeybindInputs;
 
 public class ZyinHUDKeyHandlers {
 	private static final Minecraft mc = Minecraft.getInstance();
 	private static final MouseHelper mouseHelper = new MouseHelper(mc);
-	private static boolean doLogKeybindInputs = EnableLoggingKeybindInputs.get();
+	private static boolean doLogKeybindInputs = enableLoggingKeybindInputs.get();
 	public static final Logger logger = LogManager.getLogger(ZyinHUDKeyHandlers.class);
 
 	/**
@@ -60,52 +60,52 @@ public class ZyinHUDKeyHandlers {
 	public static final KeyBinding[] KEY_BINDINGS = {
 		//TODO: It might be beneficial to migrate this to something like a Map, removing a need for ordering
 		new KeyBinding(
-			AnimalInfoKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
+			AnimalInfoKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_O), ZyinHUD.MODNAME
 		),    //[0]
 		new KeyBinding(
-			CoordinatesKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
+			CoordinatesKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_F4), ZyinHUD.MODNAME
 		),    //[1]
 		new KeyBinding(
-			DistanceMeasurerKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
+			DistanceMeasurerKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_K), ZyinHUD.MODNAME
 		),    //[2]
 		new KeyBinding(
-//			EatingAidKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
+//			EatingAidKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 			"WIP: Eating Aid", KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_G), ZyinHUD.MODNAME
 		),    //[3]PLACEHOLDER
 		new KeyBinding(
-			EnderPearlAidKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
+			EnderPearlAidKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_C), ZyinHUD.MODNAME
 		),    //[4]
 		new KeyBinding(
-			PlayerLocatorKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
+			PlayerLocatorKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_P), ZyinHUD.MODNAME
 		),    //[5]
 		new KeyBinding(
-			PotionAidKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
+			PotionAidKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_V), ZyinHUD.MODNAME
 		),    //[6]
 		new KeyBinding(
-			QuickDepositKeyHandler.HotkeyDescription, KeyConflictContext.GUI,
+			QuickDepositKeyHandler.hotkeyDescription, KeyConflictContext.GUI,
 			mapKey(GLFW.GLFW_KEY_X), ZyinHUD.MODNAME
 		),    //[7]
 		new KeyBinding(
-			SafeOverlayKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
+			SafeOverlayKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_L), ZyinHUD.MODNAME
 		),    //[8]
 		new KeyBinding(
-			WeaponSwapperKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
+			WeaponSwapperKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_F), ZyinHUD.MODNAME
 		),    //[9]
 		new KeyBinding(
-			ZyinHUDOptionsKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
+			ZyinHUDOptionsKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_Z), ZyinHUD.MODNAME
 		),    //[10]
 		new KeyBinding(
-			ItemSelectorKeyHandler.HotkeyDescription, KeyConflictContext.IN_GAME,
+			ItemSelectorKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 			mapKey(GLFW.GLFW_KEY_LEFT_ALT), ZyinHUD.MODNAME
 		),    //[11]
 	};
@@ -127,7 +127,7 @@ public class ZyinHUDKeyHandlers {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void KeyInputEvent(KeyInputEvent event) {
+	public void onKeyInputEvent(KeyInputEvent event) {
 		//KeyInputEvent will not fire when looking at a GuiScreen - 1.7.2
 
 		if (doLogKeybindInputs) {
@@ -138,23 +138,23 @@ public class ZyinHUDKeyHandlers {
 				));
 		}
 
-		if (KEY_BINDINGS[0].isKeyDown()) { AnimalInfoKeyHandler.Pressed(event); }
-		else if (KEY_BINDINGS[1].isKeyDown()) { CoordinatesKeyHandler.Pressed(event); } //THIS WILL NOT FIRE ON A Screen
-		else if (KEY_BINDINGS[2].isKeyDown()) { DistanceMeasurerKeyHandler.Pressed(event); }
-//		else if (KEY_BINDINGS[3].isKeyDown()) { EatingAidKeyHandler.Pressed(event); }
-		else if (KEY_BINDINGS[4].isKeyDown()) { EnderPearlAidKeyHandler.Pressed(event); }
-		else if (KEY_BINDINGS[5].isKeyDown()) { PlayerLocatorKeyHandler.Pressed(event); }
-		else if (KEY_BINDINGS[6].isKeyDown()) { PotionAidKeyHandler.Pressed(event); }
-		else if (KEY_BINDINGS[7].isKeyDown()) { QuickDepositKeyHandler.Pressed(event); }//THIS WILL NOT FIRE ON A Screen
-		else if (KEY_BINDINGS[8].isKeyDown()) { SafeOverlayKeyHandler.Pressed(event); }
-		else if (KEY_BINDINGS[9].isKeyDown()) { WeaponSwapperKeyHandler.Pressed(event); }
-		else if (KEY_BINDINGS[10].isKeyDown()) { ZyinHUDOptionsKeyHandler.Pressed(event); }
-		else if (KEY_BINDINGS[11].isKeyDown()) { ItemSelectorKeyHandler.Pressed(event); }
+		if (KEY_BINDINGS[0].isKeyDown()) { AnimalInfoKeyHandler.onPressed(event); }
+		else if (KEY_BINDINGS[1].isKeyDown()) { CoordinatesKeyHandler.onPressed(event); } //THIS WILL NOT FIRE ON A Screen
+		else if (KEY_BINDINGS[2].isKeyDown()) { DistanceMeasurerKeyHandler.onPressed(event); }
+//		else if (KEY_BINDINGS[3].isKeyDown()) { EatingAidKeyHandler.onPressed(event); }
+		else if (KEY_BINDINGS[4].isKeyDown()) { EnderPearlAidKeyHandler.onPressed(event); }
+		else if (KEY_BINDINGS[5].isKeyDown()) { PlayerLocatorKeyHandler.onPressed(event); }
+		else if (KEY_BINDINGS[6].isKeyDown()) { PotionAidKeyHandler.onPressed(event); }
+		else if (KEY_BINDINGS[7].isKeyDown()) { QuickDepositKeyHandler.onPressed(event); }//THIS WILL NOT FIRE ON A Screen
+		else if (KEY_BINDINGS[8].isKeyDown()) { SafeOverlayKeyHandler.onPressed(event); }
+		else if (KEY_BINDINGS[9].isKeyDown()) { WeaponSwapperKeyHandler.onPressed(event); }
+		else if (KEY_BINDINGS[10].isKeyDown()) { ZyinHUDOptionsKeyHandler.onPressed(event); }
+		else if (KEY_BINDINGS[11].isKeyDown()) { ItemSelectorKeyHandler.onPressed(event); }
 		else if (
 			(event.getKey() == KEY_BINDINGS[11].getKey().getKeyCode()) && (event.getAction() == GLFW.GLFW_RELEASE)
 		) {
 			//on key released
-			ItemSelectorKeyHandler.Released(event);
+			ItemSelectorKeyHandler.onReleased(event);
 		}
 
 	}
@@ -165,10 +165,10 @@ public class ZyinHUDKeyHandlers {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void MouseEvent(InputEvent event) {
+	public void onMouseEvent(InputEvent event) {
 //		logger.debug("Mouse event triggered");
 		if ((event instanceof MouseScrollEvent) && ((MouseScrollEvent) event).getScrollDelta() != 0) {
-			if (KEY_BINDINGS[11].isKeyDown()) { ItemSelectorKeyHandler.OnMouseWheelScroll((MouseScrollEvent) event); }
+			if (KEY_BINDINGS[11].isKeyDown()) { ItemSelectorKeyHandler.onMouseWheelScroll((MouseScrollEvent) event); }
 		}
 
 		//Mouse side buttons
@@ -177,7 +177,7 @@ public class ZyinHUDKeyHandlers {
 			(((MouseInputEvent) event).getButton() == 3 || ((MouseInputEvent) event).getButton() == 4)
 		) {
 			if (mouseHelper.isLeftDown() || mouseHelper.isRightDown()) {
-				ItemSelectorKeyHandler.OnMouseSideButton((MouseInputEvent) event);
+				ItemSelectorKeyHandler.onMouseSideButton((MouseInputEvent) event);
 			}
 		}
 	}
@@ -189,26 +189,26 @@ public class ZyinHUDKeyHandlers {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void ClientTickEvent(TickEvent.ClientTickEvent event) {
+	public void onClientTickEvent(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END && (mc.currentScreen == null || mc.currentScreen.passEvents)) {
 			//This tick handler is to overcome the Screen + KeyInputEvent limitation
 			//for Coordinates and QuickDeposit
 
 //FIXME: Yeah, i have no idea; now, if I could get an InputEvent here, then I might know what to do
 //		if (Keyboard.getEventKey() == KEY_BINDINGS[1].getKey().getKeyCode())
-//	    	CoordinatesKeyHandler.ClientTickEvent(event);
+//	    	CoordinatesKeyHandler.onClientTickEvent(event);
 //		else if(Keyboard.getEventKey() == KEY_BINDINGS[7].getKey().getKeyCode())
-//			QuickDepositKeyHandler.ClientTickEvent(event);
+//			QuickDepositKeyHandler.onClientTickEvent(event);
 
 			//since this method is in the ClientTickEvent, it'll overcome the Screen limitation of not handling mouse clicks
-			FireUseBlockEvents();
+			onFireUseBlockEvents();
 		}
 	}
 
 
 	private static boolean useBlockButtonPreviouslyDown = false;
 
-	private static void FireUseBlockEvents() {//TODO: Migrate either to a dedicated TorchAid event helper, or to TorchAid itself
+	private static void onFireUseBlockEvents() {//TODO: Migrate either to a dedicated TorchAid event helper, or to TorchAid itself
 		//.keyBindUseItem		isButtonDown()
 
 		boolean useBlockButtonDown;
@@ -226,18 +226,18 @@ public class ZyinHUDKeyHandlers {
 //            useBlockButtonDown = InputMappings.isKeyDown(mc.gameSettings.keyBindUseItem.getKey().getKeyCode());
 		useBlockButtonDown = mc.gameSettings.keyBindUseItem.isKeyDown();
 //    	}
-		if (useBlockButtonDown & !useBlockButtonPreviouslyDown) { OnUseBlockPressed(); }
-		else if (!useBlockButtonDown & useBlockButtonPreviouslyDown) { OnUseBlockReleased(); }
+		if (useBlockButtonDown & !useBlockButtonPreviouslyDown) { onUseBlockPressed(); }
+		else if (!useBlockButtonDown & useBlockButtonPreviouslyDown) { onUseBlockReleased(); }
 
 		useBlockButtonPreviouslyDown = useBlockButtonDown;
 	}
 
-	private static void OnUseBlockPressed() {
-		TorchAid.instance.Pressed();
+	private static void onUseBlockPressed() {
+		TorchAid.instance.onPressed();
 	}
 
-	private static void OnUseBlockReleased() {
-		TorchAid.instance.Released();
+	private static void onUseBlockReleased() {
+		TorchAid.instance.onReleased();
 	}
 
 	@Nonnull

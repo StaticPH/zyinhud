@@ -29,17 +29,17 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled = ZyinHUDConfig.EnableWeaponSwap.get();
+	public static boolean isEnabled = ZyinHUDConfig.enableWeaponSwap.get();
 
 	/**
 	 * Toggles this module on or off
 	 *
 	 * @return The state the module was changed to
 	 */
-	public static boolean ToggleEnabled() {
-		ZyinHUDConfig.EnableWeaponSwap.set(!Enabled);
-		ZyinHUDConfig.EnableWeaponSwap.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return Enabled = !Enabled;
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableWeaponSwap.set(!isEnabled);
+		ZyinHUDConfig.enableWeaponSwap.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
 	//private static List<Class> meleeWeaponClasses = null;
@@ -48,48 +48,48 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	/**
 	 * Makes the player select their sword. If a sword is already selected, it selects the bow instead.
 	 */
-	public static void SwapWeapons() {
+	public static void swapWeapons() {
 		ItemStack currentItemStack = mc.player.getHeldItemMainhand(); //back when there was no off-hand, this used getHeldItem();
 
-		InitializeListOfWeaponClasses();
+		initializeListOfWeaponClasses();
 
-		int meleeWeaponSlot = GetMostDamagingWeaponSlotFromHotbar();
-		int rangedWeaponSlot = GetBowSlotFromHotbar(rangedWeaponClasses);
+		int meleeWeaponSlot = getMostDamagingWeaponSlotFromHotbar();
+		int rangedWeaponSlot = getBowSlotFromHotbar(rangedWeaponClasses);
 
 		if (meleeWeaponSlot < 0 && rangedWeaponSlot < 0) {
 			//we dont have a sword or a bow on the hotbar, so check our inventory
 
-			meleeWeaponSlot = GetMostDamagingWeaponSlotFromInventory();
+			meleeWeaponSlot = getMostDamagingWeaponSlotFromInventory();
 			if (meleeWeaponSlot < 0) {
-				rangedWeaponSlot = GetItemSlotFromInventory(rangedWeaponClasses);
+				rangedWeaponSlot = getItemSlotFromInventory(rangedWeaponClasses);
 				if (rangedWeaponSlot < 0) {
-					ZyinHUDRenderer.DisplayNotification(Localization.get("weaponswapper.noweapons"));
+					ZyinHUDRenderer.displayNotification(Localization.get("weaponswapper.noweapons"));
 				}
 				else {
-					InventoryUtil.Swap(InventoryUtil.GetCurrentlySelectedItemInventoryIndex(), rangedWeaponSlot);
+					InventoryUtil.swap(InventoryUtil.getCurrentlySelectedItemInventoryIndex(), rangedWeaponSlot);
 				}
 			}
 			else {
-				InventoryUtil.Swap(InventoryUtil.GetCurrentlySelectedItemInventoryIndex(), meleeWeaponSlot);
+				InventoryUtil.swap(InventoryUtil.getCurrentlySelectedItemInventoryIndex(), meleeWeaponSlot);
 			}
 		}
 		else if (meleeWeaponSlot >= 0 && rangedWeaponSlot < 0) {
 			//we have a sword, but no bow
-			SelectHotbarSlot(meleeWeaponSlot);
+			selectHotbarSlot(meleeWeaponSlot);
 		}
 		else if (meleeWeaponSlot < 0 && rangedWeaponSlot >= 0) {
 			//we have a bow, but no sword
-			SelectHotbarSlot(rangedWeaponSlot);
+			selectHotbarSlot(rangedWeaponSlot);
 		}
 		else {
 			//we have both a bow and a sword
 			if (mc.player.inventory.currentItem == meleeWeaponSlot) {
 				//we are selected on the best melee weapon, so select the ranged weapon
-				SelectHotbarSlot(rangedWeaponSlot);
+				selectHotbarSlot(rangedWeaponSlot);
 			}
 			else {
 				//we are not selecting the best melee weapon, so select the melee weapon
-				SelectHotbarSlot(meleeWeaponSlot);
+				selectHotbarSlot(meleeWeaponSlot);
 			}
 		}
 	}
@@ -101,7 +101,7 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	 * @param maxInventoryIndex the max inventory index
 	 * @return 0 -9
 	 */
-	protected static int GetMostDamagingWeaponSlot(int minInventoryIndex, int maxInventoryIndex) {
+	protected static int getMostDamagingWeaponSlot(int minInventoryIndex, int maxInventoryIndex) {
 		NonNullList<ItemStack> items = mc.player.inventory.mainInventory;
 		double highestWeaponDamage = -1;
 		double highestAttackSpeed = -1;
@@ -114,8 +114,8 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 			ItemStack itemStack = items.get(i);
 
 			if (!itemStack.isEmpty()) {
-				double weaponDamage = GetItemWeaponDamage(itemStack);
-				double weaponAttackSpeed = GetAttackSpeed(itemStack);
+				double weaponDamage = getItemWeaponDamage(itemStack);
+				double weaponAttackSpeed = getAttackSpeed(itemStack);
 				if (itemStack.getItem() instanceof SwordItem) {
 					if (
 						(weaponDamage > highestSwordDamage && weaponAttackSpeed >= highestSwordAttackSpeed) ||
@@ -157,8 +157,8 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	 *
 	 * @return 0 -8, -1 if none found
 	 */
-	public static int GetMostDamagingWeaponSlotFromHotbar() {
-		return GetMostDamagingWeaponSlot(0, 8);
+	public static int getMostDamagingWeaponSlotFromHotbar() {
+		return getMostDamagingWeaponSlot(0, 8);
 	}
 
 	/**
@@ -166,8 +166,8 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	 *
 	 * @return 9 -35, -1 if none found
 	 */
-	public static int GetMostDamagingWeaponSlotFromInventory() {
-		return GetMostDamagingWeaponSlot(9, 35);
+	public static int getMostDamagingWeaponSlotFromInventory() {
+		return getMostDamagingWeaponSlot(9, 35);
 	}
 
 	/**
@@ -176,11 +176,11 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	 * @param itemStack the item stack
 	 * @return -1 if it doesn't have a damage modifier
 	 */
-	public static double GetItemWeaponDamage(ItemStack itemStack) {
+	public static double getItemWeaponDamage(ItemStack itemStack) {
 		EquipmentSlotType EquipmentSlot = EquipmentSlotType.MAINHAND;
-		Multimap<String, AttributeModifier> multimap = itemStack.getItem().getAttributeModifiers(
-			EquipmentSlot, itemStack);
-		double enchantDamage = GetEnchantDamage(itemStack);
+		Multimap<String, AttributeModifier> multimap =
+			itemStack.getItem().getAttributeModifiers(EquipmentSlot, itemStack);
+		double enchantDamage = getEnchantDamage(itemStack);
 
 		if (multimap.containsKey(SharedMonsterAttributes.ATTACK_DAMAGE.getName())) {
 			Collection<AttributeModifier> attributes = multimap.get(SharedMonsterAttributes.ATTACK_DAMAGE.getName());
@@ -197,7 +197,7 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 		return -1;
 	}
 
-	private static void InitializeListOfWeaponClasses() {
+	private static void initializeListOfWeaponClasses() {
 		if (rangedWeaponClasses == null) {
 			rangedWeaponClasses = new ArrayList<Class>();
 			rangedWeaponClasses.add(BowItem.class);
@@ -219,7 +219,7 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	 * @param item
 	 * @return
 	 */
-	private static boolean IsRangedWeapon(Item item) {
+	private static boolean isRangedWeapon(Item item) {
 		if (rangedWeaponClasses == null) { return false; }
 
 		for (Class rangedWeaponClass : rangedWeaponClasses) {
@@ -235,7 +235,7 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	 *
 	 * @param slot 0 through 8
 	 */
-	protected static void SelectHotbarSlot(int slot) {
+	protected static void selectHotbarSlot(int slot) {
 		if (slot < 0 || slot > 8) { return; }
 
 		mc.player.inventory.currentItem = slot;
@@ -250,7 +250,7 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	 * @param maxInventoryIndex the max inventory index
 	 * @return 0 through 8, inclusive. -1 if not found.
 	 */
-	protected static int GetItemSlot(List<Class> itemClasses, int minInventoryIndex, int maxInventoryIndex) {
+	protected static int getItemSlot(List<Class> itemClasses, int minInventoryIndex, int maxInventoryIndex) {
 		NonNullList<ItemStack> items = mc.player.inventory.mainInventory;
 
 		for (int i = minInventoryIndex; i <= maxInventoryIndex; i++) {
@@ -276,8 +276,8 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	 * @param itemClasses the type of item to find (i.e. ItemSword.class, ItemBow.class)
 	 * @return 0 through 8, inclusive. -1 if not found.
 	 */
-	public static int GetItemSlotFromHotbar(List<Class> itemClasses) {
-		return GetItemSlot(itemClasses, 0, 8);
+	public static int getItemSlotFromHotbar(List<Class> itemClasses) {
+		return getItemSlot(itemClasses, 0, 8);
 	}
 
 	/**
@@ -286,11 +286,11 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	 * @param itemClasses the type of item to find (i.e. ItemSword.class, ItemBow.class)
 	 * @return 9 through 35, inclusive. -1 if not found.
 	 */
-	public static int GetItemSlotFromInventory(List<Class> itemClasses) {
-		return GetItemSlot(itemClasses, 9, 35);
+	public static int getItemSlotFromInventory(List<Class> itemClasses) {
+		return getItemSlot(itemClasses, 9, 35);
 	}
 
-	public static double GetEnchantDamage(ItemStack item) {
+	public static double getEnchantDamage(ItemStack item) {
 		double damage = 0.0D;
 		if (item.isEnchanted()) {
 			damage = EnchantmentHelper.getModifierForCreature(item, CreatureAttribute.UNDEFINED);
@@ -298,7 +298,7 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 		return damage;
 	}
 
-	public static double GetAttackSpeed(ItemStack item) {
+	public static double getAttackSpeed(ItemStack item) {
 		EquipmentSlotType EquipmentSlot = EquipmentSlotType.MAINHAND;
 		Multimap<String, AttributeModifier> multimap = item.getItem().getAttributeModifiers(EquipmentSlot, item);
 
@@ -314,7 +314,7 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 		return -1;
 	}
 
-	public static double GetBowDamage(ItemStack item) {
+	public static double getBowDamage(ItemStack item) {
 		double damage = 0.0D;
 		if (item.isEnchanted()) {
 			int power = EnchantmentHelper.getEnchantmentLevel(Enchantments.POWER, item);
@@ -325,7 +325,7 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 		return damage;
 	}
 
-	public static int GetBowSlotFromHotbar(List<Class> itemClasses) {
+	public static int getBowSlotFromHotbar(List<Class> itemClasses) {
 		NonNullList<ItemStack> items = mc.player.inventory.mainInventory;
 		double highestDamage = -1;
 		int slot = -1;
@@ -337,8 +337,8 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 
 				for (Class itemClass : itemClasses) {
 					if (itemClass.isInstance(item)) {
-						if (GetBowDamage(itemStack) > highestDamage) {
-							highestDamage = GetBowDamage(itemStack);
+						if (getBowDamage(itemStack) > highestDamage) {
+							highestDamage = getBowDamage(itemStack);
 							slot = i;
 						}
 					}

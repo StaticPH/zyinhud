@@ -13,15 +13,15 @@ import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
  * The type Zyin hud options key handler.
  */
 public class ZyinHUDOptionsKeyHandler implements ZyinHUDKeyHandlerBase {
-	public static final String HotkeyDescription = "key.zyinhud.zyinhudoptions";
+	public static final String hotkeyDescription = "key.zyinhud.zyinhudoptions";
 	private static Logger logger = LogManager.getLogger("OptionsKeyHandler");
 
 	/**
-	 * Pressed.
+	 * onPressed.
 	 *
 	 * @param event the event
 	 */
-	public static void Pressed(KeyInputEvent event) {
+	public static void onPressed(KeyInputEvent event) {
 		//don't activate if the user is looking at a GUI
 		if (mc.currentScreen != null) { return; }
 
@@ -34,7 +34,7 @@ public class ZyinHUDOptionsKeyHandler implements ZyinHUDKeyHandlerBase {
 			 (GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS))) {
 			//display the GUI
 //            mc.displayGuiScreen(new GuiZyinHUDOptions(null));
-//            ZyinHUDSound.PlayButtonPress();
+//            ZyinHUDSound.playButtonPress();
 			logger.info("Gui not yet implemented. Unable to display.");
 		}
 	}

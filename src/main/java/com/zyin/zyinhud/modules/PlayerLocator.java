@@ -43,32 +43,32 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled = ZyinHUDConfig.EnablePlayerLocator.get();
+	public static boolean isEnabled = ZyinHUDConfig.enablePlayerLocator.get();
 
 	/**
 	 * Toggles this module on or off
 	 *
 	 * @return The state the module was changed to
 	 */
-	public static boolean ToggleEnabled() {
-		ZyinHUDConfig.EnablePlayerLocator.set(!Enabled);
-		ZyinHUDConfig.EnablePlayerLocator.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return Enabled = !Enabled;
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enablePlayerLocator.set(!isEnabled);
+		ZyinHUDConfig.enablePlayerLocator.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
 	/**
 	 * The current mode for this module
 	 */
-	public static LocatorOptions.LocatorModes Mode = ZyinHUDConfig.PlayerLocatorMode.get();
+	public static LocatorOptions.LocatorModes mode = ZyinHUDConfig.playerLocatorMode.get();
 
 	/**
 	 * Shows how far you are from other players next to their name
 	 */
-	public static boolean ShowDistanceToPlayers = ZyinHUDConfig.ShowDistanceToPlayers.get();
-	public static boolean ShowPlayerHealth = ZyinHUDConfig.ShowPlayerHealth.get();
-	public static boolean ShowWitherSkeletons = ZyinHUDConfig.ShowWitherSkeletons.get();
-	public static boolean ShowWolves = ZyinHUDConfig.ShowWolves.get();
-	public static boolean UseWolfColors = ZyinHUDConfig.UseWolfColors.get();
+	private static boolean showDistanceToPlayers = ZyinHUDConfig.showDistanceToPlayers.get();
+	private static boolean showPlayerHealth = ZyinHUDConfig.showPlayerHealth.get();
+	private static boolean showWitherSkeletons = ZyinHUDConfig.showWitherSkeletons.get();
+	private static boolean showWolves = ZyinHUDConfig.showWolves.get();
+	private static boolean useWolfColors = ZyinHUDConfig.useWolfColors.get();
 
 	private static final ResourceLocation iconsResourceLocation = new ResourceLocation("textures/gui/icons.png");
 
@@ -79,12 +79,16 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	/**
 	 * Don't render players that are closer than this
 	 */
-	public static int viewDistanceCutoff = ZyinHUDConfig.PlayerLocatorMinViewDistance.get();
-	public static final int minViewDistanceCutoff = LocatorOptions.minViewDistanceCutoff;
-	public static final int maxViewDistanceCutoff = LocatorOptions.maxViewDistanceCutoff;    //realistic max distance the game will render entities: up to ~115 blocks away
+	private static int viewDistanceCutoff = ZyinHUDConfig.playerLocatorMinViewDistance.get();
+	private static final int minViewDistanceCutoff = LocatorOptions.minViewDistanceCutoff;
+	private static final int maxViewDistanceCutoff = LocatorOptions.maxViewDistanceCutoff;    //realistic max distance the game will render entities: up to ~115 blocks away
 
-	public static int numOverlaysRendered;
-	public static final int maxNumberOfOverlays = 50;    //render only the first nearest 50 players
+	private static int numOverlaysRendered;
+	private static final int maxNumberOfOverlays = 50;    //render only the first nearest 50 players
+
+	public static void resetNumOverlaysRendered(){
+		numOverlaysRendered = 0;
+	}
 
 	/**
 	 * Get the type of the horse armor in int type
@@ -110,7 +114,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	 * @param x      location on the HUD
 	 * @param y      location on the HUD
 	 */
-	public static void RenderEntityInfoOnHUD(Entity entity, int x, int y) {
+	public static void renderEntityInfoOnHUD(Entity entity, int x, int y) {
 		if (numOverlaysRendered > maxNumberOfOverlays) { return; }
 
 		//we only care about other players and wolves( and wither skeletons)
@@ -120,7 +124,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 		//and not looking at a menu
 		//and F3 not pressed
 		if (
-			PlayerLocator.Enabled && Mode == LocatorOptions.LocatorModes.ON &&
+			PlayerLocator.isEnabled && mode == LocatorOptions.LocatorModes.ON &&
 			(mc.mouseHelper.isMouseGrabbed() || doesScreenShowHUD(mc.currentScreen)) &&
 			!mc.gameSettings.showDebugInfo
 		) {
@@ -147,11 +151,11 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 				if (team != null) { overlayMessage = team.getName(); }
 			}
 			else if (entity instanceof WolfEntity) {
-				if (!ShowWolves || !PlayerIsWolfsOwner((WolfEntity) entity)) { return; }
+				if (!showWolves || !playerIsWolfsOwner((WolfEntity) entity)) { return; }
 
 				overlayMessage = getOverlayMessageForEntity(entity, distanceFromMe);
 
-				if (UseWolfColors) {
+				if (useWolfColors) {
 					DyeColor collarColor = ((WolfEntity) entity).getCollarColor();
 					float[] dyeRGBColors = SheepEntity.getDyeRgb(collarColor);
 
@@ -167,7 +171,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 				}
 			}
 			else if (entity instanceof WitherSkeletonEntity) {
-				if (!ShowWitherSkeletons) { return; }
+				if (!showWitherSkeletons) { return; }
 
 				overlayMessage = getOverlayMessageForEntity(entity, distanceFromMe);
 
@@ -187,11 +191,11 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 			//check if the text is attempting to render outside of the screen, and if so, fix it to snap to the edge of the screen.
 			x = Math.min(x, width - overlayMessageWidth);
 			x = Math.max(x, 0);
-			y = (y > height - 10 && !ShowPlayerHealth) ? height - 10 : y;
-			y = (y > height - 20 && ShowPlayerHealth) ? height - 20 : y;
-			if (y < 10 && InfoLine.GetVerticalLocation() <= 1 &&
-			    (x > InfoLine.GetHorizontalLocation() + mc.fontRenderer.getStringWidth(InfoLine.getInfoLineMessage()) ||
-			     x < InfoLine.GetHorizontalLocation() - overlayMessageWidth)) {
+			y = (y > height - 10 && !showPlayerHealth) ? height - 10 : y;
+			y = (y > height - 20 && showPlayerHealth) ? height - 20 : y;
+			if (y < 10 && InfoLine.getVerticalLocation() <= 1 &&
+			    (x > InfoLine.getHorizontalLocation() + mc.fontRenderer.getStringWidth(InfoLine.getInfoLineMessage()) ||
+			     x < InfoLine.getHorizontalLocation() - overlayMessageWidth)) {
 				//if the text is to the right or left of the info line then allow it to render in that open space
 				y = Math.max(y, 0);
 			}
@@ -214,12 +218,12 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 				renderRidingIcon(entity, x, y);
 			}
 			else if (entity instanceof PlayerEntity && ((PlayerEntity) entity).isElytraFlying()) {
-				RenderElytraIcon(x, y);
+				renderElytraIcon(x, y);
 			}
 
 			//if showing player health is turned on, render the hp and a heart icon under their name
 			//but don't show health for mobs, such as Wither Skeletons
-			if (ShowPlayerHealth && !(entity instanceof MonsterEntity)) {
+			if (showPlayerHealth && !(entity instanceof MonsterEntity)) {
 				showOtherPlayerHealth((LivingEntity) entity, x, y, alpha, overlayMessageWidth);
 			}
 
@@ -238,11 +242,11 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 
 		GL11.glColor4f(1f, 1f, 1f, ((float) alpha) / 0xFF);
 		//black outline of the heart icon
-		ZyinHUDRenderer.RenderCustomTexture(
+		ZyinHUDRenderer.renderCustomTexture(
 			x + offsetX + hpOverlayMessageWidth + 1, y + 9, 16, 0, 9, 9, iconsResourceLocation, 1f
 		);
 		//red interior of the heart icon
-		ZyinHUDRenderer.RenderCustomTexture(
+		ZyinHUDRenderer.renderCustomTexture(
 			x + offsetX + hpOverlayMessageWidth + 1, y + 9, 52, 0, 9, 9, iconsResourceLocation, 1f
 		);
 		GL11.glColor4f(1f, 1f, 1f, 1f);
@@ -253,7 +257,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 			renderHorseArmorOrSaddleIcon((HorseEntity) (entity.getRidingEntity()), x, y);
 		}
 		if (entity.getRidingEntity() instanceof PigEntity) {
-			RenderSaddleIcon(x, y);
+			renderSaddleIcon(x, y);
 		}
 		else if (entity.getRidingEntity() instanceof AbstractMinecartEntity) {
 			renderItemIconIntoGUI(
@@ -281,12 +285,12 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 			renderItemIconIntoGUI(armorIter.next(), x, y);
 		}
 		else if (horse.isHorseSaddled()) {
-			RenderSaddleIcon(x, y);
+			renderSaddleIcon(x, y);
 		}
 	}
 
 	//FIXME?: this doesnt seem correct
-	private static boolean PlayerIsWolfsOwner(WolfEntity wolf) {
+	private static boolean playerIsWolfsOwner(WolfEntity wolf) {
 		return wolf.isOnSameTeam(mc.player);
 	}
 
@@ -295,7 +299,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 		String overlayMessage = "";
 
 		//add distance to this entity into the message
-		if (ShowDistanceToPlayers) {
+		if (showDistanceToPlayers) {
 			overlayMessage = TextFormatting.GRAY + "[" + (int) distanceFromMe + "] " + TextFormatting.RESET;
 		}
 
@@ -337,23 +341,23 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 		renderItemIconIntoGUI(new ItemStack(item), x, y);
 	}
 
-	private static void RenderSaddleIcon(int x, int y) {
+	private static void renderSaddleIcon(int x, int y) {
 		renderItemIconIntoGUI(new ItemStack(Items.SADDLE), x, y);
 	}
 
-	private static void RenderElytraIcon(int x, int y) {
+	private static void renderElytraIcon(int x, int y) {
 		renderItemIconIntoGUI(new ItemStack(Items.ELYTRA), x, y);
 	}
 
     /*
-    public static double AngleBetweenTwoVectors(Vec3 a, Vec3 b)
+    public static double angleBetweenTwoVectors(Vec3 a, Vec3 b)
     {
         return Math.acos(a.dotProduct(b) / (a.lengthVector() * b.lengthVector()));
     }
-    public static double SignedAngleBetweenTwoVectors(Vec3 a, Vec3 b)
+    public static double signedAngleBetweenTwoVectors(Vec3 a, Vec3 b)
     {
     	// Get the angle in degrees between 0 and 180
-    	double angle = AngleBetweenTwoVectors(b, a);
+    	double angle = angleBetweenTwoVectors(b, a);
 
     	// the vector perpendicular to referenceForward (90 degrees clockwise)
     	// (used to determine if angle is positive or negative)
@@ -373,9 +377,9 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	 *
 	 * @return the string "players" if the Player Locator is enabled, otherwise "".
 	 */
-	public static String CalculateMessageForInfoLine() {
-		if (Mode == LocatorOptions.LocatorModes.OFF || !PlayerLocator.Enabled) { return ""; }
-		else if (Mode == LocatorOptions.LocatorModes.ON) {
+	public static String calculateMessageForInfoLine() {
+		if (mode == LocatorOptions.LocatorModes.OFF || !PlayerLocator.isEnabled) { return ""; }
+		else if (mode == LocatorOptions.LocatorModes.ON) {
 			return TextFormatting.WHITE + Localization.get("playerlocator.infoline");
 		}
 		else { return TextFormatting.WHITE + "???"; }
@@ -386,8 +390,8 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	 *
 	 * @return The new Clock mode
 	 */
-	public static boolean ToggleShowDistanceToPlayers() {
-		return ShowDistanceToPlayers = !ShowDistanceToPlayers;
+	public static boolean toggleShowDistanceToPlayers() {
+		return showDistanceToPlayers = !showDistanceToPlayers;
 	}
 
 	/**
@@ -395,8 +399,8 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	 *
 	 * @return The new Clock mode
 	 */
-	public static boolean ToggleShowPlayerHealth() {
-		return ShowPlayerHealth = !ShowPlayerHealth;
+	public static boolean toggleShowPlayerHealth() {
+		return showPlayerHealth = !showPlayerHealth;
 	}
 
 	/**
@@ -404,8 +408,8 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	 *
 	 * @return The new Clock mode
 	 */
-	public static boolean ToggleShowWolves() {
-		return ShowWolves = !ShowWolves;
+	public static boolean toggleShowWolves() {
+		return showWolves = !showWolves;
 	}
 
 	/**
@@ -413,8 +417,8 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	 *
 	 * @return The new Clock mode
 	 */
-	public static boolean ToggleUseWolfColors() {
-		return UseWolfColors = !UseWolfColors;
+	public static boolean toggleUseWolfColors() {
+		return useWolfColors = !useWolfColors;
 	}
 
 	/**
@@ -422,7 +426,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	 *
 	 * @return The new Clock mode
 	 */
-	public static boolean ToggleShowWitherSkeletons() {
-		return ShowWitherSkeletons = !ShowWitherSkeletons;
+	public static boolean toggleShowWitherSkeletons() {
+		return showWitherSkeletons = !showWitherSkeletons;
 	}
 }

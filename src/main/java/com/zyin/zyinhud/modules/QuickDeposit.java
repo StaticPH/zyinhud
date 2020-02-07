@@ -27,17 +27,17 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled = ZyinHUDConfig.EnableQuickDeposit.get();
-	public static boolean BlacklistClockCompass = ZyinHUDConfig.BlacklistClockCompass.get();
-	public static boolean BlacklistWeapons = ZyinHUDConfig.BlacklistWeapons.get();
-	public static boolean BlacklistArrow = ZyinHUDConfig.BlacklistArrow.get();
-	public static boolean BlacklistEnderPearl = ZyinHUDConfig.BlacklistEnderPearl.get();
-	public static boolean BlacklistFood = ZyinHUDConfig.BlacklistFood.get();
-	public static boolean BlacklistTools = ZyinHUDConfig.BlacklistTools.get();
-	public static boolean BlacklistTorch = ZyinHUDConfig.BlacklistTorch.get();
-	public static boolean BlacklistWaterBucket = ZyinHUDConfig.BlacklistWaterBucket.get();
-	public static boolean CloseChestAfterDepositing = ZyinHUDConfig.CloseChestAfterDepositing.get();
-	public static boolean IgnoreItemsInHotbar = ZyinHUDConfig.IgnoreItemsInHotbar.get();
+	public static boolean isEnabled = ZyinHUDConfig.enableQuickDeposit.get();
+	public static boolean blacklistClockCompass = ZyinHUDConfig.blacklistClockCompass.get();
+	public static boolean blacklistWeapons = ZyinHUDConfig.blacklistWeapons.get();
+	public static boolean blacklistArrow = ZyinHUDConfig.blacklistArrow.get();
+	public static boolean blacklistEnderPearl = ZyinHUDConfig.blacklistEnderPearl.get();
+	public static boolean blacklistFood = ZyinHUDConfig.blacklistFood.get();
+	public static boolean blacklistTools = ZyinHUDConfig.blacklistTools.get();
+	public static boolean blacklistTorch = ZyinHUDConfig.blacklistTorch.get();
+	public static boolean blacklistWaterBucket = ZyinHUDConfig.blacklistWaterBucket.get();
+	public static boolean closeChestAfterDepositing = ZyinHUDConfig.closeChestAfterDepositing.get();
+	public static boolean ignoreItemsInHotbar = ZyinHUDConfig.ignoreItemsInHotbar.get();
 
 
 	/**
@@ -45,10 +45,10 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 *
 	 * @return The state the module was changed to
 	 */
-	public static boolean ToggleEnabled() {
-		ZyinHUDConfig.EnableQuickDeposit.set(!Enabled);
-		ZyinHUDConfig.EnableQuickDeposit.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return Enabled = !Enabled;
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableQuickDeposit.set(!isEnabled);
+		ZyinHUDConfig.enableQuickDeposit.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
 	/**
@@ -57,8 +57,8 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 *
 	 * @param onlyDepositMatchingItems only deposit an item if another one exists in the chest already
 	 */
-	public static void QuickDepositItemsInChest(boolean onlyDepositMatchingItems) {
-		if (!(mc.currentScreen instanceof ContainerScreen) || !QuickDeposit.Enabled) { return; }
+	public static void quickDepositItemsInChest(boolean onlyDepositMatchingItems) {
+		if (!(mc.currentScreen instanceof ContainerScreen) || !QuickDeposit.isEnabled) { return; }
 
 		try {
 			if (
@@ -71,25 +71,25 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 				return;
 			}
 			else if (mc.currentScreen instanceof MerchantScreen) {
-				InventoryUtil.DepositAllMatchingItemsInMerchant();
+				InventoryUtil.depositAllMatchingItemsInMerchant();
 			}
 			else if (mc.currentScreen instanceof FurnaceScreen) {
-				InventoryUtil.DepositAllMatchingItemsInFurance();
+				InventoryUtil.depositAllMatchingItemsInFurance();
 			}
 			else if (mc.currentScreen instanceof BrewingStandScreen) {
-				InventoryUtil.DepositAllMatchingItemsInBrewingStand();
+				InventoryUtil.depositAllMatchingItemsInBrewingStand();
 			}
 			else {
 				//single chest, double chest, donkey/mules, hopper, dropper, dispenser
-				InventoryUtil.DepositAllMatchingItemsInContainer(onlyDepositMatchingItems, IgnoreItemsInHotbar);
+				InventoryUtil.depositAllMatchingItemsInContainer(onlyDepositMatchingItems, ignoreItemsInHotbar);
 
-				if (CloseChestAfterDepositing) {
+				if (closeChestAfterDepositing) {
 //					mc.currentScreen.onClose();
 					mc.player.closeScreen();
 				}
 			}
 
-			ZyinHUDSound.PlayButtonPress();
+			ZyinHUDSound.playButtonPress();
 		}
 		catch (Exception e) {
 			//Quick Deposit has a bad history of causing unpredictable crashes, so just catch all exceptions
@@ -104,17 +104,17 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 * @return true if it is allowed to be deposited
 	 */
 	@SuppressWarnings({"BooleanMethodIsAlwaysInverted"})
-	public static boolean IsAllowedToBeDepositedInContainer(ItemStack itemStack) {
+	public static boolean isAllowedToBeDepositedInContainer(ItemStack itemStack) {
 		Item item = itemStack.getItem(); // no need to call this for every comparison; just once per item will do
 		return !itemStack.isEmpty() &&
-		       !(BlacklistTorch && ItemLike.isTorchLike(item)) &&
-		       !(BlacklistTools && ItemLike.isToolLike(item)) &&
-		       !(BlacklistWeapons && (item instanceof SwordItem || item instanceof BowItem)) &&
-		       !(BlacklistArrow && ItemLike.isArrowLike(item)) &&
-		       !(BlacklistEnderPearl && item == Items.ENDER_PEARL) &&
-		       !(BlacklistWaterBucket && item == Items.WATER_BUCKET) &&
-		       !(BlacklistFood && item.isFood()) && // item == Items.CAKE)) ||
-		       !(BlacklistClockCompass && (item == Items.COMPASS || item == Items.CLOCK));
+		       !(blacklistTorch && ItemLike.isTorchLike(item)) &&
+		       !(blacklistTools && ItemLike.isToolLike(item)) &&
+		       !(blacklistWeapons && (item instanceof SwordItem || item instanceof BowItem)) &&
+		       !(blacklistArrow && ItemLike.isArrowLike(item)) &&
+		       !(blacklistEnderPearl && item == Items.ENDER_PEARL) &&
+		       !(blacklistWaterBucket && item == Items.WATER_BUCKET) &&
+		       !(blacklistFood && item.isFood()) && // item == Items.CAKE)) ||
+		       !(blacklistClockCompass && (item == Items.COMPASS || item == Items.CLOCK));
 		//TODO: replace/supplement the item checks with tag checks wherever possible. like with torches
 	}
 
@@ -124,8 +124,8 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleIgnoreItemsInHotbar() {
-		return IgnoreItemsInHotbar = !IgnoreItemsInHotbar;
+	public static boolean toggleIgnoreItemsInHotbar() {
+		return ignoreItemsInHotbar = !ignoreItemsInHotbar;
 	}
 
 	/**
@@ -133,8 +133,8 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleCloseChestAfterDepositing() {
-		return CloseChestAfterDepositing = !CloseChestAfterDepositing;
+	public static boolean toggleCloseChestAfterDepositing() {
+		return closeChestAfterDepositing = !closeChestAfterDepositing;
 	}
 
 	/**
@@ -142,8 +142,8 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleBlacklistTorch() {
-		return BlacklistTorch = !BlacklistTorch;
+	public static boolean toggleBlacklistTorch() {
+		return blacklistTorch = !blacklistTorch;
 	}
 
 	/**
@@ -151,8 +151,8 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleBlacklistTools() {
-		return BlacklistTools = !BlacklistTools;
+	public static boolean toggleBlacklistTools() {
+		return blacklistTools = !blacklistTools;
 	}
 
 	/**
@@ -160,8 +160,8 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleBlacklistWeapons() {
-		return BlacklistWeapons = !BlacklistWeapons;
+	public static boolean toggleBlacklistWeapons() {
+		return blacklistWeapons = !blacklistWeapons;
 	}
 
 	/**
@@ -169,8 +169,8 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleBlacklistArrow() {
-		return BlacklistArrow = !BlacklistArrow;
+	public static boolean toggleBlacklistArrow() {
+		return blacklistArrow = !blacklistArrow;
 	}
 
 	/**
@@ -178,8 +178,8 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleBlacklistEnderPearl() {
-		return BlacklistEnderPearl = !BlacklistEnderPearl;
+	public static boolean toggleBlacklistEnderPearl() {
+		return blacklistEnderPearl = !blacklistEnderPearl;
 	}
 
 	/**
@@ -187,8 +187,8 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleBlacklistFood() {
-		return BlacklistFood = !BlacklistFood;
+	public static boolean toggleBlacklistFood() {
+		return blacklistFood = !blacklistFood;
 	}
 
 	/**
@@ -196,8 +196,8 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleBlacklistWaterBucket() {
-		return BlacklistWaterBucket = !BlacklistWaterBucket;
+	public static boolean toggleBlacklistWaterBucket() {
+		return blacklistWaterBucket = !blacklistWaterBucket;
 	}
 
 	/**
@@ -205,7 +205,7 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleBlacklistClockCompass() {
-		return BlacklistClockCompass = !BlacklistClockCompass;
+	public static boolean toggleBlacklistClockCompass() {
+		return blacklistClockCompass = !blacklistClockCompass;
 	}
 }

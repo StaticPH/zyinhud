@@ -9,34 +9,28 @@
 ///**
 // * Used to capture GUI Events for vanilla screens in order to add custom functionality to them.
 // */
-//public class ZyinHUDGuiEvents
-//{
-//	/**
-//	 * The constant instance.
-//	 */
+//public class ZyinHUDGuiEvents {
 //	public static final ZyinHUDGuiEvents instance = new ZyinHUDGuiEvents();
 //
 //	/**
 //	 * Init gui event post.
+//	 * Used to inject new buttons into vanilla GUIs
 //	 *
 //	 * @param event the event
 //	 */
-////Used to inject new buttons into vanilla GUIs
 //	@SubscribeEvent
-//	public void InitGuiEventPost(InitGuiEvent.Post event)
-//	{
-//		GuiZyinHUDOptions.InitGuiEventPost(event);
+//	public void initGuiEventPost(InitGuiEvent.Post event) {
+//		GuiZyinHUDOptions.initGuiEventPost(event);
 //	}
 //
 //	/**
 //	 * Action performed event post.
+//	 * Used to capture when a custom button is clicked in a vanilla GUI
 //	 *
 //	 * @param event the event
 //	 */
-////Used to capture when a custom button is clicked in a vanilla GUI
 //	@SubscribeEvent
-//	public void ActionPerformedEventPost(ActionPerformedEvent.Post event)
-//	{
-//		GuiZyinHUDOptions.ActionPerformedEventPost(event);
+//	public void actionPerformedEventPost(ActionPerformedEvent.Post event) {
+//		GuiZyinHUDOptions.actionPerformedEventPost(event);
 //	}
 //}

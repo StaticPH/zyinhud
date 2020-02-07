@@ -84,12 +84,12 @@ public class TagHelper {
 			return item instanceof ToolItem ||
 			       item instanceof HoeItem ||
 			       item instanceof ShearsItem ||
-			       ModCompatibility.TConstruct.IsTConstructHarvestTool(item);
+			       ModCompatibility.TConstruct.isTConstructHarvestTool(item);
 		}
 
 		public static boolean canItemPlaceTorches(Item item) {
 			return item instanceof ToolItem ||
-			       ModCompatibility.TConstruct.IsTConstructToolWithoutARightClickAction(item);
+			       ModCompatibility.TConstruct.isTConstructToolWithoutARightClickAction(item);
 
 		}
 	}

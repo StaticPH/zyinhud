@@ -19,29 +19,29 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled = ZyinHUDConfig.EnableHealthMonitor.get();
+	public static boolean isEnabled = ZyinHUDConfig.enableHealthMonitor.get();
 
 	/**
 	 * Toggles this module on or off
 	 *
 	 * @return The state the module was changed to
 	 */
-	public static boolean ToggleEnabled() {
-		ZyinHUDConfig.EnableHealthMonitor.set(!Enabled);
-		ZyinHUDConfig.EnableHealthMonitor.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return Enabled = !Enabled;
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableHealthMonitor.set(!isEnabled);
+		ZyinHUDConfig.enableHealthMonitor.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
 	/**
 	 * The current mode for this module
 	 */
-	public static HealthMonitorOptions.HealthMonitorModes Mode = ZyinHUDConfig.HealthMonitorMode.get();
+	public static HealthMonitorOptions.HealthMonitorModes mode = ZyinHUDConfig.healthMonitorMode.get();
 
 	private static Timer timer = new Timer();
 
-	private static int LowHealthSoundThreshold = ZyinHUDConfig.LowHealthSoundThreshold.get();
-	private static float Volume = ZyinHUDConfig.HealthMonitorVolume.get().floatValue();
-	public static boolean PlayFasterNearDeath = ZyinHUDConfig.PlayFasterNearDeath.get();
+	private static int lowHealthSoundThreshold = ZyinHUDConfig.lowHealthSoundThreshold.get();
+	private static float volume = ZyinHUDConfig.healthMonitorVolume.get().floatValue();
+	public static boolean playFasterNearDeath = ZyinHUDConfig.playFasterNearDeath.get();
 
 	private static boolean isPlayingLowHealthSound = false;
 	private static final int repeatDelay = 1000;
@@ -62,10 +62,10 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void ClientTickEvent(ClientTickEvent event) {
+	public void onClientTickEvent(ClientTickEvent event) {
 		//only play the sound if it's not playing already
-		if (HealthMonitor.Enabled && !isPlayingLowHealthSound) {
-			PlayLowHealthSoundIfHurt();
+		if (HealthMonitor.isEnabled && !isPlayingLowHealthSound) {
+			playLowHealthSoundIfHurt();
 		}
 	}
 
@@ -74,22 +74,22 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 	 * Checks to see if the player has less health than the set threshold, and will play a
 	 * warning sound on a 1 second loop until they heal up.
 	 */
-	protected static void PlayLowHealthSoundIfHurt() {
+	protected static void playLowHealthSoundIfHurt() {
 		//Don't play any sounds or do anything with any timers while in creative mode
-		if (HealthMonitor.Enabled && mc.player != null && !mc.playerController.isInCreativeMode()) {
+		if (HealthMonitor.isEnabled && mc.player != null && !mc.playerController.isInCreativeMode()) {
 			int playerHealth = (int) mc.player.getHealth();
-			if (playerHealth < LowHealthSoundThreshold && playerHealth > 0) {
+			if (playerHealth < lowHealthSoundThreshold && playerHealth > 0) {
 				//don't play the sound if the user is looking at a screen
 				if (!mc.isGamePaused() && mc.isGameFocused()) {
-					PlayLowHealthSound();
+					playLowHealthSound();
 				}
 
 				isPlayingLowHealthSound = true;
 
 				int soundDelay = repeatDelay;
 
-				if (PlayFasterNearDeath) {
-					soundDelay = repeatDelay / 2 + (int) ((float) repeatDelay / 2 * ((float) playerHealth / (float) LowHealthSoundThreshold));
+				if (playFasterNearDeath) {
+					soundDelay = repeatDelay / 2 + (int) ((float) repeatDelay / 2 * ((float) playerHealth / (float) lowHealthSoundThreshold));
 				}
 
 				TimerTask t = new PlayLowHealthSoundTimerTask();
@@ -102,22 +102,11 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 		isPlayingLowHealthSound = false;
 	}
 
-
-	/**
-	 * Gets the name of the sound resource associated with the current mode.
-	 * Sound resouce names are declared in assets/zyinhud/sounds.json.
-	 *
-	 * @return string
-	 */
-	protected static String GetSoundNameFromMode() {
-		return Mode.soundName;
-	}
-
 	/**
 	 * Plays the low health warning sound right now.
 	 */
-	public static void PlayLowHealthSound() {
-		ZyinHUDSound.play(GetSoundNameFromMode(), Volume);
+	public static void playLowHealthSound() {
+		ZyinHUDSound.play(mode.getSoundName(), volume);
 	}
 
 	private static class PlayLowHealthSoundTimerTask extends TimerTask {
@@ -128,17 +117,17 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 
 		@Override
 		public void run() {
-			PlayLowHealthSoundIfHurt();
+			playLowHealthSoundIfHurt();
 		}
 	}
 
 	/**
 	 * Set low health sound threshold.
 	 *
-	 * @param lowHealthSoundThreshold the low health sound threshold
+	 * @param newThreshold the low health sound threshold
 	 */
-	public static void SetLowHealthSoundThreshold(int lowHealthSoundThreshold) {
-		LowHealthSoundThreshold = MathHelper.clamp(lowHealthSoundThreshold, 1, 20);
+	public static void setLowHealthSoundThreshold(int newThreshold) {
+		lowHealthSoundThreshold = MathHelper.clamp(lowHealthSoundThreshold, 1, 20);
 	}
 
 	/**
@@ -146,8 +135,8 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 	 *
 	 * @return the int
 	 */
-	public static int GetLowHealthSoundThreshold() {
-		return LowHealthSoundThreshold;
+	public static int getLowHealthSoundThreshold() {
+		return lowHealthSoundThreshold;
 	}
 
 	/**
@@ -155,8 +144,8 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 	 *
 	 * @param volume the volume
 	 */
-	public static void SetVolume(float volume) {
-		Volume = MathHelper.clamp(volume, 0, 1);
+	public static void setVolume(float volume) {
+		HealthMonitor.volume = MathHelper.clamp(volume, 0, 1);
 	}
 
 	/**
@@ -164,8 +153,8 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 	 *
 	 * @return the float
 	 */
-	public static float GetVolume() {
-		return Volume;
+	public static float getVolume() {
+		return volume;
 	}
 
 
@@ -174,7 +163,7 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean TogglePlayFasterNearDeath() {
-		return PlayFasterNearDeath = !PlayFasterNearDeath;
+	public static boolean togglePlayFasterNearDeath() {
+		return playFasterNearDeath = !playFasterNearDeath;
 	}
 }

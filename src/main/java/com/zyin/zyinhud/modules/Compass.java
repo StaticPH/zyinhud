@@ -12,20 +12,20 @@ public class Compass extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled = ZyinHUDConfig.EnableCompass.get();
+	public static boolean isEnabled = ZyinHUDConfig.enableCompass.get();
 
 	/**
 	 * Toggles this module on or off
 	 *
 	 * @return The state the module was changed to
 	 */
-	public static boolean ToggleEnabled() {
-		ZyinHUDConfig.EnableCompass.set(!Enabled);
-		ZyinHUDConfig.EnableCompass.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return Enabled = !Enabled;
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableCompass.set(!isEnabled);
+		ZyinHUDConfig.enableCompass.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
-	public static boolean renderCompassTextInMiddle = false;
+	public static boolean renderCompassTextInMiddle = ZyinHUDConfig.renderCompassTextInMiddle.get();
 
 	private static String south = Localization.get("compass.south");
 	private static String southwest = Localization.get("compass.southwest");
@@ -42,8 +42,8 @@ public class Compass extends ZyinHUDModuleBase {
 	 * @param infoLineMessageUpToThisPoint the info line message up to this point
 	 * @return "[Direction]" compass formatted string if the Compass is enabled, otherwise "".
 	 */
-	public static String CalculateMessageForInfoLine(String infoLineMessageUpToThisPoint) {
-		if (Compass.Enabled) {
+	public static String calculateMessageForInfoLine(String infoLineMessageUpToThisPoint) {
+		if (Compass.isEnabled) {
 			String compassDirection;
 			int facing;
 			int yaw = (int) mc.player.rotationYaw;
@@ -89,15 +89,14 @@ public class Compass extends ZyinHUDModuleBase {
 
 				mc.fontRenderer.drawStringWithShadow(
 					TextFormatting.RED + compassDirection,
-					InfoLine.GetHorizontalLocation() + x + x_padding,
-					InfoLine.GetVerticalLocation(), 0xffffff
+					InfoLine.getHorizontalLocation() + x + x_padding,
+					InfoLine.getVerticalLocation(), 0xffffff
 				);
 
 				return TextFormatting.GRAY + brackets;
 			}
 			else {
-				return TextFormatting.GRAY + "[" + TextFormatting.RED +
-				       compassDirection + TextFormatting.GRAY + ']';
+				return TextFormatting.GRAY + "[" + TextFormatting.RED + compassDirection + TextFormatting.GRAY + ']';
 			}
 		}
 

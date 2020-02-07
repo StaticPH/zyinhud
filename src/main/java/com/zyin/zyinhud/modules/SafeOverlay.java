@@ -36,17 +36,17 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled = ZyinHUDConfig.EnableSafeOverlay.get();
+	public static boolean isEnabled = ZyinHUDConfig.enableSafeOverlay.get();
 
 	/**
 	 * Toggles this module on or off
 	 *
 	 * @return The state the module was changed to
 	 */
-	public static boolean ToggleEnabled() {
-		ZyinHUDConfig.EnableSafeOverlay.set(!Enabled);
-		ZyinHUDConfig.EnableSafeOverlay.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return Enabled = !Enabled;
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableSafeOverlay.set(!isEnabled);
+		ZyinHUDConfig.enableSafeOverlay.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
 	public static MobEntity zombie = null;
@@ -54,7 +54,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	/**
 	 * The current mode for this module
 	 */
-	public static SafeOverlayOptions.SafeOverlayModes Mode = ZyinHUDConfig.SafeOverlayMode.get();
+	public static SafeOverlayOptions.safeOverlayModes mode = ZyinHUDConfig.safeOverlayMode.get();
 
 	/**
 	 * USE THE Getter/Setter METHODS FOR THIS!!
@@ -71,7 +71,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * <br>
 	 * drawDistance = 175 = 42,875,000 blocks (max)
 	 */
-	protected static int drawDistance = ZyinHUDConfig.SafeOverlayDrawDistance.get();
+	protected static int drawDistance = ZyinHUDConfig.safeOverlayDrawDistance.get();
 	public static final int defaultDrawDistance = SafeOverlayOptions.defaultDrawDistance;
 	public static final int minDrawDistance = SafeOverlayOptions.minDrawDistance;
 	public static final int maxDrawDistance = SafeOverlayOptions.maxDrawDistance;
@@ -79,12 +79,12 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	/**
 	 * The transprancy of the "X" marks when rendered, between (0.1 and 1]
 	 */
-	private static float unsafeOverlayTransparency = ZyinHUDConfig.SafeOverlayTransparency.get().floatValue();
+	private static float unsafeOverlayTransparency = ZyinHUDConfig.safeOverlayTransparency.get().floatValue();
 	private static float minUnsafeOverlayTransparency = SafeOverlayOptions.minUnsafeOverlayTransparency;
 	private static float maxUnsafeOverlayTransparency = SafeOverlayOptions.maxUnsafeOverlayTransparency;
 
-	private static boolean displayInNether = ZyinHUDConfig.SafeOverlayDisplayInNether.get();
-	private static boolean renderUnsafePositionsThroughWalls = ZyinHUDConfig.SafeOverlaySeeThroughWalls.get();
+	private static boolean displayInNether = ZyinHUDConfig.safeOverlayDisplayInNether.get();
+	private static boolean renderUnsafePositionsThroughWalls = ZyinHUDConfig.safeOverlaySeeThroughWalls.get();
 
 	private BlockPos playerPosition;
 
@@ -152,7 +152,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 								cachedPlayerPosition.getZ() + z
 							);
 
-							if (CanMobsSpawnAtPosition(pos)) {
+							if (canMobsSpawnAtPosition(pos)) {
 								unsafePositionCache.add(pos);
 							}
 						}
@@ -176,7 +176,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * @param entityTypeIn Type of the entity
 	 * @return boolean
 	 */
-	private static boolean CanMobsSpawnAtPosition(
+	private static boolean canMobsSpawnAtPosition(
 		BlockPos pos, World world, @Nullable EntityType<? extends MobEntity> entityTypeIn
 	) {
 		return WorldEntitySpawner.canCreatureTypeSpawnAtLocation(
@@ -191,7 +191,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * @param pos Position of the block whos surface gets checked
 	 * @return boolean
 	 */
-	public static boolean CanMobsSpawnAtPosition(BlockPos pos) {
+	public static boolean canMobsSpawnAtPosition(BlockPos pos) {
 		//if a mob can spawn here, add it to the unsafe positions cache so it can be rendered as unsafe
 		//4 things must be true for a mob to be able to spawn here:
 		//1) mobs need to be able to spawn on top of this block (block with a solid top surface)
@@ -201,8 +201,9 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 		World world = mc.player.world;
 		boolean canSpawn;
 		// TODO: how many mod entities are there?
-		canSpawn = SafeOverlay.CanMobsSpawnAtPosition(
-			pos, world, EntityType.ZOMBIE) || SafeOverlay.CanMobsSpawnAtPosition(pos, world, EntityType.SKELETON);
+		canSpawn = SafeOverlay.canMobsSpawnAtPosition(pos, world, EntityType.ZOMBIE) ||
+		           SafeOverlay.canMobsSpawnAtPosition(pos, world, EntityType.SKELETON);
+
 		if (canSpawn) {
 			zombie.setLocationAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, 0.0F, 0.0F);
 			canSpawn = zombie.isNotColliding(world);
@@ -220,8 +221,8 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @param partialTickTime the partial tick time
 	 */
-	public void RenderAllUnsafePositionsMultithreaded(float partialTickTime) {
-		if (!SafeOverlay.Enabled || Mode == SafeOverlayOptions.SafeOverlayModes.OFF) { return; }
+	public void renderAllUnsafePositionsMultithreaded(float partialTickTime) {
+		if (!SafeOverlay.isEnabled || mode == SafeOverlayOptions.safeOverlayModes.OFF) { return; }
 
 		//turn off in the nether, mobs can spawn no matter what
 		if (!displayInNether && mc.player.dimension == DimensionType.THE_NETHER) { return; }
@@ -260,7 +261,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 		GL11.glBegin(GL11.GL_LINES);    //begin drawing lines defined by 2 vertices
 
 		//render unsafe areas
-		unsafePositions.forEach(this::RenderUnsafeMarker);
+		unsafePositions.forEach(this::renderUnsafeMarker);
 
 		//GL11.glColor4f(0, 0, 0, 1);    //change alpha back to 100% after we're done rendering
 		GL11.glEnd();
@@ -277,7 +278,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @param position A position defined by (x,y,z) coordinates
 	 */
-	protected void RenderUnsafeMarker(BlockPos position) {
+	protected void renderUnsafeMarker(BlockPos position) {
 		BlockState state = mc.player.world.getBlockState(position);
 		Block block = state.getBlock();
 		VoxelShape voxelshape = state.getShape(mc.player.world, position);
@@ -343,9 +344,9 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @return the string "safe" if the Safe Overlay is enabled, otherwise "".
 	 */
-	public static String CalculateMessageForInfoLine() {
-		if (Mode == SafeOverlayOptions.SafeOverlayModes.OFF || !SafeOverlay.Enabled) { return ""; }
-		else if (Mode == SafeOverlayOptions.SafeOverlayModes.ON) {
+	public static String calculateMessageForInfoLine() {
+		if (mode == SafeOverlayOptions.safeOverlayModes.OFF || !SafeOverlay.isEnabled) { return ""; }
+		else if (mode == SafeOverlayOptions.safeOverlayModes.ON) {
 			return TextFormatting.WHITE + Localization.get("safeoverlay.infoline");
 		}
 		else { return TextFormatting.WHITE + "???"; }
@@ -356,7 +357,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @return the draw distance radius
 	 */
-	public int GetDrawDistance() {
+	public int getDrawDistance() {
 		return drawDistance;
 	}
 
@@ -366,7 +367,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * @param newDrawDistance the new draw distance
 	 * @return the updated draw distance
 	 */
-	public int SetDrawDistance(int newDrawDistance) {
+	public int setDrawDistance(int newDrawDistance) {
 		drawDistance = MathHelper.clamp(newDrawDistance, minDrawDistance, maxDrawDistance);
 		return drawDistance;
 	}
@@ -376,8 +377,8 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @return the updated draw distance
 	 */
-	public int IncreaseDrawDistance() {
-		return SetDrawDistance(drawDistance + 3);
+	public int increaseDrawDistance() {
+		return setDrawDistance(drawDistance + 3);
 	}
 
 	/**
@@ -385,8 +386,8 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @return the updated draw distance
 	 */
-	public int DecreaseDrawDistance() {
-		return SetDrawDistance(drawDistance - 3);
+	public int decreaseDrawDistance() {
+		return setDrawDistance(drawDistance - 3);
 	}
 
 	/**
@@ -395,8 +396,8 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * @param amount how much to increase the draw distance by
 	 * @return the updated draw distance
 	 */
-	public int IncreaseDrawDistance(int amount) {
-		return SetDrawDistance(drawDistance + amount);
+	public int increaseDrawDistance(int amount) {
+		return setDrawDistance(drawDistance + amount);
 	}
 
 	/**
@@ -405,8 +406,8 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * @param amount how much to increase the draw distance by
 	 * @return the updated draw distance
 	 */
-	public int DecreaseDrawDistance(int amount) {
-		return SetDrawDistance(drawDistance - amount);
+	public int decreaseDrawDistance(int amount) {
+		return setDrawDistance(drawDistance - amount);
 	}
 
 	/**
@@ -424,7 +425,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 //	 * @param displayInUnsafeAreasInNether true or false
 //	 * @return the updated see Nether viewing mode
 //	 */
-//	public boolean SetDisplayInNether(Boolean displayInUnsafeAreasInNether) {
+//	public boolean setDisplayInNether(boolean displayInUnsafeAreasInNether) {
 //		return displayInNether = displayInUnsafeAreasInNether;
 //	}
 //
@@ -433,7 +434,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 //	 *
 //	 * @return the Nether viewing mode
 //	 */
-//	public boolean GetDisplayInNether() {
+//	public boolean getDisplayInNether() {
 //		return displayInNether;
 //	}
 //
@@ -442,8 +443,8 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 //	 *
 //	 * @return the updated see display in Nether mode
 //	 */
-//	public boolean ToggleDisplayInNether() {
-//		return SetDisplayInNether(!displayInNether);
+//	public boolean toggleDisplayInNether() {
+//		return setDisplayInNether(!displayInNether);
 //	}
 
 	/**
@@ -452,7 +453,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * @param safeOverlaySeeThroughWalls true or false
 	 * @return the updated see through wall mode
 	 */
-	public boolean SetSeeUnsafePositionsThroughWalls(Boolean safeOverlaySeeThroughWalls) {
+	public boolean setSeeUnsafePositionsThroughWalls(boolean safeOverlaySeeThroughWalls) {
 		return renderUnsafePositionsThroughWalls = safeOverlaySeeThroughWalls;
 	}
 
@@ -461,8 +462,8 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @return the udpated see through wall mode
 	 */
-	public boolean ToggleSeeUnsafePositionsThroughWalls() {
-		return SetSeeUnsafePositionsThroughWalls(!renderUnsafePositionsThroughWalls);
+	public boolean toggleSeeUnsafePositionsThroughWalls() {
+		return setSeeUnsafePositionsThroughWalls(!renderUnsafePositionsThroughWalls);
 	}
 
 //	/**
@@ -471,7 +472,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 //	 * @param alpha the alpha value of the unsafe marks, must be between (0.101, 1]
 //	 * @return the updated alpha value
 //	 */
-//	public float SetUnsafeOverlayTransparency(float alpha) {
+//	public float setUnsafeOverlayTransparency(float alpha) {
 //		return unsafeOverlayTransparency = MathHelper.clamp(
 //			alpha, minUnsafeOverlayTransparency, maxUnsafeOverlayTransparency
 //		);
@@ -482,7 +483,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 //	 *
 //	 * @return the alpha value
 //	 */
-//	public float GetUnsafeOverlayTransparency() {
+//	public float getUnsafeOverlayTransparency() {
 //		return unsafeOverlayTransparency;
 //	}
 //
@@ -491,7 +492,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 //	 *
 //	 * @return the alpha value
 //	 */
-//	public float GetminUnsafeOverlayTransparency() {
+//	public float getminUnsafeOverlayTransparency() {
 //		return minUnsafeOverlayTransparency;
 //	}
 //
@@ -500,7 +501,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 //	 *
 //	 * @return the alpha value
 //	 */
-//	public float GetmaxUnsafeOverlayTransparency() {
+//	public float getmaxUnsafeOverlayTransparency() {
 //		return maxUnsafeOverlayTransparency;
 //	}
 }

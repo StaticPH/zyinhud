@@ -54,11 +54,11 @@ public class ZyinHUDUtil {
 	 *
 	 * @return boolean
 	 */
-	public static boolean IsMouseoveredBlockRightClickable() {
+	public static boolean isMouseoveredBlockRightClickable() {
 		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.BLOCK) {
-			Block block = GetMouseOveredBlock();
+			Block block = getMousedOverBlock();
 
-			return ZyinHUDUtil.IsBlockRightClickable(block.getClass());
+			return ZyinHUDUtil.isBlockRightClickable(block.getClass());
 		}
 		return false;
 	}
@@ -109,7 +109,7 @@ public class ZyinHUDUtil {
 	 * @return t
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T, E> T GetFieldByReflection(Class<? super E> classToAccess, E instance, String... fieldNames) {
+	public static <T, E> T getFieldByReflection(Class<? super E> classToAccess, E instance, String... fieldNames) {
 		Field field = null;
 		for (String fieldName : fieldNames) {
 			try { field = classToAccess.getDeclaredField(fieldName); }
@@ -135,11 +135,11 @@ public class ZyinHUDUtil {
 	 *
 	 * @return the block
 	 */
-	public static Block GetMouseOveredBlock() {
+	public static Block getMousedOverBlock() {
 		int x = (int) mc.objectMouseOver.getHitVec().getX();
 		int y = (int) mc.objectMouseOver.getHitVec().getY();
 		int z = (int) mc.objectMouseOver.getHitVec().getZ();
-		return GetBlock(x, y, z);
+		return getBlock(x, y, z);
 	}
 
 	/**
@@ -148,7 +148,7 @@ public class ZyinHUDUtil {
 	 * @return the block pos
 	 */
 	@Nonnull
-	public static BlockPos GetMouseOveredBlockPos() {
+	public static BlockPos getMousedOverBlockPos() {
 		int x = (int) mc.objectMouseOver.getHitVec().getX();
 		int y = (int) mc.objectMouseOver.getHitVec().getY();
 		int z = (int) mc.objectMouseOver.getHitVec().getZ();
@@ -163,8 +163,8 @@ public class ZyinHUDUtil {
 	 * @param z the z
 	 * @return the block
 	 */
-	public static Block GetBlock(int x, int y, int z) {
-		return GetBlock(new BlockPos(x, y, z));
+	public static Block getBlock(int x, int y, int z) {
+		return getBlock(new BlockPos(x, y, z));
 	}
 
 	/**
@@ -174,8 +174,8 @@ public class ZyinHUDUtil {
 	 * @return the block
 	 */
 	@CheckForNull
-	public static Block GetBlock(BlockPos pos) {
-		BlockState blockState = GetBlockState(pos);
+	public static Block getBlock(BlockPos pos) {
+		BlockState blockState = getBlockState(pos);
 		if (blockState == null) { return null; }
 		else { return blockState.getBlock(); }
 	}
@@ -188,8 +188,8 @@ public class ZyinHUDUtil {
 	 * @param z the z
 	 * @return the block state
 	 */
-	public static BlockState GetBlockState(int x, int y, int z) {
-		return GetBlockState(new BlockPos(x, y, z));
+	public static BlockState getBlockState(int x, int y, int z) {
+		return getBlockState(new BlockPos(x, y, z));
 	}
 
 	/**
@@ -199,7 +199,7 @@ public class ZyinHUDUtil {
 	 * @return the block state
 	 */
 	@CheckForNull
-	public static BlockState GetBlockState(BlockPos pos) {
+	public static BlockState getBlockState(BlockPos pos) {
 		if (mc.world != null) { return mc.world.getBlockState(pos); }
 		else { return null; }
 	}
@@ -344,5 +344,4 @@ public class ZyinHUDUtil {
 			);
 		}
 	}
-
 }

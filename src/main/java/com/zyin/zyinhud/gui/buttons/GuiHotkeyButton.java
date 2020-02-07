@@ -11,24 +11,11 @@
 ///**
 // * A button used to change Minecraft's key bindings
 // */
-//public class GuiHotkeyButton extends Button
-//{
-//	/**
-//	 * The constant mc.
-//	 */
+//public class GuiHotkeyButton extends Button {
 //	protected static Minecraft mc = Minecraft.getInstance();
 //
-//	/**
-//	 * The Waiting for hotkey input.
-//	 */
 //	protected boolean waitingForHotkeyInput = false;
-//	/**
-//	 * The Hotkey.
-//	 */
 //	protected String hotkey;    //E.x.: "P"
-//	/**
-//	 * The Hotkey description.
-//	 */
 //	protected String hotkeyDescription;    //E.x.: "key.zyinhud.somemod"
 //
 //	/**
@@ -41,40 +28,38 @@
 //	 * @param height            the height
 //	 * @param hotkeyDescription This should be the same string used in the localization file, E.x.: "key.zyinhud.somemod"
 //	 */
-//	public GuiHotkeyButton(int id, int x, int y, int width, int height, String hotkeyDescription)
-//	{
+//	public GuiHotkeyButton(int id, int x, int y, int width, int height, String hotkeyDescription) {
 //		super(id, x, y, width, height, "");
 //		this.hotkeyDescription = hotkeyDescription;
-//		this.hotkey = GetHotkey();
-//		UpdateDisplayString();
+//		this.hotkey = getHotkey();
+//		updateDisplayString();
 //	}
 //
 //	/**
 //	 * This method should be called whenever this button is clicked.
 //	 */
-//	public void Clicked()
-//	{
+//	public void clicked() {
 //		waitingForHotkeyInput = !waitingForHotkeyInput;
-//		UpdateDisplayString();
+//		updateDisplayString();
 //	}
 //
 //	/**
 //	 * Make this button stop accepting hotkey input.
 //	 */
-//	public void Cancel()
-//	{
+//	public void cancel() {
 //		waitingForHotkeyInput = false;
-//		UpdateDisplayString();
+//		updateDisplayString();
 //	}
 //
 //	/**
 //	 * Update display string.
 //	 */
-//	protected void UpdateDisplayString() {
-//		if (waitingForHotkeyInput)
-//			displayString = Localization.get("gui.options.hotkey") + TextFormatting.WHITE + "> " + TextFormatting.YELLOW + GetHotkey() + TextFormatting.WHITE + " <";
-//		else
-//			displayString = Localization.get("gui.options.hotkey") + GetHotkey();
+//	protected void updateDisplayString() {
+//		if (waitingForHotkeyInput) {
+//			displayString = Localization.get("gui.options.hotkey") + TextFormatting.WHITE + "> " +
+//			                TextFormatting.YELLOW + getHotkey() + TextFormatting.WHITE + " <";
+//		}
+//		else { displayString = Localization.get("gui.options.hotkey") + getHotkey(); }
 //
 //	}
 //
@@ -83,22 +68,20 @@
 //	 *
 //	 * @return the boolean
 //	 */
-//	public boolean IsWaitingForHotkeyInput()
-//	{
+//	public boolean isWaitingForHotkeyInput() {
 //		return waitingForHotkeyInput;
 //	}
 //
 //	/**
 //	 * Finds the KeyBinding object that Minecraft uses based on the hotkey description (it sounds like
 //	 * bad practice to use the description, but that's how Minecraft does it).
+//	 *
 //	 * @param hotkeyDescription
 //	 * @return
 //	 */
-//	private KeyBinding FindKeyBinding(String hotkeyDescription)
-//	{
-//
-//        KeyBinding keyBinding = null;
-//        KeyBinding[] keyBindings = mc.gameSettings.keyBindings;
+//	private KeyBinding findKeyBinding(String hotkeyDescription) {
+//		KeyBinding keyBinding = null;
+//		KeyBinding[] keyBindings = mc.gameSettings.keyBindings;
 //		for (KeyBinding keyBinding1 : keyBindings) {
 //			if (keyBinding1.getKeyDescription().equals(hotkeyDescription)) {
 //				return keyBinding1;
@@ -113,22 +96,20 @@
 //	 *
 //	 * @param newHotkey e.x. 37 (K), 1 (Esc), 55 (*)
 //	 */
-//	public void ApplyHotkey(int newHotkey)
-//	{
+//	public void applyHotkey(int newHotkey) {
 //		waitingForHotkeyInput = false;
 //		InputMappings.Input key = InputMappings.getInputByCode(newHotkey, 0);
 //		hotkey = KeyModifier.getActiveModifier().getLocalizedComboName(key);
 //
 //		//SetHotkey(hotkey);
-//		UpdateDisplayString();
+//		updateDisplayString();
 //
 //		//update key binding in Minecraft
-//        KeyBinding keyBinding = FindKeyBinding(GetHotkeyDescription());
-//        if(keyBinding != null)
-//        {
-//        	keyBinding.bind(key);
-//        	KeyBinding.resetKeyBindingArrayAndHash();
-//        }
+//		KeyBinding keyBinding = findKeyBinding(getHotkeyDescription());
+//		if (keyBinding != null) {
+//			keyBinding.bind(key);
+//			KeyBinding.resetKeyBindingArrayAndHash();
+//		}
 //	}
 //
 //
@@ -137,24 +118,19 @@
 //	 *
 //	 * @return String representation of the hotkey, e.x. "K", "LMENU"
 //	 */
-//	public String GetHotkey()
-//	{
-//		if(hotkey == null)
-//		{
+//	public String getHotkey() {
+//		if (hotkey == null) {
 //			//get key binding in Minecraft
-//	        KeyBinding keyBinding = FindKeyBinding(GetHotkeyDescription());
-//	        if(keyBinding != null)
-//	        {
-//	        	SetHotkey(hotkey);
-//	        	return keyBinding.getLocalizedName();
-//	        }
-//	        else
-//	        {
-//	        	return "?";
-//	        }
+//			KeyBinding keyBinding = findKeyBinding(getHotkeyDescription());
+//			if (keyBinding != null) {
+//				setHotkey(hotkey);
+//				return keyBinding.getLocalizedName();
+//			}
+//			else {
+//				return "?";
+//			}
 //		}
-//		else
-//			return hotkey;
+//		else { return hotkey; }
 //	}
 //
 //
@@ -163,8 +139,7 @@
 //	 *
 //	 * @param hotkey the new hotkey to use
 //	 */
-//	protected void SetHotkey(String hotkey)
-//	{
+//	protected void setHotkey(String hotkey) {
 //		this.hotkey = hotkey;
 //	}
 //
@@ -173,8 +148,7 @@
 //	 *
 //	 * @return string
 //	 */
-//	protected String GetHotkeyDescription()
-//	{
+//	protected String getHotkeyDescription() {
 //		return hotkeyDescription;
 //	}
 //}

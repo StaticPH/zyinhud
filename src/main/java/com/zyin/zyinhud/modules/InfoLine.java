@@ -22,7 +22,7 @@ public class InfoLine extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled = ZyinHUDConfig.EnableInfoLine.get();
+	public static boolean isEnabled = ZyinHUDConfig.enableInfoLine.get();
 	private static long time = 0;
 	private static int lastPing = 0;
 	private static TextFormatting pingColor;
@@ -32,22 +32,22 @@ public class InfoLine extends ZyinHUDModuleBase {
 	 *
 	 * @return The state the module was changed to
 	 */
-	public static boolean ToggleEnabled() {
-		ZyinHUDConfig.EnableInfoLine.set(!Enabled);
-		ZyinHUDConfig.EnableInfoLine.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return Enabled = !Enabled;
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableInfoLine.set(!isEnabled);
+		ZyinHUDConfig.enableInfoLine.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
-	public static boolean ShowBiome = ZyinHUDConfig.ShowBiome.get();
-	public static boolean ShowCanSnow = ZyinHUDConfig.ShowCanSnow.get();
-	public static boolean ShowPing = ZyinHUDConfig.ShowPing.get();
+	private static boolean showBiome = ZyinHUDConfig.showBiome.get();
+	private static boolean showCanSnow = ZyinHUDConfig.showCanSnow.get();
+	private static boolean showPing = ZyinHUDConfig.showPing.get();
 
 	/**
 	 * The padding string that is inserted between different elements of the Info Line
 	 */
 	private static final String SPACER = " ";
-	public static int infoLineLocX = ZyinHUDConfig.InfoLineLocationHorizontal.get();
-	public static int infoLineLocY = ZyinHUDConfig.InfoLineLocationVertical.get();
+	private static int infoLineLocX = ZyinHUDConfig.infoLineHorizontalPos.get();
+	private static int infoLineLocY = ZyinHUDConfig.infoLineVerticalPos.get();
 
 //  UNUSED
 //    /*private static final int notificationDuration = 1200;	//measured in milliseconds
@@ -69,43 +69,43 @@ public class InfoLine extends ZyinHUDModuleBase {
 	 * Renders the on screen message consisting of everything that gets put into the top let message area,
 	 * including coordinates and the state of things that can be activated
 	 */
-	public static void RenderOntoHUD() {
+	public static void renderOntoHUD() {
 		//if the player is in the world (which can be inferred if the mouse is currently grabbed)
 		//and not looking at a menu (or is looking at either chat or the custom options gui)
 		//and debug info not shown
-		if (InfoLine.Enabled && !mc.gameSettings.showDebugInfo &&
-		    (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen instanceof ChatScreen/* || TabIsSelectedInOptionsGui()*/))
+		if (InfoLine.isEnabled && !mc.gameSettings.showDebugInfo &&
+		    (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen instanceof ChatScreen/* || tabIsSelectedInOptionsGui()*/))
 		) {
 			infoLineMessage = "";
 
-			String clock = Clock.CalculateMessageForInfoLine(infoLineMessage);
+			String clock = Clock.calculateMessageForInfoLine(infoLineMessage);
 			infoLineMessage += clock.length() > 0 ? (clock + SPACER) : clock;
 
-			String ping = CalculatePingForInfoLine();
+			String ping = calculatePingForInfoLine();
 			infoLineMessage += ping.length() > 0 ? (ping + SPACER) : ping;
 
-			String coordinates = Coordinates.CalculateMessageForInfoLine();
+			String coordinates = Coordinates.calculateMessageForInfoLine();
 			infoLineMessage += coordinates.length() > 0 ? (coordinates + SPACER) : coordinates;
 
-			String compass = Compass.CalculateMessageForInfoLine(infoLineMessage);
+			String compass = Compass.calculateMessageForInfoLine(infoLineMessage);
 			infoLineMessage += compass.length() > 0 ? (compass + SPACER) : compass;
 
-			String fps = Fps.CalculateMessageForInfoLine();
+			String fps = Fps.calculateMessageForInfoLine();
 			infoLineMessage += fps.length() > 0 ? (fps + SPACER) : fps;
 
-			String snow = ShowCanSnow ? CalculateCanSnowForInfoLine(infoLineMessage) : "";
+			String snow = showCanSnow ? calculateCanSnowForInfoLine(infoLineMessage) : "";
 			infoLineMessage += snow.length() > 0 ? (snow + SPACER) : snow;
 
-			String biome = ShowBiome ? CalculateBiomeForInfoLine() : "";
+			String biome = showBiome ? calculateBiomeForInfoLine() : "";
 			infoLineMessage += biome.length() > 0 ? (biome + SPACER) : biome;
 
-			String safe = SafeOverlay.CalculateMessageForInfoLine();
+			String safe = SafeOverlay.calculateMessageForInfoLine();
 			infoLineMessage += safe.length() > 0 ? (safe + SPACER) : safe;
 
-			String players = PlayerLocator.CalculateMessageForInfoLine();
+			String players = PlayerLocator.calculateMessageForInfoLine();
 			infoLineMessage += players.length() > 0 ? (players + SPACER) : players;
 
-			String animals = AnimalInfo.CalculateMessageForInfoLine();
+			String animals = AnimalInfo.calculateMessageForInfoLine();
 			infoLineMessage += animals.length() > 0 ? (animals + SPACER) : animals;
 
 			mc.fontRenderer.drawStringWithShadow(infoLineMessage, infoLineLocX, infoLineLocY, 0xffffff);
@@ -118,7 +118,7 @@ public class InfoLine extends ZyinHUDModuleBase {
 	 * @param infoLineMessageUpToThisPoint the info line message up to this point
 	 * @return the string
 	 */
-	protected static String CalculateCanSnowForInfoLine(String infoLineMessageUpToThisPoint) {
+	protected static String calculateCanSnowForInfoLine(String infoLineMessageUpToThisPoint) {
 		int xCoord = MathHelper.floor(mc.player.posX);
 		int yCoord = MathHelper.floor(mc.player.posY) - 1;
 		int zCoord = MathHelper.floor(mc.player.posZ);
@@ -149,7 +149,7 @@ public class InfoLine extends ZyinHUDModuleBase {
 	 *
 	 * @return the string
 	 */
-	protected static String CalculateBiomeForInfoLine() {
+	protected static String calculateBiomeForInfoLine() {
 		int xCoord = MathHelper.floor(mc.player.posX);
 		int zCoord = MathHelper.floor(mc.player.posZ);
 
@@ -159,8 +159,8 @@ public class InfoLine extends ZyinHUDModuleBase {
 
 	//Stop complaining that you cant catch the NPE that is the entire reason you're in a try-catch!
 	@SuppressWarnings("ConstantConditions")
-	protected static String CalculatePingForInfoLine() {
-		if (ShowPing && !mc.isSingleplayer()) {
+	protected static String calculatePingForInfoLine() {
+		if (showPing && !mc.isSingleplayer()) {
 			if (time < System.currentTimeMillis()) {
 				time = System.currentTimeMillis() + 5000;
 				try {
@@ -182,14 +182,14 @@ public class InfoLine extends ZyinHUDModuleBase {
 	 * Checks to see if the Info Line, Clock, Coordinates, Compass, or FPS tabs are selected in GuiZyinHUDOptions
 	 * @return
 	 */
-//    private static boolean TabIsSelectedInOptionsGui()
+//    private static boolean tabIsSelectedInOptionsGui()
 //    {
 //    	return mc.currentScreen instanceof GuiZyinHUDOptions &&
-//    		(((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("infoline.name")) ||
-//			((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("clock.name")) ||
-//			((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("coordinates.name")) ||
-//			((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("compass.name")) ||
-//			((GuiZyinHUDOptions)mc.currentScreen).IsButtonTabSelected(Localization.get("fps.name")));
+//    		(((GuiZyinHUDOptions)mc.currentScreen).isButtonTabSelected(Localization.get("infoline.name")) ||
+//			((GuiZyinHUDOptions)mc.currentScreen).isButtonTabSelected(Localization.get("clock.name")) ||
+//			((GuiZyinHUDOptions)mc.currentScreen).isButtonTabSelected(Localization.get("coordinates.name")) ||
+//			((GuiZyinHUDOptions)mc.currentScreen).isButtonTabSelected(Localization.get("compass.name")) ||
+//			((GuiZyinHUDOptions)mc.currentScreen).isButtonTabSelected(Localization.get("fps.name")));
 //    }
 
 
@@ -198,8 +198,8 @@ public class InfoLine extends ZyinHUDModuleBase {
 	 *
 	 * @return The state it was changed to
 	 */
-	public static boolean ToggleShowBiome() {
-		return ShowBiome = !ShowBiome;
+	public static boolean toggleShowBiome() {
+		return showBiome = !showBiome;
 	}
 
 	/**
@@ -207,12 +207,12 @@ public class InfoLine extends ZyinHUDModuleBase {
 	 *
 	 * @return The state it was changed to
 	 */
-	public static boolean ToggleShowCanSnow() {
-		return ShowCanSnow = !ShowCanSnow;
+	public static boolean toggleShowCanSnow() {
+		return showCanSnow = !showCanSnow;
 	}
 
-	public static boolean ToggleShowPing() {
-		return ShowPing = !ShowPing;
+	public static boolean toggleShowPing() {
+		return showPing = !showPing;
 	}
 
 	/**
@@ -220,7 +220,7 @@ public class InfoLine extends ZyinHUDModuleBase {
 	 *
 	 * @return int
 	 */
-	public static int GetHorizontalLocation() {
+	public static int getHorizontalLocation() {
 		return infoLineLocX;
 	}
 
@@ -230,7 +230,7 @@ public class InfoLine extends ZyinHUDModuleBase {
 	 * @param x the x
 	 * @return the new x location
 	 */
-	public static int SetHorizontalLocation(int x) {
+	public static int setHorizontalLocation(int x) {
 		infoLineLocX = MathHelper.clamp(x, 0, mc.mainWindow.getWidth());
 		return infoLineLocX;
 	}
@@ -240,7 +240,7 @@ public class InfoLine extends ZyinHUDModuleBase {
 	 *
 	 * @return int
 	 */
-	public static int GetVerticalLocation() {
+	public static int getVerticalLocation() {
 		return infoLineLocY;
 	}
 
@@ -250,7 +250,7 @@ public class InfoLine extends ZyinHUDModuleBase {
 	 * @param y the y
 	 * @return the new y location
 	 */
-	public static int SetVerticalLocation(int y) {
+	public static int setVerticalLocation(int y) {
 		infoLineLocY = MathHelper.clamp(y, 0, mc.mainWindow.getHeight());
 		return infoLineLocY;
 	}
@@ -258,5 +258,4 @@ public class InfoLine extends ZyinHUDModuleBase {
 	public static String getInfoLineMessage() {
 		return infoLineMessage;
 	}
-
 }

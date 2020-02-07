@@ -20,12 +20,12 @@
 //	/**
 //	 * Show a white "?" in the top right part of any button with a tooltip assigned to it
 //	 */
-//	public static boolean ShowTooltipButtonEffect = true;
+//	public static boolean showTooltipButtonEffect = true;
 //
 //	/**
 //	 * Show an aqua "?" in the top right part of any button with a tooltip assigned to it when mouseovered
 //	 */
-//	public static boolean ShowTooltipButtonMouseoverEffect = true;
+//	public static boolean showTooltipButtonMouseoverEffect = true;
 //
 //	/**
 //	 * Putting this string into a tooltip will cause a line break
@@ -51,7 +51,7 @@
 //	 */
 //	protected int tooltipYOffset = 10;
 //
-//    private final static int LINE_HEIGHT = 11;
+//	private final static int LINE_HEIGHT = 11;
 //
 //	private long mouseoverTime = 0;
 //	private long prevSystemTime = -1;
@@ -60,11 +60,10 @@
 //		super(titleIn);
 //	}
 //
-//	public void drawScreen(int mouseX, int mouseY, float f)
-//	{
+//	public void drawScreen(int mouseX, int mouseY, float f) {
 //		super.render(mouseX, mouseY, f);
 //
-//		DrawTooltipScreen(mouseX, mouseY);
+//		drawTooltipScreen(mouseX, mouseY);
 //	}
 //
 //	/**
@@ -74,7 +73,7 @@
 //	 * @param buttonId The ID of the button this tooltip corresponds to
 //	 * @return The tooltip string for the specified buttonId. null if no tooltip exists for this button.
 //	 */
-//	protected abstract String GetButtonTooltip(int buttonId);
+//	protected abstract String getButtonTooltip(int buttonId);
 //
 //	/**
 //	 * Renders any special effects applied to tooltip buttons, and renders any tooltips for Buttons
@@ -83,10 +82,8 @@
 //	 * @param mouseX the mouse x
 //	 * @param mouseY the mouse y
 //	 */
-//	protected void DrawTooltipScreen(int mouseX, int mouseY)
-//	{
-//		if(ShowTooltipButtonEffect)
-//			RenderTooltipButtonEffect();
+//	protected void drawTooltipScreen(int mouseX, int mouseY) {
+//		if (showTooltipButtonEffect) { renderTooltipButtonEffect(); }
 //
 //		int mousedOverButtonId = -1;
 //
@@ -95,35 +92,31 @@
 //			if (button.isMouseOver(mouseX, mouseY)) {   //isMouseOver vs isHovered
 //				mousedOverButtonId = button.id;
 //
-//				if (ShowTooltipButtonMouseoverEffect && GetButtonTooltip(mousedOverButtonId) != null)
-//					RenderTooltipButtonMouseoverEffect((Button)button);
+//				if (showTooltipButtonMouseoverEffect && getButtonTooltip(mousedOverButtonId) != null) {
+//					renderTooltipButtonMouseoverEffect((Button) button);
+//				}
 //
 //				break;
 //			}
 //		}
 //
 //		//calculate how long this button has been mouseovered for
-//		if(mousedOverButtonId > -1)
-//		{
+//		if (mousedOverButtonId > -1) {
 //			long systemTime = System.currentTimeMillis();
 //
-//			if(prevSystemTime > 0)
-//				mouseoverTime += systemTime - prevSystemTime;
+//			if (prevSystemTime > 0) { mouseoverTime += systemTime - prevSystemTime; }
 //
 //			prevSystemTime = systemTime;
 //		}
-//		else
-//		{
+//		else {
 //			mouseoverTime = 0;
 //		}
 //
 //		//render the button's tooltip
-//		if(mouseoverTime > tooltipDelay)
-//		{
-//			String tooltip = GetButtonTooltip(mousedOverButtonId);
-//			if(tooltip != null)
-//			{
-//				RenderTooltip(mouseX, mouseY, tooltip);
+//		if (mouseoverTime > tooltipDelay) {
+//			String tooltip = getButtonTooltip(mousedOverButtonId);
+//			if (tooltip != null) {
+//				renderTooltip(mouseX, mouseY, tooltip);
 //			}
 //		}
 //	}
@@ -136,7 +129,7 @@
 //	 * @param button the button
 //	 * @return true if this button is mouseovered
 //	 */
-////	protected boolean IsButtonMouseovered(int mouseX, int mouseY, Button button)
+////	protected boolean isButtonMousedOver(int mouseX, int mouseY, Button button)
 ////	{
 ////		if(mouseX >= button.x && mouseX <= button.x + button.getWidth() && mouseY >= button.y)
 ////		{
@@ -154,9 +147,9 @@
 //	 * Render anything special onto all buttons that have tooltips assigned to them.
 //	 */
 //	//_CHECK: It SEEMS like unicode handling is now internal?
-//	protected void RenderTooltipButtonEffect() {
+//	protected void renderTooltipButtonEffect() {
 //		for (Widget button : buttons) {
-//			if (GetButtonTooltip(button.id) != null) {
+//			if (getButtonTooltip(button.id) != null) {
 //				mc.fontRenderer.drawString("?", button.x + button.getWidth() - 5, button.y, 0x99FFFFFF);
 //			}
 //		}
@@ -167,8 +160,7 @@
 //	 *
 //	 * @param button the button
 //	 */
-//	protected void RenderTooltipButtonMouseoverEffect(Button button)
-//	{
+//	protected void renderTooltipButtonMouseoverEffect(Button button) {
 //		mc.fontRenderer.drawString(TextFormatting.AQUA + "?", button.x + button.getWidth() - 5, button.y, 0xFFFFFF);
 //	}
 //
@@ -179,45 +171,54 @@
 //	 * @param y       the y
 //	 * @param tooltip the tooltip
 //	 */
-//	protected void RenderTooltip(int x, int y, String tooltip)
-//	{
-//		String[] tooltipArray = ParseTooltipArrayFromString(tooltip);
+//	protected void renderTooltip(int x, int y, String tooltip) {
+//		String[] tooltipArray = parseTooltipArrayFromString(tooltip);
 //
-//        int tooltipWidth = GetTooltipWidth(tooltipArray);
-//        int tooltipHeight = GetTooltipHeight(tooltipArray);
+//		int tooltipWidth = getTooltipWidth(tooltipArray);
+//		int tooltipHeight = getTooltipHeight(tooltipArray);
 //
-//        int tooltipX = x + tooltipXOffset;
-//        int tooltipY = y + tooltipYOffset;
+//		int tooltipX = x + tooltipXOffset;
+//		int tooltipY = y + tooltipYOffset;
 //
-//        if(tooltipX > width - tooltipWidth - 7)
-//        	tooltipX = width - tooltipWidth - 7;
-//        if(tooltipY > height -  tooltipHeight - 8)
-//        	tooltipY = height -  tooltipHeight - 8;
+//		if (tooltipX > width - tooltipWidth - 7) { tooltipX = width - tooltipWidth - 7; }
+//		if (tooltipY > height - tooltipHeight - 8) { tooltipY = height - tooltipHeight - 8; }
 //
-//        //render the background inside box
-//        int innerAlpha = -0xFEFFFF0;	//very very dark purple
-//        fillGradient(tooltipX, tooltipY - 1, tooltipX + tooltipWidth + 6, tooltipY, innerAlpha, innerAlpha);
-//        fillGradient(tooltipX, tooltipY + tooltipHeight + 6, tooltipX + tooltipWidth + 6, tooltipY + tooltipHeight + 7, innerAlpha, innerAlpha);
-//        fillGradient(tooltipX, tooltipY, tooltipX + tooltipWidth + 6, tooltipY + tooltipHeight + 6, innerAlpha, innerAlpha);
-//        fillGradient(tooltipX - 1, tooltipY, tooltipX, tooltipY + tooltipHeight + 6, innerAlpha, innerAlpha);
-//        fillGradient(tooltipX + tooltipWidth + 6, tooltipY, tooltipX + tooltipWidth + 7, tooltipY + tooltipHeight + 6, innerAlpha, innerAlpha);
+//		//render the background inside box
+//		int innerAlpha = -0xFEFFFF0;    //very very dark purple
+//		fillGradient(tooltipX, tooltipY - 1, tooltipX + tooltipWidth + 6, tooltipY, innerAlpha, innerAlpha);
+//		fillGradient(
+//			tooltipX, tooltipY + tooltipHeight + 6, tooltipX + tooltipWidth + 6, tooltipY + tooltipHeight + 7,
+//			innerAlpha, innerAlpha
+//		);
+//		fillGradient(
+//			tooltipX, tooltipY, tooltipX + tooltipWidth + 6, tooltipY + tooltipHeight + 6, innerAlpha, innerAlpha);
+//		fillGradient(tooltipX - 1, tooltipY, tooltipX, tooltipY + tooltipHeight + 6, innerAlpha, innerAlpha);
+//		fillGradient(
+//			tooltipX + tooltipWidth + 6, tooltipY, tooltipX + tooltipWidth + 7, tooltipY + tooltipHeight + 6,
+//			innerAlpha, innerAlpha
+//		);
 //
-//        //render the background outside box
-//        int outerAlpha1 = 0x505000FF;
-//        int outerAlpha2 = (outerAlpha1 & 0xFEFEFE) >> 1 | outerAlpha1 & -0x1000000;
-//        fillGradient(tooltipX, tooltipY + 1, tooltipX + 1, tooltipY + tooltipHeight + 6 - 1, outerAlpha1, outerAlpha2);
-//        fillGradient(tooltipX + tooltipWidth + 5, tooltipY + 1, tooltipX + tooltipWidth + 7, tooltipY + tooltipHeight + 6 - 1, outerAlpha1, outerAlpha2);
-//        fillGradient(tooltipX, tooltipY, tooltipX + tooltipWidth + 3, tooltipY + 1, outerAlpha1, outerAlpha1);
-//        fillGradient(tooltipX, tooltipY + tooltipHeight + 5, tooltipX + tooltipWidth + 7, tooltipY + tooltipHeight + 6, outerAlpha2, outerAlpha2);
+//		//render the background outside box
+//		int outerAlpha1 = 0x505000FF;
+//		int outerAlpha2 = (outerAlpha1 & 0xFEFEFE) >> 1 | outerAlpha1 & -0x1000000;
+//		fillGradient(tooltipX, tooltipY + 1, tooltipX + 1, tooltipY + tooltipHeight + 6 - 1, outerAlpha1, outerAlpha2);
+//		fillGradient(
+//			tooltipX + tooltipWidth + 5, tooltipY + 1, tooltipX + tooltipWidth + 7, tooltipY + tooltipHeight + 6 - 1,
+//			outerAlpha1, outerAlpha2
+//		);
+//		fillGradient(tooltipX, tooltipY, tooltipX + tooltipWidth + 3, tooltipY + 1, outerAlpha1, outerAlpha1);
+//		fillGradient(
+//			tooltipX, tooltipY + tooltipHeight + 5, tooltipX + tooltipWidth + 7, tooltipY + tooltipHeight + 6,
+//			outerAlpha2, outerAlpha2
+//		);
 //
-//        //render the foreground text
-//        int lineCount = 0;
-//        for (String s : tooltipArray)
-//        {
-//            mc.fontRenderer.drawString(s, tooltipX + 2, tooltipY + 2 + lineCount * LINE_HEIGHT, 0xFFFFFF);
-//            lineCount++;
-//        }
-//        //Why not just Screen.renderTooltip though?
+//		//render the foreground text
+//		int lineCount = 0;
+//		for (String s : tooltipArray) {
+//			mc.fontRenderer.drawString(s, tooltipX + 2, tooltipY + 2 + lineCount * LINE_HEIGHT, 0xFFFFFF);
+//			lineCount++;
+//		}
+//		//Why not just Screen.renderTooltip though?
 //	}
 //
 //	/**
@@ -226,13 +227,11 @@
 //	 * @param s Ex: "Hello,_nI am your _ltooltip_r and you love me."
 //	 * @return An array of Strings such that each String width does not exceed tooltipMaxWidth
 //	 */
-//	protected String[] ParseTooltipArrayFromString(String s)
-//	{
+//	protected String[] parseTooltipArrayFromString(String s) {
 //		String[] tooltipSections = s.split(tooltipNewlineDelimeter);
 //		ArrayList<String> tooltipArrayList = new ArrayList<String>();
 //
-//		for(String section : tooltipSections)
-//		{
+//		for (String section : tooltipSections) {
 //			String tooltip = "";
 //			String[] tooltipWords = section.split(" ");
 //
@@ -241,7 +240,8 @@
 //				if (lineWidthWithNextWord > tooltipMaxWidth) {
 //					tooltipArrayList.add(tooltip.trim());
 //					tooltip = tooltipWord + " ";
-//				} else {
+//				}
+//				else {
 //					tooltip += tooltipWord + " ";
 //				}
 //			}
@@ -260,31 +260,26 @@
 //	 * @param tooltipArray
 //	 * @return
 //	 */
-//	private int GetTooltipWidth(String[] tooltipArray)
-//	{
+//	private int getTooltipWidth(String[] tooltipArray) {
 //		int longestWidth = 0;
-//		for(String s : tooltipArray)
-//		{
+//		for (String s : tooltipArray) {
 //			int width = mc.fontRenderer.getStringWidth(s);
-//			if(width > longestWidth)
-//				longestWidth = width;
+//			if (width > longestWidth) { longestWidth = width; }
 //		}
 //		return longestWidth;
 //	}
 //
 //	/**
 //	 * Gets the height of the tooltip in pixels.
+//	 *
 //	 * @param tooltipArray
 //	 * @return
 //	 */
-//	private int GetTooltipHeight(String[] tooltipArray)
-//	{
+//	private int getTooltipHeight(String[] tooltipArray) {
 //		int tooltipHeight = mc.fontRenderer.FONT_HEIGHT - 2;
-//        if (tooltipArray.length > 1)
-//        {
-//        	tooltipHeight += (tooltipArray.length - 1) * LINE_HEIGHT;
-//        }
-//        return tooltipHeight;
+//		if (tooltipArray.length > 1) {
+//			tooltipHeight += (tooltipArray.length - 1) * LINE_HEIGHT;
+//		}
+//		return tooltipHeight;
 //	}
-//
 //}

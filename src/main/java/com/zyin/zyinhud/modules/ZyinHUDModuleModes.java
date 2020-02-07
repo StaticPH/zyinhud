@@ -5,6 +5,8 @@ import com.zyin.zyinhud.util.Localization;
 
 //TODO: give this a more appropriate name
 //      ?add setter methods for all modes so that the config code can control them without this class importing from it?
+
+/** This class contains default values for all modules that may need to be accessed from elsewhere in the codebase */
 public class ZyinHUDModuleModes {
 	//module imports from this class and the config class
 	//  where possible, sets its internal default values according to their equivalent config
@@ -56,7 +58,7 @@ public class ZyinHUDModuleModes {
 			 * @param modeName the mode name
 			 * @return modes
 			 */
-			public static AnimalInfoModes GetMode(String modeName) {
+			public static AnimalInfoModes getMode(String modeName) {
 				try { return AnimalInfoModes.valueOf(modeName); }
 				catch (IllegalArgumentException e) { return values()[0]; }
 			}
@@ -66,7 +68,7 @@ public class ZyinHUDModuleModes {
 			 *
 			 * @return the string
 			 */
-			public String GetFriendlyName() {
+			public String getFriendlyName() {
 				return Localization.get(unfriendlyName);
 			}
 		}
@@ -98,7 +100,7 @@ public class ZyinHUDModuleModes {
 			 * @param modeName the mode name
 			 * @return modes
 			 */
-			public static ClockModes GetMode(String modeName) {
+			public static ClockModes getMode(String modeName) {
 				try { return ClockModes.valueOf(modeName); }
 				catch (IllegalArgumentException e) { return STANDARD; }
 			}
@@ -108,7 +110,7 @@ public class ZyinHUDModuleModes {
 			 *
 			 * @return the string
 			 */
-			public String GetFriendlyName() {
+			public String getFriendlyName() {
 				return Localization.get(unfriendlyName);
 			}
 		}
@@ -116,6 +118,7 @@ public class ZyinHUDModuleModes {
 
 	public static class CompassOptions {
 		public static final boolean defaultEnabled = true;
+		public static final boolean defaultRenderCompassTextInMiddle = false;
 	}
 
 	public static class CoordinateOptions {
@@ -152,7 +155,7 @@ public class ZyinHUDModuleModes {
 			 * @param modeName the mode name
 			 * @return modes
 			 */
-			public static CoordinateModes GetMode(String modeName) {
+			public static CoordinateModes getMode(String modeName) {
 				try {return CoordinateModes.valueOf(modeName);}
 				catch (IllegalArgumentException e) {return XZY;}
 			}
@@ -162,7 +165,7 @@ public class ZyinHUDModuleModes {
 			 *
 			 * @return the string
 			 */
-			public String GetFriendlyName() {
+			public String getFriendlyName() {
 				return Localization.get(unfriendlyName);
 			}
 		}
@@ -192,7 +195,7 @@ public class ZyinHUDModuleModes {
 			 * @param modeName the mode name
 			 * @return modes
 			 */
-			public static DistanceMeasurerModes GetMode(String modeName) {
+			public static DistanceMeasurerModes getMode(String modeName) {
 				try { return DistanceMeasurerModes.valueOf(modeName); }
 				catch (IllegalArgumentException e) { return OFF; }
 			}
@@ -202,7 +205,7 @@ public class ZyinHUDModuleModes {
 			 *
 			 * @return the string
 			 */
-			public String GetFriendlyName() {
+			public String getFriendlyName() {
 				return Localization.get(unfriendlyName);
 			}
 		}
@@ -261,7 +264,7 @@ public class ZyinHUDModuleModes {
 			 * @param modeName the mode name
 			 * @return text modes
 			 */
-			public static DurabilityInfoTextModes GetMode(String modeName) {
+			public static DurabilityInfoTextModes getMode(String modeName) {
 				try {return DurabilityInfoTextModes.valueOf(modeName);}
 				catch (IllegalArgumentException e) {return values()[1];}
 			}
@@ -271,16 +274,55 @@ public class ZyinHUDModuleModes {
 			 *
 			 * @return the string
 			 */
-			public String GetFriendlyName() {
+			public String getFriendlyName() {
 				return Localization.get(unfriendlyName);
 			}
 		}
 	}
 
-	//TODO
-//	public static class EatingAidOptions {
-//		public static final boolean defaultEnabled = true;
-//	}
+	public static class EatingAidOptions {
+		public static final boolean defaultEnabled = true;
+		public static final boolean defaultEatGoldenFood = false;
+		public static final boolean defaultEatRawFood = false;
+		public static final boolean defaultPrioritizeFoodInHotbar = false;
+		public static final boolean defaultUsePvPSoup = false;
+
+		/**
+		 * The enum for the different modes available to the EatingAid module
+		 */
+		public static enum EatingAidModes implements IAdvancingEnum {
+			BASIC("eatingaid.mode.basic"),
+			INTELLIGENT("eatingaid.mode.intelligent");
+
+			private String unfriendlyName;
+
+			//NOTE: In all likelihood, the next() and prev() methods will likely be called by a gui button, if at all
+
+			private EatingAidModes(String unfriendlyName) {
+				this.unfriendlyName = unfriendlyName;
+			}
+
+			/**
+			 * Gets the mode based on its internal name as written in the enum declaration
+			 *
+			 * @param modeName the mode name
+			 * @return text modes
+			 */
+			public static EatingAidModes getMode(String modeName) {
+				try {return EatingAidModes.valueOf(modeName);}
+				catch (IllegalArgumentException e) {return values()[1];}
+			}
+
+			/**
+			 * Get friendly name string.
+			 *
+			 * @return the string
+			 */
+			public String getFriendlyName() {
+				return Localization.get(unfriendlyName);
+			}
+		}
+	}
 
 	public static class EnderPearlAidOptions {
 		public static final boolean defaultEnabled = true;
@@ -328,7 +370,7 @@ public class ZyinHUDModuleModes {
 			 * @param modeName the mode name
 			 * @return modes
 			 */
-			public static HealthMonitorModes GetMode(String modeName) {
+			public static HealthMonitorModes getMode(String modeName) {
 				try { return HealthMonitorModes.valueOf(modeName); }
 				catch (IllegalArgumentException e) { return OOT; }
 			}
@@ -338,8 +380,18 @@ public class ZyinHUDModuleModes {
 			 *
 			 * @return the string
 			 */
-			public String GetFriendlyName() {
+			public String getFriendlyName() {
 				return Localization.get(unfriendlyName);
+			}
+
+			/**
+			 * Gets the name of the sound resource associated with the current mode.
+			 * Sound resource names are declared in assets/zyinhud/sounds.json.
+			 *
+			 * @return a String representing the name of the sound resource file
+			 */
+			public String getSoundName() {
+				return soundName;
 			}
 		}
 	}
@@ -387,7 +439,7 @@ public class ZyinHUDModuleModes {
 			 * @param modeName the mode name
 			 * @return modes
 			 */
-			public static ItemSelectorModes GetMode(String modeName) {
+			public static ItemSelectorModes getMode(String modeName) {
 				try { return ItemSelectorModes.valueOf(modeName); }
 				catch (IllegalArgumentException e) { return values()[0]; }
 			}
@@ -397,7 +449,7 @@ public class ZyinHUDModuleModes {
 			 *
 			 * @return the string
 			 */
-			public String GetFriendlyName() {
+			public String getFriendlyName() {
 				return Localization.get(unfriendlyName);
 			}
 		}
@@ -435,7 +487,7 @@ public class ZyinHUDModuleModes {
 			 * @param modeName the mode name
 			 * @return modes
 			 */
-			public static LocatorModes GetMode(String modeName) {
+			public static LocatorModes getMode(String modeName) {
 				try { return LocatorModes.valueOf(modeName);}
 				catch (IllegalArgumentException e) { return OFF;}
 			}
@@ -445,16 +497,16 @@ public class ZyinHUDModuleModes {
 			 *
 			 * @return the string
 			 */
-			public String GetFriendlyName() {
+			public String getFriendlyName() {
 				return Localization.get(unfriendlyName);
 			}
 		}
 	}
 
 	public static class MiscOptions {
-		public static final boolean ShowAnvilRepairs = true;
-		public static final boolean UseQuickPlaceSign = false;
-		public static final boolean UseUnlimitedSprintingSP = false;
+		public static final boolean showAnvilRepairs = true;
+		public static final boolean useQuickPlaceSign = true;
+		public static final boolean useUnlimitedSprintingSP = false;
 	}
 
 	public static class PotionAidOptions {
@@ -462,65 +514,86 @@ public class ZyinHUDModuleModes {
 	}
 
 	//TODO
-//	public static class PotionTimerOptions{
-//		public static final boolean defaultEnabled = true;
-//		public static PotionTimerModes PotionTimerMode;
-//
-//		/**
-//		 * The enum for the different text display modes available to the PotionTimer module
-//		 */
-//		public static enum PotionTimerModes implements IAdvancingEnum{
-//			WHITE("potiontimers.textmode.white"),
-//			COLORED("potiontimers.textmode.colored"),
-//			NONE("potiontimers.textmode.none");
-//
-//			private String unfriendlyName;
-//
-//			//NOTE: In all likelihood, the next() and prev() methods will likely be called by a gui button, if at all
-//
-//			private PotionTimerModes(String unfriendlyName) {
-//				this.unfriendlyName = unfriendlyName;
-//			}
-//
-//			/**
-//			 * Gets the mode based on its internal name as written in the enum declaration
-//			 *
-//			 * @param modeName the mode name
-//			 * @return text modes
-//			 */
-//			public static PotionTimerModes GetMode(String modeName) {
-//				try { return PotionTimerModes.valueOf(modeName); }
-//				catch (IllegalArgumentException e) { return COLORED; }
-//			}
-//
-//			/**
-//			 * Get friendly name string.
-//			 *
-//			 * @return the string
-//			 */
-//			public String GetFriendlyName() {
-//				return Localization.get(unfriendlyName);
-//			}
-//		}
-//	}
+	public static class PotionTimerOptions {
+		public static final boolean defaultEnabled = true;
+//		public static PotionTimerModes potionTimerMode;
+
+		public static final boolean defaultHidePotionEffectsInInventory = false;
+
+		public static final double minPotionScale = 0.25d;
+		public static final double maxPotionScale = 5.0d;
+		public static final double defaultPotionScale = 1.0d;
+
+		public static final int minPotionTimersHorizontalPos = 0;
+		public static final int maxPotionTimersHorizontalPos = 400;
+		public static final int defaultPotionTimersHorizontalPos = 1;
+
+		public static final int minPotionTimersVerticalPos = 0;
+		public static final int maxPotionTimersVerticalPos = 200;
+		public static final int defaultPotionTimersVerticalPos = 16;
+
+		public static final boolean defaultShowPotionIcons = true;
+		public static final boolean defaultHideBeaconPotionEffects = false;
+		public static final boolean defaultShowVanillaStatusEffectHUD = true;
+		public static final boolean defaultShowEffectName = true;
+		public static final boolean defaultShowEffectLevel = true;
+
+
+		/**
+		 * The enum for the different text display modes available to the PotionTimer module
+		 */
+		public static enum PotionTimerModes implements IAdvancingEnum {
+			WHITE("potiontimers.textmode.white"),
+			COLORED("potiontimers.textmode.colored"),
+			NONE("potiontimers.textmode.none");
+
+			private String unfriendlyName;
+
+			//NOTE: In all likelihood, the next() and prev() methods will likely be called by a gui button, if at all
+
+			private PotionTimerModes(String unfriendlyName) {
+				this.unfriendlyName = unfriendlyName;
+			}
+
+			/**
+			 * Gets the mode based on its internal name as written in the enum declaration
+			 *
+			 * @param modeName the mode name
+			 * @return text modes
+			 */
+			public static PotionTimerModes getMode(String modeName) {
+				try { return PotionTimerModes.valueOf(modeName); }
+				catch (IllegalArgumentException e) { return COLORED; }
+			}
+
+			/**
+			 * Get friendly name string.
+			 *
+			 * @return the string
+			 */
+			public String getFriendlyName() {
+				return Localization.get(unfriendlyName);
+			}
+		}
+	}
 
 	public static class QuickDepositOptions {
 		public static final boolean defaultEnabled = true;
-		public static final boolean BlacklistArrow = false;
-		public static final boolean BlacklistEnderPearl = false;
-		public static final boolean BlacklistFood = false;
-		public static final boolean BlacklistTools = true;
-		public static final boolean BlacklistTorch = false;
-		public static final boolean BlacklistWaterBucket = false;
-		public static final boolean BlacklistWeapons = true;
-		public static final boolean BlacklistClockCompass = false;
-		public static final boolean CloseChestAfterDepositing = false;
-		public static final boolean IgnoreItemsInHotbar = false;
+		public static final boolean blacklistArrow = false;
+		public static final boolean blacklistEnderPearl = false;
+		public static final boolean blacklistFood = false;
+		public static final boolean blacklistTools = true;
+		public static final boolean blacklistTorch = false;
+		public static final boolean blacklistWaterBucket = false;
+		public static final boolean blacklistWeapons = true;
+		public static final boolean blacklistClockCompass = false;
+		public static final boolean closeChestAfterDepositing = false;
+		public static final boolean ignoreItemsInHotbar = false;
 	}
 
 	public static class SafeOverlayOptions {
 		public static final boolean defaultEnabled = true;
-		public static SafeOverlayModes safeOverlayMode;
+		public static safeOverlayModes safeOverlayMode;
 
 		public static final boolean defaultDisplayInNether = false;
 		public static final int defaultDrawDistance = 20;
@@ -534,13 +607,13 @@ public class ZyinHUDModuleModes {
 		/**
 		 * The enum for the different modes available to the SafeOverlay module
 		 */
-		public static enum SafeOverlayModes implements IAdvancingEnum {
+		public static enum safeOverlayModes implements IAdvancingEnum {
 			OFF("safeoverlay.mode.off"),
 			ON("safeoverlay.mode.on");
 
 			private String unfriendlyName;
 
-			private SafeOverlayModes(String unfriendlyName) {
+			private safeOverlayModes(String unfriendlyName) {
 				this.unfriendlyName = unfriendlyName;
 			}
 
@@ -550,8 +623,8 @@ public class ZyinHUDModuleModes {
 			 * @param modeName the mode name
 			 * @return modes
 			 */
-			public static SafeOverlayModes GetMode(String modeName) {
-				try { return SafeOverlayModes.valueOf(modeName); }
+			public static safeOverlayModes getMode(String modeName) {
+				try { return safeOverlayModes.valueOf(modeName); }
 				catch (IllegalArgumentException e) { return OFF; }
 			}
 
@@ -560,7 +633,7 @@ public class ZyinHUDModuleModes {
 			 *
 			 * @return the string
 			 */
-			public String GetFriendlyName() {
+			public String getFriendlyName() {
 				return Localization.get(unfriendlyName);
 			}
 		}

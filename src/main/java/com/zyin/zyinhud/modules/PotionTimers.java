@@ -1,16 +1,15 @@
 //package com.zyin.zyinhud.modules;
 //
+//import com.zyin.zyinhud.ZyinHUDConfig;
 //import com.zyin.zyinhud.ZyinHUDRenderer;
 ////import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
+//import com.zyin.zyinhud.modules.ZyinHUDModuleModes.PotionTimerOptions;
 //import net.minecraft.client.gui.DisplayEffectsScreen;
-//import net.minecraft.client.gui.screen.ChatScreen;
 //import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 //import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-//import net.minecraft.client.resources.I18n;
 //import net.minecraft.potion.Effect;
 //import net.minecraft.potion.EffectInstance;
 //import net.minecraft.potion.EffectUtils;
-//import net.minecraft.util.ResourceLocation;
 //import net.minecraft.util.math.MathHelper;
 //import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 //import org.lwjgl.opengl.GL11;
@@ -18,6 +17,7 @@
 //import java.util.Collection;
 //import java.util.Iterator;
 //
+//import static com.zyin.zyinhud.util.ZyinHUDUtil.doesScreenShowHUD;
 //import static net.minecraft.client.gui.screen.inventory.ContainerScreen.INVENTORY_BACKGROUND;
 //
 ///**
@@ -28,86 +28,47 @@
 //	/**
 //	 * Enables/Disables this module
 //	 */
-//	public static boolean Enabled;
+//	public static boolean isEnabled;
 //
 //	/**
 //	 * Toggles this module on or off
 //	 *
 //	 * @return The state the module was changed to
 //	 */
-//	public static boolean ToggleEnabled() {
-//		return Enabled = !Enabled;
+//	public static boolean toggleEnabled() {
+//		return isEnabled = !isEnabled;
 //	}
 //
 //	/**
 //	 * The current mode for this module
 //	 */
-//	public static ZyinHUDModuleModes.PotionTimerOptions.PotionTimerModes TextMode;
+//	public static PotionTimerOptions.PotionTimerModes mode = ZyinHUDConfig.potionTimerMode.get();
 //
-//	/**
-//	 * The constant ShowPotionIcons.
-//	 */
-//	public static boolean ShowPotionIcons;
-//	/**
-//	 * The constant ShowEffectName.
-//	 */
-//	public static boolean ShowEffectName;
-//	/**
-//	 * The constant ShowEffectLevel.
-//	 */
-//	public static boolean ShowEffectLevel;
-//	/**
-//	 * The constant UsePotionColors.
-//	 */
-//	public static boolean UsePotionColors;
-//	/**
-//	 * The constant PotionScale.
-//	 */
-//	public static float PotionScale;
-//	/**
-//	 * The constant HidePotionEffectsInInventory.
-//	 */
-//	public static boolean HidePotionEffectsInInventory;
-//	/**
-//	 * The constant HideBeaconPotionEffects.
-//	 */
-//	public static boolean HideBeaconPotionEffects;
-//	/**
-//	 * The constant ShowVanillaStatusEffectHUD.
-//	 */
-//	public static boolean ShowVanillaStatusEffectHUD;
+//	private static boolean showPotionIcons = ZyinHUDConfig.showPotionIcons.get();
+////	private static boolean showEffectName;
+////	private static boolean showEffectLevel;
+////	private static boolean UsePotionColors;     UNUSED
+//	private static float potionScale = ZyinHUDConfig.potionScale.get().floatValue();
+//	private static boolean hidePotionEffectsInInventory = ZyinHUDConfig.hidePotionEffectsInInventory.get();
+////	private static boolean hideBeaconPotionEffects;
+////	private static boolean showVanillaStatusEffectHUD;
 //
-//	/**
-//	 * The constant blinkingThresholds.
-//	 */
 //	protected static final int[] blinkingThresholds = {3 * 20, 5 * 20, 16 * 20};    //the time at which blinking starts
-//	/**
-//	 * The constant blinkingSpeed.
-//	 */
 //	protected static final int[] blinkingSpeed = {5, 10, 20};                    //how often the blinking occurs
-//	/**
-//	 * The constant blinkingDuration.
-//	 */
 //	protected static final int[] blinkingDuration = {2, 3, 3};                    //how long the blink lasts
 //
-//	/**
-//	 * The constant potionLocX.
-//	 */
-//	protected static int potionLocX = 1;
-//	/**
-//	 * The constant potionLocY.
-//	 */
-//	protected static int potionLocY = 16;
+//	protected static int potionLocX = PotionTimerOptions.defaultPotionTimersHorizontalPos;
+//	protected static int potionLocY = PotionTimerOptions.defaultPotionTimersVerticalPos;
 //
 //	/**
 //	 * Renders the duration any potion effects that the player currently has on the left side of the screen.
 //	 */
-//	public static void RenderOntoHUD() {
+//	public static void renderOntoHUD() {
 //		//if the player is in the world
 //		//and not in a menu (except for chat and the custom Options menu)
 //		//and F3 not shown
-//		if (PotionTimers.Enabled &&
-//		    (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen instanceof ChatScreen /*|| TabIsSelectedInOptionsGui()*/)) &&
+//		if (PotionTimers.isEnabled &&
+//		    (mc.mouseHelper.isMouseGrabbed() || (doesScreenShowHUD(mc.currentScreen) /*|| tabIsSelectedInOptionsGui()*/)) &&
 //		    !mc.gameSettings.showDebugInfo
 //		) {
 //			Collection potionEffects = mc.player.getActivePotionEffects();    //key:potionId, value:potionEffect
@@ -116,9 +77,9 @@
 //			int x = potionLocX;
 //			int y = potionLocY;
 //
-//			x /= PotionScale;
-//			y /= PotionScale;
-//			GL11.glScalef(PotionScale, PotionScale, PotionScale);
+//			x /= potionScale;
+//			y /= potionScale;
+//			GL11.glScalef(potionScale, potionScale, potionScale);
 //
 //
 //			int i = 0;
@@ -128,18 +89,16 @@
 //				Effect potion = potionEffect.getPotion();
 //				boolean isFromBeacon = potionEffect.isAmbient();
 //
-//				if (!isFromBeacon || !HideBeaconPotionEffects) {
-//					if (ShowPotionIcons) {
-//						DrawPotionIcon(x, y, potion);
+//				if (!isFromBeacon) {// || !hideBeaconPotionEffects) {
+//					if (showPotionIcons) {
+//						drawPotionIcon(x, y, potion);
 //
-//						if (TextMode != ZyinHUDModuleModes.PotionTimerOptions.PotionTimerModes.NONE) {
-//							DrawPotionText(x + 10, y, potion, potionEffect);
+//						if (mode != PotionTimerOptions.PotionTimerModes.NONE) {
+//							drawPotionText(x + 10, y, potion, potionEffect);
 //						}
 //					}
-//					else {
-//						if (TextMode != ZyinHUDModuleModes.PotionTimerOptions.PotionTimerModes.NONE) {
-//							DrawPotionText(x, y, potion, potionEffect);
-//						}
+//					else if (mode != PotionTimerOptions.PotionTimerModes.NONE) {
+//						drawPotionText(x, y, potion, potionEffect);
 //					}
 //
 //					y += 10;
@@ -147,7 +106,7 @@
 //				}
 //			}
 //
-//			GL11.glScalef(1f / PotionScale, 1f / PotionScale, 1f / PotionScale);
+//			GL11.glScalef(1f / potionScale, 1f / potionScale, 1f / potionScale);
 //		}
 //	}
 //
@@ -160,22 +119,24 @@
 //	 * @param potion       the potion
 //	 * @param potionEffect the potion effect
 //	 */
-//	protected static void DrawPotionText(int x, int y, Effect potion, EffectInstance potionEffect) {
+//	protected static void drawPotionText(int x, int y, Effect potion, EffectInstance potionEffect) {
 //		//TODO: Figure out that float number, this is a temporary fix
 //		String potionText = EffectUtils.getPotionDurationString(potionEffect, 1.0F);
 //
-//		if (ShowEffectName) {
-//			potionText += " " + I18n.format(potionEffect.getEffectName());
-//		}
-//		if (ShowEffectLevel) {
-//			potionText += " " + (potionEffect.getAmplifier() + 1);
-//		}
+////		UNUSED
+////		if (showEffectName) {
+////			potionText += " " + I18n.format(potionEffect.getEffectName());
+////		}
+////		if (showEffectLevel) {
+////			potionText += " " + (potionEffect.getAmplifier() + 1);
+////		}
+//
 //		int potionDuration = potionEffect.getDuration();    //goes down by 20 ticks per second
 //		int colorInt;
-//		if (TextMode == ZyinHUDModuleModes.PotionTimerOptions.PotionTimerModes.COLORED) {
+//		if (mode == PotionTimerOptions.PotionTimerModes.COLORED) {
 //			colorInt = potion.getLiquidColor();
 //		}
-//		else if (TextMode == ZyinHUDModuleModes.PotionTimerOptions.PotionTimerModes.WHITE) { colorInt = 0xFFFFFF; }
+//		else if (mode == PotionTimerOptions.PotionTimerModes.WHITE) { colorInt = 0xFFFFFF; }
 //		else { colorInt = 0xFFFFFF; }
 //
 //
@@ -211,7 +172,7 @@
 //	 * @param y      the y
 //	 * @param potion the potion
 //	 */
-//	protected static void DrawPotionIcon(int x, int y, Effect potion) {
+//	protected static void drawPotionIcon(int x, int y, Effect potion) {
 //		mc.getTextureManager().bindTexture(INVENTORY_BACKGROUND);
 //		// see net/minecraft/client/gui/DisplayEffectsScreen.java
 //		//      func_214079_a       renders the box around the potion effect displayed in the player inventory
@@ -234,7 +195,7 @@
 //
 //			GL11.glColor4f(1f, 1f, 1f, 1f);
 //
-//			ZyinHUDRenderer.RenderCustomTexture(x, y, u, v, width, height, null, scaler);
+//			ZyinHUDRenderer.renderCustomTexture(x, y, u, v, width, height, null, scaler);
 //		}
 //	}
 //
@@ -244,16 +205,18 @@
 //	 *
 //	 * @param guiScreen the screen the player is looking at which extends InventoryEffectRenderer
 //	 */
-//	public static void DisableInventoryPotionEffects(DisplayEffectsScreen guiScreen) {
-//		if (PotionTimers.Enabled && HidePotionEffectsInInventory) {
+//	public static void disableInventoryPotionEffects(DisplayEffectsScreen guiScreen) {
+//		if (PotionTimers.isEnabled && hidePotionEffectsInInventory) {
 //			if (!mc.player.getActivePotionEffects().isEmpty()) {
 //				int guiLeftPx = (guiScreen.width - 176) / 2;
 //
 //				// mapped field: guiLeft
 //				ObfuscationReflectionHelper.setPrivateValue(
-//					ContainerScreen.class, (ContainerScreen) guiScreen, guiLeftPx, "field_147003_i");
+//					ContainerScreen.class, (ContainerScreen) guiScreen, guiLeftPx, "field_147003_i"
+//				);
 //				ObfuscationReflectionHelper.setPrivateValue(
-//					DisplayEffectsScreen.class, (DisplayEffectsScreen) guiScreen, false, "field_147045_u");
+//					DisplayEffectsScreen.class, (DisplayEffectsScreen) guiScreen, false, "field_147045_u"
+//				);
 //			}
 //		}
 //	}
@@ -262,9 +225,9 @@
 //	 *
 //	 * @return
 //	 */
-////    private static boolean TabIsSelectedInOptionsGui() {
+////    private static boolean tabIsSelectedInOptionsGui() {
 ////        return mc.currentScreen instanceof GuiZyinHUDOptions &&
-////                (((GuiZyinHUDOptions) mc.currentScreen).IsButtonTabSelected(Localization.get("potiontimers.name")));
+////                (((GuiZyinHUDOptions) mc.currentScreen).isButtonTabSelected(Localization.get("potiontimers.name")));
 ////    }
 //
 //
@@ -273,8 +236,8 @@
 //	 *
 //	 * @return boolean
 //	 */
-//	public static boolean ToggleShowPotionIcons() {
-//		return ShowPotionIcons = !ShowPotionIcons;
+//	public static boolean toggleShowPotionIcons() {
+//		return showPotionIcons = !showPotionIcons;
 //	}
 //
 ////	UNUSED
@@ -283,8 +246,8 @@
 ////	 *
 ////	 * @return boolean
 ////	 */
-////	public static boolean ToggleShowEffectName() {
-////		return ShowEffectName = !ShowEffectName;
+////	public static boolean toggleShowEffectName() {
+////		return showEffectName = !showEffectName;
 ////	}
 ////
 ////	/**
@@ -292,8 +255,8 @@
 ////	 *
 ////	 * @return boolean
 ////	 */
-////	public static boolean ToggleShowEffectLevel() {
-////		return ShowEffectLevel = !ShowEffectLevel;
+////	public static boolean toggleShowEffectLevel() {
+////		return showEffectLevel = !showEffectLevel;
 ////	}
 //
 //	/**
@@ -301,8 +264,8 @@
 //	 *
 //	 * @return boolean
 //	 */
-//	public static boolean ToggleHidePotionEffectsInInventory() {
-//		return HidePotionEffectsInInventory = !HidePotionEffectsInInventory;
+//	public static boolean toggleHidePotionEffectsInInventory() {
+//		return hidePotionEffectsInInventory = !hidePotionEffectsInInventory;
 //	}
 //
 //	/**
@@ -310,7 +273,7 @@
 //	 *
 //	 * @return int
 //	 */
-//	public static int GetHorizontalLocation() {
+//	public static int getHorizontalLocation() {
 //		return potionLocX;
 //	}
 //
@@ -320,7 +283,7 @@
 //	 * @param x the x
 //	 * @return the new x location
 //	 */
-//	public static int SetHorizontalLocation(int x) {
+//	public static int setHorizontalLocation(int x) {
 //		potionLocX = MathHelper.clamp(x, 0, mc.mainWindow.getWidth());
 //		return potionLocX;
 //	}
@@ -330,7 +293,7 @@
 //	 *
 //	 * @return int
 //	 */
-//	public static int GetVerticalLocation() {
+//	public static int getVerticalLocation() {
 //		return potionLocY;
 //	}
 //
@@ -340,18 +303,18 @@
 //	 * @param y the y
 //	 * @return the new y location
 //	 */
-//	public static int SetVerticalLocation(int y) {
+//	public static int setVerticalLocation(int y) {
 //		potionLocY = MathHelper.clamp(y, 0, mc.mainWindow.getHeight());
 //		return potionLocY;
 //	}
 //
 //// UNUSED
-////	public static boolean ToggleHideBeaconPotionEffects() {
-////		return HideBeaconPotionEffects = !HideBeaconPotionEffects;
+////	public static boolean toggleHideBeaconPotionEffects() {
+////		return hideBeaconPotionEffects = !hideBeaconPotionEffects;
 ////	}
 ////
-////	public static boolean ToggleShowVanillaStatusEffectHUD() {
-////		return ShowVanillaStatusEffectHUD = !ShowVanillaStatusEffectHUD;
+////	public static boolean toggleShowVanillaStatusEffectHUD() {
+////		return showVanillaStatusEffectHUD = !showVanillaStatusEffectHUD;
 ////	}
 //
 //}

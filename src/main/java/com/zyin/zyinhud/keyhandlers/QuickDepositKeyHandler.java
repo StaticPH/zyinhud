@@ -8,38 +8,38 @@ import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import org.lwjgl.glfw.GLFW;
 
 public class QuickDepositKeyHandler implements ZyinHUDKeyHandlerBase {
-	public static final String HotkeyDescription = "key.zyinhud.quickdeposit";
+	public static final String hotkeyDescription = "key.zyinhud.quickdeposit";
 	private static long handle = mc.mainWindow.getHandle();
-	private static boolean keyDown = false;
+	private static boolean isKeyDown = false;
 
 	//_CHECK: having set the conflict context in ZyinHUDKeyHandlers may make the ContainerScreen check unnecessary
 	//_CHECK: KeyInputEvent might need to be replaced by one of the events from GuiScreenEvent
-	public static void Pressed(KeyInputEvent event) {
+	public static void onPressed(KeyInputEvent event) {
 		//don't activate if the user isn't looking at a container gui
 		if (!(mc.currentScreen instanceof ContainerScreen)) { return; }
 
-		if (QuickDeposit.Enabled) {
+		if (QuickDeposit.isEnabled) {
 			if ((GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS)) {
-				QuickDeposit.QuickDepositItemsInChest(false);
+				QuickDeposit.quickDepositItemsInChest(false);
 			}
-			else { QuickDeposit.QuickDepositItemsInChest(true); }
+			else { QuickDeposit.quickDepositItemsInChest(true); }
 		}
 	}
 
-	public static void ClientTickEvent(ClientTickEvent event) {
+	public static void onClientTickEvent(ClientTickEvent event) {
 		long handle = mc.mainWindow.getHandle();
 		int keyState = GLFW.glfwGetKey(handle, ZyinHUDKeyHandlers.KEY_BINDINGS[7].getKey().getKeyCode());
 
 		if (mc.currentScreen instanceof ContainerScreen) {
 			if (keyState == GLFW.GLFW_PRESS){
-				if (!keyDown) { OnKeyDown(); }
-				keyDown = true;
+				if (!isKeyDown) { onKeyDown(); }
+				isKeyDown = true;
 			}
-			else {keyDown = false; }
+			else {isKeyDown = false; }
 		}
 	}
 
-	private static void OnKeyDown() {
-		Pressed(null);
+	private static void onKeyDown() {
+		onPressed(null);
 	}
 }

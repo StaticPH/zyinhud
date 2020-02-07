@@ -98,7 +98,7 @@ public class CommandDev implements ICommandBase {
 		public static final ArgumentBuilder<CommandSource, ?> t2_showItemsWithTag = showItemsWithTag();
 		public static final ArgumentBuilder<CommandSource, ?> t2_listKnownItemTags = listKnownItemTags();
 		public static final ArgumentBuilder<CommandSource, ?> t2_listKnownBlockTags = listKnownBlockTags();
-		public static final ArgumentBuilder<CommandSource, ?> t1_Tags = cmd_t1_Tags();
+		public static final ArgumentBuilder<CommandSource, ?> t1_tags = cmd_t1_Tags();
 		public static final ArgumentBuilder<CommandSource, ?> t1_firstThingInTestWorld = cmd_t1_TestWorldRules();
 		private static final String[] firstCommandsInTestWorld = {
 			"/gamerule doDaylightCycle false", "/gamerule doFireTick false", "/gamerule doLimitedCrafting false",
@@ -219,7 +219,7 @@ public class CommandDev implements ICommandBase {
 		LiteralCommandNode<CommandSource> commandLiteral = dispatcher.register(
 			Commands.literal("zhdevhelp")
 //			        .requires(commandSource -> commandSource.hasPermissionLevel(2))
-                    .then(SubCommands.t1_Tags)
+                    .then(SubCommands.t1_tags)
                     .then(SubCommands.t1_firstThingInTestWorld)
                     .executes((command) -> {
 	                    respond(command.getSource(), "No operation provided.");

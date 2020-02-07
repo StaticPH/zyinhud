@@ -8,30 +8,30 @@ import net.minecraftforge.client.event.InputEvent.MouseInputEvent;
 import net.minecraftforge.client.event.InputEvent.MouseScrollEvent;
 
 public class ItemSelectorKeyHandler implements ZyinHUDKeyHandlerBase {
-	public static final String HotkeyDescription = "key.zyinhud.itemselector";
+	public static final String hotkeyDescription = "key.zyinhud.itemselector";
 
-	public static void OnMouseWheelScroll(MouseScrollEvent event) { //should event be .Post?
-		if (!mc.mouseHelper.isMouseGrabbed() || !ItemSelector.Enabled) { return; }
-        ItemSelector.Scroll(event.getScrollDelta() > 0 ? ItemSelector.WHEEL_UP : ItemSelector.WHEEL_DOWN);
+	public static void onMouseWheelScroll(MouseScrollEvent event) { //should event be .Post?
+		if (!mc.mouseHelper.isMouseGrabbed() || !ItemSelector.isEnabled) { return; }
+        ItemSelector.scroll(event.getScrollDelta() > 0 ? ItemSelector.WHEEL_UP : ItemSelector.WHEEL_DOWN);
 		event.setCanceled(true);
 	}
 
-	public static void OnMouseSideButton(MouseInputEvent event) { //should event be .Post?
-		if (!mc.mouseHelper.isMouseGrabbed() || !ItemSelector.Enabled || !ItemSelector.shouldUseMouseSideButtons()) {
+	public static void onMouseSideButton(MouseInputEvent event) { //should event be .Post?
+		if (!mc.mouseHelper.isMouseGrabbed() || !ItemSelector.isEnabled || !ItemSelector.shouldUseMouseSideButtons()) {
 			return;
 		}
 		int direction = event.getButton() == 3 ? ItemSelector.WHEEL_UP : ItemSelector.WHEEL_DOWN;
 
-		ItemSelector.SideButton(direction);
+		ItemSelector.sideButton(direction);
 		event.setCanceled(true);
 	}
 
-	public static void Pressed(KeyInputEvent event) {
+	public static void onPressed(KeyInputEvent event) {
 		//don't activate if the user is looking at a GUI or has a modifier pressed
-		if (mc.currentScreen == null) { ItemSelector.OnHotkeyPressed(); }
+		if (mc.currentScreen == null) { ItemSelector.onHotkeyPressed(); }
 	}
 
-	public static void Released(KeyInputEvent event) {
-		ItemSelector.OnHotkeyReleased();
+	public static void onReleased(KeyInputEvent event) {
+		ItemSelector.onHotkeyReleased();
 	}
 }

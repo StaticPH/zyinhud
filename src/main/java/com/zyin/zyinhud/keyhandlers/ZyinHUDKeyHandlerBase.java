@@ -11,7 +11,7 @@ public interface ZyinHUDKeyHandlerBase {
 	 * and is also used to get the friendly display name from the language file when viewing it in the
 	 * Options > Controls menu.
 	 */
-	String HotkeyDescription = "key.zyinhud.unknown";
+	String hotkeyDescription = "key.zyinhud.unknown";
 
 	Minecraft mc = Minecraft.getInstance();
 }

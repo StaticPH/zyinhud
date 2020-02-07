@@ -18,38 +18,38 @@ public class DistanceMeasurer extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled = ZyinHUDConfig.EnableDistanceMeasurer.get();
+	public static boolean isEnabled = ZyinHUDConfig.enableDistanceMeasurer.get();
 
 	/**
 	 * Toggles this module on or off
 	 *
 	 * @return The state the module was changed to
 	 */
-	public static boolean ToggleEnabled() {
-		ZyinHUDConfig.EnableDistanceMeasurer.set(!Enabled);
-		ZyinHUDConfig.EnableDistanceMeasurer.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return Enabled = !Enabled;
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableDistanceMeasurer.set(!isEnabled);
+		ZyinHUDConfig.enableDistanceMeasurer.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
 	/**
 	 * The current mode for this module
 	 */
-	public static DistanceMeasurerOptions.DistanceMeasurerModes Mode = ZyinHUDConfig.DistanceMeasurerMode.get();
+	public static DistanceMeasurerOptions.DistanceMeasurerModes mode = ZyinHUDConfig.distanceMeasurerMode.get();
 
 
 	/**
 	 * Render onto hud.
 	 */
-	public static void RenderOntoHUD() {
+	public static void renderOntoHUD() {
 		//if the player is in the world
 		//and not looking at a menu
 		//and F3 not pressed
-		if (DistanceMeasurer.Enabled &&
-		    Mode != DistanceMeasurerOptions.DistanceMeasurerModes.OFF &&
+		if (DistanceMeasurer.isEnabled &&
+		    mode != DistanceMeasurerOptions.DistanceMeasurerModes.OFF &&
 		    !mc.gameSettings.showDebugInfo &&
 		    (mc.mouseHelper.isMouseGrabbed() || ((mc.currentScreen instanceof ChatScreen)))
 		) {
-			String distanceString = CalculateDistanceString();
+			String distanceString = calculateDistanceString();
 
 			int width = mc.mainWindow.getScaledWidth();
 			int height = mc.mainWindow.getScaledHeight();
@@ -68,14 +68,14 @@ public class DistanceMeasurer extends ZyinHUDModuleBase {
 	 * @return the distance to a block if Distance Measurer is enabled, otherwise "".
 	 */
 	@SuppressWarnings("ConstantConditions")
-	protected static String CalculateDistanceString() {
+	protected static String calculateDistanceString() {
 //        RayTraceResult objectMouseOver = mc.player.rayTrace(300.0d, 1.0f, RayTraceFluidMode.ALWAYS);
 		// If the third parameter of "func_213324_a" here is true, the raytrace will use RayTraceContext.FluidMode.ANY
 		// see DebugOverlayGui:rayTraceFluid
 		RayTraceResult objectMouseOver = mc.player.pick(300.0d, 1.0f, true);
 
 		if (objectMouseOver != null && objectMouseOver.getType() == RayTraceResult.Type.BLOCK) {
-			if (Mode == DistanceMeasurerOptions.DistanceMeasurerModes.SIMPLE) {
+			if (mode == DistanceMeasurerOptions.DistanceMeasurerModes.SIMPLE) {
 				double playerX = mc.player.posX;
 				double playerY = mc.player.posY + mc.player.getEyeHeight();
 				double playerZ = mc.player.posZ;
@@ -104,7 +104,7 @@ public class DistanceMeasurer extends ZyinHUDModuleBase {
 
 				return TextFormatting.GOLD + "[" + String.format("%1$,.1f", farthestDistance) + ']';
 			}
-			else if (Mode == DistanceMeasurerOptions.DistanceMeasurerModes.COORDINATE) {
+			else if (mode == DistanceMeasurerOptions.DistanceMeasurerModes.COORDINATE) {
 				BlockPos pos = ((BlockRayTraceResult) objectMouseOver).getPos();
 
 				return TextFormatting.GOLD + "[" + pos.getX() + ", " + pos.getY() + ", " + pos.getZ() + ']';

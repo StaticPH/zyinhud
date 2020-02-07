@@ -26,8 +26,8 @@ public class RenderEntityTrackerHelper {
 	 * @param entity
 	 * @param partialTickTime
 	 */
-	private static void RenderEntityInfoInWorld(Entity entity, float partialTickTime) {
-		AnimalInfo.RenderEntityInfoInWorld(entity, partialTickTime);
+	private static void renderEntityInfoInWorld(Entity entity, float partialTickTime) {
+		AnimalInfo.renderEntityInfoInWorld(entity, partialTickTime);
 	}
 
 	/**
@@ -35,15 +35,15 @@ public class RenderEntityTrackerHelper {
 	 *
 	 * @param partialTickTime the partial tick time
 	 */
-	public static void RenderEntityInfo(float partialTickTime) {
-		if ((AnimalInfo.Mode == AnimalInfoModes.ON) && mc.isGameFocused() && doesScreenShowHUD(mc.currentScreen)) {
+	public static void renderEntityInfo(float partialTickTime) {
+		if ((AnimalInfo.mode == AnimalInfoModes.ON) && mc.isGameFocused() && doesScreenShowHUD(mc.currentScreen)) {
 			//_CHECK: does everything relevant fall under AnimalEntity?
 			//        if so, replace these filters with .filter(entity -> (entity instanceof AnimalEntity))
 			//        And consider renaming this class to AnimalTrackerHelper,
 			//        or even just merging it into AnimalInfo
 			//Iterate over all the loaded Entity objects and find just the non-player creatures
 			findEntities(mc.world, animalInfoMaybeTrack, logger).forEach(
-				entity -> RenderEntityInfoInWorld(entity, partialTickTime)
+				entity -> renderEntityInfoInWorld(entity, partialTickTime)
 			);
 		}
 	}

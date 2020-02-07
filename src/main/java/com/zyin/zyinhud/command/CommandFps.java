@@ -40,7 +40,7 @@ public class CommandFps implements ICommandBase{
 	 * @return 0 in the absence of catastrophic failures (crashes)
 	 */
 	public static int execute(CommandContext<CommandSource> command) {
-		Fps.ToggleEnabled();
+		Fps.toggleEnabled();
 		return 0;
 	}
 }

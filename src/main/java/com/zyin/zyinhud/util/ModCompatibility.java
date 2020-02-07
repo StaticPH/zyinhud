@@ -36,7 +36,7 @@ public class ModCompatibility {
 		 * @param item the item
 		 * @return the boolean
 		 */
-		public static boolean IsTConstructHarvestTool(Item item) {
+		public static boolean isTConstructHarvestTool(Item item) {
 			if (isLoaded) {
 				String className = item.getClass().getSuperclass().getName();
 				return className.equals(tConstructHarvestToolClass) || className.equals(tConstructDualHarvestToolClass);
@@ -51,7 +51,7 @@ public class ModCompatibility {
 		 * @param item the item
 		 * @return the boolean
 		 */
-		public static boolean IsTConstructWeapon(Item item) {
+		public static boolean isTConstructWeapon(Item item) {
 			if (isLoaded) {
 				String className = item.getClass().getSuperclass().getName();
 				return className.equals(tConstructWeaponClass);
@@ -66,7 +66,7 @@ public class ModCompatibility {
 		 * @param item the item
 		 * @return the boolean
 		 */
-		public static boolean IsTConstructBow(Item item) {
+		public static boolean isTConstructBow(Item item) {
 			if (isLoaded) {
 				String className = item.getClass().getSuperclass().getName();
 				return className.equals(tConstructBowClass);
@@ -81,10 +81,10 @@ public class ModCompatibility {
 		 * @param item the item
 		 * @return the boolean
 		 */
-		public static boolean IsTConstructItem(Item item) {
-			return IsTConstructHarvestTool(item) ||
-			       IsTConstructWeapon(item) ||
-			       IsTConstructBow(item);
+		public static boolean isTConstructItem(Item item) {
+			return isTConstructHarvestTool(item) ||
+			       isTConstructWeapon(item) ||
+			       isTConstructBow(item);
 		}
 
 		/**
@@ -93,7 +93,7 @@ public class ModCompatibility {
 		 * @param item the item
 		 * @return the boolean
 		 */
-		public static boolean IsTConstructToolWithoutARightClickAction(Item item) {
+		public static boolean isTConstructToolWithoutARightClickAction(Item item) {
 			if (isLoaded) {
 				String className = item.getClass().getSuperclass().getName();
 				return className.equals(tConstructHarvestToolClass);
@@ -109,7 +109,7 @@ public class ModCompatibility {
 		 * @param itemStack the item stack
 		 * @return returns the damage value of the tool, 			returns the energy if it has any, 			or returns -1 if the tool is broken.
 		 */
-		public static Integer GetDamage(ItemStack itemStack) {
+		public static Integer getDamage(ItemStack itemStack) {
 			CompoundNBT tags = itemStack.getTag();
 			if (tags == null) {
 				return null;
@@ -129,7 +129,7 @@ public class ModCompatibility {
 		 * @param itemStack the item stack
 		 * @return returns the max durability of the tool. 			returns 400000 if it has energy.
 		 */
-		public static int GetMaxDamage(ItemStack itemStack) {
+		public static int getMaxDamage(ItemStack itemStack) {
 			CompoundNBT tags = itemStack.getTag();
 			if (tags == null) {
 				return -1;

@@ -26,37 +26,37 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean Enabled = ZyinHUDConfig.EnableItemSelector.get();
+	public static boolean isEnabled = ZyinHUDConfig.enableItemSelector.get();
 
 	/**
 	 * Toggles this module on or off
 	 *
 	 * @return The state the module was changed to
 	 */
-	public static boolean ToggleEnabled() {
-		ZyinHUDConfig.EnableItemSelector.set(!Enabled);
-		ZyinHUDConfig.EnableItemSelector.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return Enabled = !Enabled;
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableItemSelector.set(!isEnabled);
+		ZyinHUDConfig.enableItemSelector.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
 	/**
 	 * The current mode for this module
 	 */
-	public static ItemSelectorOptions.ItemSelectorModes Mode = ZyinHUDConfig.ItemSelectorMode.get();
+	public static ItemSelectorOptions.ItemSelectorModes mode = ZyinHUDConfig.itemSelectorMode.get();
 
 	/**
 	 * Determines if the side buttons of supported mice can be used for item selection
 	 */
-	protected static boolean UseMouseSideButtons = ZyinHUDConfig.ItemSelectorSideButtons.get();
+	protected static boolean useMouseSideButtons = ZyinHUDConfig.itemSelectorSideButtons.get();
 
 	protected static final ResourceLocation widgetTexture = new ResourceLocation("textures/gui/widgets.png");
 
 	public static final int WHEEL_UP = -1;
 	public static final int WHEEL_DOWN = 1;
 
-	protected static int timeout = ZyinHUDConfig.ItemSelectorTimeout.get();
-	protected static final int minTimeout = 50;
-	protected static final int maxTimeout = 500;
+	protected static int timeout = ZyinHUDConfig.itemSelectorTimeout.get();
+	protected static final int minTimeout = ItemSelectorOptions.minTimeout;
+	protected static final int maxTimeout = ItemSelectorOptions.maxTimeout;
 
 	private static int[] slotMemory = new int[PlayerInventory.getHotbarSize()];
 
@@ -74,12 +74,12 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	 *
 	 * @param direction Direction player is scrolling toward
 	 */
-	public static void Scroll(int direction) {
+	public static void scroll(int direction) {
 		// Bind to current player state
 		currentHotbarSlot = mc.player.inventory.currentItem;
 		currentInventory = mc.player.inventory.mainInventory;
-		if (!AdjustSlot(direction)) {
-			Done();
+		if (!adjustSlot(direction)) {
+			cleanupWhenDone();
 			return;
 		}
 
@@ -95,15 +95,15 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	 *
 	 * @param direction Direction player is scrolling toward
 	 */
-	public static void SideButton(int direction) {
+	public static void sideButton(int direction) {
 		currentHotbarSlot = mc.player.inventory.currentItem;
 		currentInventory = mc.player.inventory.mainInventory;
 
-		if (AdjustSlot(direction)) {
+		if (adjustSlot(direction)) {
 			slotMemory[currentHotbarSlot] = targetInvSlot;
-			SelectItem();
+			selectItem();
 		}
-		else { Done(); }
+		else { cleanupWhenDone(); }
 	}
 
 	/**
@@ -113,13 +113,13 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	 * @return True if successful, false if attempting to switch enchanted item
 	 * or no target is available
 	 */
-	private static boolean AdjustSlot(int direction) {
+	private static boolean adjustSlot(int direction) {
 		if (!mc.isSingleplayer()) {
 			if (
 				!currentInventory.get(currentHotbarSlot).isEmpty() &&
 				currentInventory.get(currentHotbarSlot).isEnchanted()
 			) {
-				ZyinHUDRenderer.DisplayNotification(Localization.get("itemselector.error.enchant"));
+				ZyinHUDRenderer.displayNotification(Localization.get("itemselector.error.enchant"));
 				return false;
 			}
 		}
@@ -135,7 +135,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 
 			previousDir = direction;
 
-			if ((Mode == ItemSelectorOptions.ItemSelectorModes.SAME_COLUMN && memory % 9 != currentHotbarSlot) ||
+			if ((mode == ItemSelectorOptions.ItemSelectorModes.SAME_COLUMN && memory % 9 != currentHotbarSlot) ||
 			    (currentInventory.get(memory).isEmpty()) ||
 			    (!mc.isSingleplayer() && currentInventory.get(memory).isEnchanted())) {
 				continue;
@@ -146,25 +146,25 @@ public class ItemSelector extends ZyinHUDModuleBase {
 		}
 
 		if (targetInvSlot == -1) {
-			ZyinHUDRenderer.DisplayNotification(Localization.get("itemselector.error.empty"));
+			ZyinHUDRenderer.displayNotification(Localization.get("itemselector.error.empty"));
 			return false;
 		}
 		else { return true; }
 	}
 
-	public static void OnHotkeyPressed() {
-		if (!ItemSelector.Enabled) { return; }
+	public static void onHotkeyPressed() {
+		if (!ItemSelector.isEnabled) { return; }
 
 		currentHotbarSlot = mc.player.inventory.currentItem;
 		currentInventory = mc.player.inventory.mainInventory;
 		isCurrentlyRendering = true;
 	}
 
-	public static void OnHotkeyReleased() {
-		if (!ItemSelector.Enabled) { return; }
+	public static void onHotkeyReleased() {
+		if (!ItemSelector.isEnabled) { return; }
 
-		if (isCurrentlySelecting) { SelectItem(); }
-		else { Done(); }
+		if (isCurrentlySelecting) { selectItem(); }
+		else { cleanupWhenDone(); }
 	}
 
 	/**
@@ -172,13 +172,15 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	 *
 	 * @param partialTicks the partial ticks
 	 */
-	public static void RenderOntoHUD(float partialTicks) {
-		if (!ItemSelector.Enabled || !isCurrentlyRendering) { return; }
+	public static void renderOntoHUD(float partialTicks) {
+		if (!ItemSelector.isEnabled || !isCurrentlyRendering) { return; }
 
 		//stop the item selecting if another modifier key is pressed so we don't get stuck in the selecting state
-		if (GLFW.glfwGetKey(mc.mainWindow.getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS ||
-		    GLFW.glfwGetKey(mc.mainWindow.getHandle(), GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS) {
-			Done();
+		if (
+			GLFW.glfwGetKey(mc.mainWindow.getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS ||
+		    GLFW.glfwGetKey(mc.mainWindow.getHandle(), GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS
+		) {
+			cleanupWhenDone();
 			return;
 		}
 
@@ -208,7 +210,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 		int idx = 0;
 		for (int z = 0; z < 3; z++) { // 3 rows of the inventory
 			for (int x = 0; x < 9; x++) { // 9 cols of the inventory
-				if (Mode == ItemSelectorOptions.ItemSelectorModes.SAME_COLUMN && x != currentHotbarSlot) {
+				if (mode == ItemSelectorOptions.ItemSelectorModes.SAME_COLUMN && x != currentHotbarSlot) {
 					// don't draw items that we will never be able to select if Same Column mode is active
 					idx++;
 					continue;
@@ -219,7 +221,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 					GLX.glBlendFuncSeparate(770, 771, 1, 0); // so the selection graphic renders properly
 					GL11.glEnable(GL11.GL_BLEND);
 					GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.4F);
-					ZyinHUDRenderer.RenderCustomTexture(
+					ZyinHUDRenderer.renderCustomTexture(
 						originX + (x * 20) - 1, originZ + (z * 22) - 1, 0, 22, 24, 24, widgetTexture, 1f
 					);
 					GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -258,44 +260,44 @@ public class ItemSelector extends ZyinHUDModuleBase {
 
 		if (isCurrentlySelecting) {
 			ticksToShow--;
-			if (ticksToShow <= 0) { Done(); }
+			if (ticksToShow <= 0) { cleanupWhenDone(); }
 		}
 	}
 
 	/**
 	 * Moves the selected item onto the hotbar.
 	 */
-	private static void SelectItem() {
+	private static void selectItem() {
 		ItemStack currentStack = mc.player.inventory.mainInventory.get(currentHotbarSlot);
 		ItemStack targetStack = mc.player.inventory.mainInventory.get(targetInvSlot);
 
 		// Check if what was actually selected still exists in player's inventory
 		if (!targetStack.isEmpty()) {
 			if (!mc.isSingleplayer() && ((!currentStack.isEmpty() && currentStack.isEnchanted()) || targetStack.isEnchanted())) {
-				ZyinHUDRenderer.DisplayNotification(Localization.get("itemselector.error.enchant"));
-				Done();
+				ZyinHUDRenderer.displayNotification(Localization.get("itemselector.error.enchant"));
+				cleanupWhenDone();
 				return;
 			}
 
-			int currentInvSlot = InventoryUtil.TranslateHotbarIndexToInventoryIndex(currentHotbarSlot);
+			int currentInvSlot = InventoryUtil.translateHotbarIndexToInventoryIndex(currentHotbarSlot);
 
 			//this can happen if the player is using a mod to increase the size of their hotbar
 			if (currentInvSlot < 0) {
-				ZyinHUDRenderer.DisplayNotification(Localization.get("itemselector.error.unsupportedhotbar"));
-				Done();
+				ZyinHUDRenderer.displayNotification(Localization.get("itemselector.error.unsupportedhotbar"));
+				cleanupWhenDone();
 				return;
 			}
-			InventoryUtil.Swap(currentInvSlot, targetInvSlot);
+			InventoryUtil.swap(currentInvSlot, targetInvSlot);
 		}
-		else { ZyinHUDRenderer.DisplayNotification(Localization.get("itemselector.error.emptyslot")); }
+		else { ZyinHUDRenderer.displayNotification(Localization.get("itemselector.error.emptyslot")); }
 
-		Done();
+		cleanupWhenDone();
 	}
 
 	/**
 	 * Cleans up after we're done rendering or selecting an item
 	 */
-	private static void Done() {
+	private static void cleanupWhenDone() {
 		targetInvSlot = -1;
 		scrollAmount = 0;
 		currentHotbarSlot = 0;
@@ -311,7 +313,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	 *
 	 * @return the int
 	 */
-	public static int GetTimeout() {
+	public static int getTimeout() {
 		return timeout;
 	}
 
@@ -320,12 +322,12 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	 *
 	 * @param value the value
 	 */
-	public static void SetTimeout(int value) {//TODO: this sort of thing would need to pass the update to the config :/
-		timeout = MathHelper.clamp(value, ItemSelectorOptions.minTimeout, ItemSelectorOptions.maxTimeout);
+	public static void setTimeout(int value) {//TODO: this sort of thing would need to pass the update to the config :/
+		timeout = MathHelper.clamp(value, minTimeout, maxTimeout);
 	}
 
 	public static boolean shouldUseMouseSideButtons() {
-		return UseMouseSideButtons;
+		return useMouseSideButtons;
 	}
 
 	/**
@@ -333,7 +335,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleUseMouseSideButtons() {
-		return UseMouseSideButtons = !UseMouseSideButtons;
+	public static boolean toggleUseMouseSideButtons() {
+		return useMouseSideButtons = !useMouseSideButtons;
 	}
 }

@@ -34,7 +34,7 @@ public class HUDEntityTrackerHelper {
 	/**
 	 * Stores world render transform matrices for later use when rendering HUD.
 	 */
-	public static void StoreMatrices() {
+	public static void storeMatrices() {
 		modelMatrix.rewind();
 		GL11.glGetFloatv(GL11.GL_MODELVIEW_MATRIX, modelMatrix);
 		projMatrix.rewind();
@@ -51,8 +51,8 @@ public class HUDEntityTrackerHelper {
 	 * @param x      location on the HUD
 	 * @param y      location on the HUD
 	 */
-	private static void RenderEntityInfoOnHUD(Entity entity, int x, int y) {
-		PlayerLocator.RenderEntityInfoOnHUD(entity, x, y);
+	private static void renderEntityInfoOnHUD(Entity entity, int x, int y) {
+		PlayerLocator.renderEntityInfoOnHUD(entity, x, y);
 	}
 
 	/* Alternative to Entity.getLook() and/or Entity.getLookVec()
@@ -73,11 +73,11 @@ public class HUDEntityTrackerHelper {
 	 *
 	 * @param partialTickTime the partial tick time
 	 */
-	public static void RenderEntityInfo(float partialTickTime) {
-		PlayerLocator.numOverlaysRendered = 0;
+	public static void renderEntityInfo(float partialTickTime) {
+		PlayerLocator.resetNumOverlaysRendered();
 
 		if (
-			PlayerLocator.Enabled && PlayerLocator.Mode == LocatorOptions.LocatorModes.ON &&
+			PlayerLocator.isEnabled && PlayerLocator.mode == LocatorOptions.LocatorModes.ON &&
 			mc.isGameFocused() && doesScreenShowHUD(mc.currentScreen)
 		) {
 			PlayerEntity player = mc.player;
@@ -179,7 +179,7 @@ public class HUDEntityTrackerHelper {
 		//use Y overshoot to scale X
 		int newHudX = calcScaledHudPos(width, height, hudX, hudY);
 
-		RenderEntityInfoOnHUD(entity, newHudX, newHudY);
+		renderEntityInfoOnHUD(entity, newHudX, newHudY);
 	}
 
 	private static int calcScaledHudPos(int scaleDimension, int overshotDimension, int posToScale, int overshotPos) {
