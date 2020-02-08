@@ -2,7 +2,6 @@ package com.zyin.zyinhud.modules;
 
 import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.CoordinateOptions;
-import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.util.text.TextFormatting;
 
 /**
@@ -115,7 +114,7 @@ public class Coordinates extends ZyinHUDModuleBase {
 	 * Share the user's coordinates in chat.
 	 */
 	public static void shareCoordinatesInChat() {
-		if (mc.currentScreen instanceof ChatScreen) {
+		if (mc.currentScreen == null) {
 			String coordinateString = Coordinates.chatStringFormat;
 			coordinateString = coordinateString.replace("{x}", Integer.toString(Coordinates.getXCoordinate()));
 			coordinateString = coordinateString.replace("{y}", Integer.toString(Coordinates.getYCoordinate()));

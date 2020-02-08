@@ -220,6 +220,9 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		    && !mc.gameSettings.showDebugInfo) {
 			//_CHECK: my use of doesScreenShowHUD here may remove the need to check that the debugInfo is not being shown
 
+			// FIXME: I don't really want to do the math required to make info render in the right place while not in first person view
+			if (mc.gameRenderer.getActiveRenderInfo().isThirdPerson()){return;}
+
 			//_CHECK:Will need to see if this triggers for entities being ridden by others...I expect it will, but I'm not sure.
 			//don't render stats of the horse/animal we are currently riding
 			if (entity.isBeingRidden()) { return; }
@@ -281,7 +284,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 			//render the overlay message
 			ZyinHUDRenderer.renderFloatingText(
 				multilineOverlayMessage,
-				x, y + (animal.getHeight() * 0.5f), z,
+				x, y, z,
 				0xFFFFFF, showTextBackgrounds, partialTickTime
 			);
 		}
@@ -293,7 +296,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		) {
 			Item item = getBreedingItem(animal);
 			if (item != null) {
-				ZyinHUDRenderer.renderFloatingItemIcon(x, y, z, item, partialTickTime);
+				ZyinHUDRenderer.renderFloatingItemIcon(x, y + (animal.getHeight() * 0.5f), z, item, partialTickTime);
 			}
 		}
 		

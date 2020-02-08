@@ -24,6 +24,7 @@ import java.util.ArrayList;
  * and then displays info about them onto the HUD.
  */
 public class DurabilityInfo extends ZyinHUDModuleBase {
+	private static boolean doLogUnequips = ZyinHUDConfig.enableLoggingUnequip.get();
 	/**
 	 * Enables/Disables this module
 	 */
@@ -57,7 +58,7 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 	private static boolean useColoredNumbers = ZyinHUDConfig.useColoredNumbers.get();
 
 	private static float durabilityIconScale = ZyinHUDConfig.durabilityScale.get().floatValue();
-	public static boolean hideDurabilityInfoInChat; //TODO: make configurable
+	public static boolean hideDurabilityInfoInChat = ZyinHUDConfig.hideDurabilityInfoInChat.get();
 	private static final int durabilityUpdateFrequency = 600;
 
 	protected static float armorDurabilityScaler = 0.2f;
@@ -376,13 +377,14 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 						ZyinHUDRenderer.displayNotification(
 							Localization.get("durabilityinfo.name") +
 							Localization.get("durabilityinfo.unequippeditem") +
-							itemStack.getDisplayName()
+							itemStack.getDisplayName().getString()
 						);
-						//FIXME: Dont log this by default; make it a config flag
-						ZyinHUD.ZyinLogger.info(
-							"Unequipped {} because it was at low durability ({}/{})",
-							itemStack.getDisplayName(), itemDamage, maxDamage
-						);
+						if (doLogUnequips) {
+							ZyinHUD.ZyinLogger.info(
+								"Unequipped {} because it was at low durability ({}/{})",
+								itemStack.getDisplayName().getString(), itemDamage, maxDamage
+							);
+						}
 					}
 				}
 			}
@@ -419,13 +421,14 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 						ZyinHUDRenderer.displayNotification(
 							Localization.get("durabilityinfo.name") +
 							Localization.get("durabilityinfo.unequippeditem") +
-							item.getDisplayName(itemStack).toString()
+							item.getDisplayName(itemStack).getString()
 						);
-						//FIXME: Dont log this by default; make it a config flag
-						ZyinHUD.ZyinLogger.info(
-							"Unequipped {} because it was at low durability ({}/{})",
-							item.getDisplayName(itemStack).toString(), itemDamage, maxDamage
-						);
+						if (doLogUnequips) {
+							ZyinHUD.ZyinLogger.info(
+								"Unequipped {} because it was at low durability ({}/{})",
+								item.getDisplayName(itemStack).getString(), itemDamage, maxDamage
+							);
+						}
 					}
 				}
 			}
@@ -555,7 +558,7 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleAutoUnequipArmor() {
+	public static boolean toggleAutoUnequipArmor() {
 		return autoUnequipArmor = !autoUnequipArmor;
 	}
 
@@ -564,7 +567,7 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public static boolean ToggleAutoUnequipTools() {
+	public static boolean toggleAutoUnequipTools() {
 		return autoUnequipTools = !autoUnequipTools;
 	}
 
@@ -577,7 +580,7 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 		return useColoredNumbers = !useColoredNumbers;
 	}
 
-	public static boolean ToggleHideDurabilityInfoInChat() {
+	public static boolean toggleHideDurabilityInfoInChat() {
 		return hideDurabilityInfoInChat = !hideDurabilityInfoInChat;
 	}
 }

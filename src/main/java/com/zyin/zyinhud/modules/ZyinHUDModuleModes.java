@@ -221,6 +221,7 @@ public class ZyinHUDModuleModes {
 		public static final boolean defaultAutoUnequipArmor = false;
 		public static final boolean defaultAutoUnequipTools = false;
 		public static final boolean defaultUseColoredNumbers = true;
+		public static final boolean defaultHideDurabilityInfoInChat = true;
 
 		//the height/width of the tools being rendered;
 		// NOTE: being hardcoded to 16, this may do weird things with larger textures
@@ -513,7 +514,7 @@ public class ZyinHUDModuleModes {
 		public static final boolean defaultEnabled = true;
 	}
 
-	//TODO
+	//WIP
 	public static class PotionTimerOptions {
 		public static final boolean defaultEnabled = true;
 //		public static PotionTimerModes potionTimerMode;

@@ -12,10 +12,12 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import net.minecraftforge.fml.common.Mod;
 import org.lwjgl.opengl.GL11;
 
 import com.zyin.zyinhud.helper.HUDEntityTrackerHelper;
@@ -31,6 +33,7 @@ import com.zyin.zyinhud.modules.SafeOverlay;
 /**
  * This class is in charge of rendering things onto the HUD and into the game world.
  */
+@Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class ZyinHUDRenderer {
 	public static final ZyinHUDRenderer instance = new ZyinHUDRenderer();
 	private static Minecraft mc = Minecraft.getInstance();
@@ -42,7 +45,7 @@ public class ZyinHUDRenderer {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void onRenderGameOverlayEvent(RenderGameOverlayEvent event) {
+	public static void onRenderGameOverlayEvent(RenderGameOverlayEvent event) {
 		//render everything onto the screen
 		if (event.getType() == RenderGameOverlayEvent.ElementType.TEXT) {
 			InfoLine.renderOntoHUD();
@@ -75,7 +78,7 @@ public class ZyinHUDRenderer {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void onRenderWorldLastEvent(RenderWorldLastEvent event) {
+	public static void onRenderWorldLastEvent(RenderWorldLastEvent event) {
 		//render unsafe positions (cache calculations are done from this render method)
 		SafeOverlay.instance.renderAllUnsafePositionsMultithreaded(event.getPartialTicks());
 

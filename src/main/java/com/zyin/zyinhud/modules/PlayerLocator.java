@@ -174,7 +174,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 				if (!showWitherSkeletons) { return; }
 
 				overlayMessage = getOverlayMessageForEntity(entity, distanceFromMe);
-
+//				y*=entity.getHeight();      FIXME: what must I do to get this text to render somewhere reasonable >.<
 				rgb = 0x555555;
 				alpha = alpha / 6;
 			}
@@ -189,13 +189,14 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 			x -= overlayMessageWidth / 2;
 
 			//check if the text is attempting to render outside of the screen, and if so, fix it to snap to the edge of the screen.
-			x = Math.min(x, width - overlayMessageWidth);
-			x = Math.max(x, 0);
+			x = Math.max(Math.min(x, width - overlayMessageWidth), 0);
 			y = (y > height - 10 && !showPlayerHealth) ? height - 10 : y;
 			y = (y > height - 20 && showPlayerHealth) ? height - 20 : y;
-			if (y < 10 && InfoLine.getVerticalLocation() <= 1 &&
+			if (
+				y < 10 && InfoLine.getVerticalLocation() <= 1 &&
 			    (x > InfoLine.getHorizontalLocation() + mc.fontRenderer.getStringWidth(InfoLine.getInfoLineMessage()) ||
-			     x < InfoLine.getHorizontalLocation() - overlayMessageWidth)) {
+			     x < InfoLine.getHorizontalLocation() - overlayMessageWidth)
+			) {
 				//if the text is to the right or left of the info line then allow it to render in that open space
 				y = Math.max(y, 0);
 			}

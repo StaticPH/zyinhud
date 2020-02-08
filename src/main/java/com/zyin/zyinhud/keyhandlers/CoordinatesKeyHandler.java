@@ -15,6 +15,7 @@ public class CoordinatesKeyHandler implements ZyinHUDKeyHandlerBase {
 		Coordinates.shareCoordinatesInChat();
 	}
 
+	//FIXME:Unused?
 	public static void onClientTickEvent(ClientTickEvent event) {
 		long handle = mc.mainWindow.getHandle();
 		int keyState = GLFW.glfwGetKey(handle, ZyinHUDKeyHandlers.KEY_BINDINGS[1].getKey().getKeyCode());

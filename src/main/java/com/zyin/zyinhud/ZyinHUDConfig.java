@@ -52,10 +52,12 @@ public class ZyinHUDConfig {
 	// ######################################################################
 	// Mod Debugging Options
 	// ######################################################################
-	// Enable/Disable logging whenever any of the mod's keybindings receive input, and what key they are bound to
-	public static BooleanValue enableLoggingKeybindInputs;
 	// Enable/Disable logging every entity found by any module that deals with entities in the world.
 	public static BooleanValue enableLoggingAllEntitiesFound;
+	// Enable/Disable logging whenever any of the mod's keybindings receive input, and what key they are bound to
+	public static BooleanValue enableLoggingKeybindInputs;
+	// Enable/Disable logging when a tool or armor piece has been automatically unequipped to prevent it from breaking
+	public static BooleanValue enableLoggingUnequip;
 
 	// ######################################################################
 	// Animal(Mainly Horse) Info Module
@@ -121,22 +123,24 @@ public class ZyinHUDConfig {
 	// ######################################################################
 	// Enable/Disable showing all durability info
 	public static BooleanValue enableDurabilityInfo;
+	// Display when armor gets damaged less than this fraction of its durability
+	public static DoubleValue armorDurabilityDisplayThreshold;
 	// Enable/Disable automatically unequipping armor before it breaks.
 	public static BooleanValue autoUnequipArmor;
 	// Enable/Disable automatically unequipping tools before they breaks
 	public static BooleanValue autoUnequipTools;
-	// Display when armor gets damaged less than this fraction of its durability
-	public static DoubleValue armorDurabilityDisplayThreshold;
-	// Display when an item gets damaged less than this fraction of its durability
-	public static DoubleValue itemDurabilityDisplayThreshold;
-	// Sets Durability Info's number display mode. Valid modes are NONE, TEXT, and PERCENTAGE
-	public static EnumValue<DurabilityInfoOptions.DurabilityInfoTextModes> durabilityInfoTextMode;
 	// The horizontal position of the durability icons. 0 is left, 400 is far right
 	public static IntValue durabilityHorizontalPos;
-	// The vertical position of the durability icons. 0 is top, 200 is very bottom
-	public static IntValue durabilityVerticalPos;
+	// Sets Durability Info's number display mode. Valid modes are NONE, TEXT, and PERCENTAGE
+	public static EnumValue<DurabilityInfoOptions.DurabilityInfoTextModes> durabilityInfoTextMode;
 	// How large the durability icons are rendered, 1.0 being the normal size
 	public static DoubleValue durabilityScale;
+	// The vertical position of the durability icons. 0 is top, 200 is very bottom
+	public static IntValue durabilityVerticalPos;
+	// Hide/Show durability info while chat is open.
+	public static BooleanValue hideDurabilityInfoInChat;
+	// Display when an item gets damaged less than this fraction of its durability
+	public static DoubleValue itemDurabilityDisplayThreshold;
 	// Enable/Disable showing breaking armor
 	public static BooleanValue showArmorDurability;
 	// Enable/Disable showing armor peices instead of the big broken armor icon
@@ -145,8 +149,6 @@ public class ZyinHUDConfig {
 	public static BooleanValue showItemDurability;
 	// Toggle using colored numbering
 	public static BooleanValue useColoredNumbers;
-
-	//hideDurabilityInfoInChat, boolean, default true
 
 	// ######################################################################
 	// Eating Aid Module
@@ -375,6 +377,11 @@ public class ZyinHUDConfig {
 					"Enable/Disable logging every entity found by any module that deals with entities in the world."
 				)
 				.define("enableLoggingAllEntitiesFound", false);
+			enableLoggingUnequip = builder
+				.comment(
+					"Enable/Disable logging when a tool or armor piece has been automatically unequipped to prevent it from breaking."
+				)
+				.define("enableLoggingUnequip", false);
 		}
 		builder.pop();
 
@@ -523,6 +530,9 @@ public class ZyinHUDConfig {
 					DurabilityInfoOptions.minDurabilityDisplayThreshold,
 					DurabilityInfoOptions.maxDurabilityDisplayThreshold
 				);
+			hideDurabilityInfoInChat = builder
+				.comment("Hide/Show durability info while chat is open.")
+				.define("hideDurabilityInfoInChat", DurabilityInfoOptions.defaultHideDurabilityInfoInChat);
 			itemDurabilityDisplayThreshold = builder
 				.comment("Display when an item has less than this fraction of its durability")
 				.defineInRange(
@@ -1009,7 +1019,7 @@ public class ZyinHUDConfig {
 		return SPEC;
 	}
 
-	public Type getConfigType() {
+	public static Type getConfigType() {
 		return Type.CLIENT;
 	}
 }

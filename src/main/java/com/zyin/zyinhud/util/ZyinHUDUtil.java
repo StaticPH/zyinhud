@@ -15,6 +15,7 @@ import net.minecraft.block.RedstoneDiodeBlock;
 import net.minecraft.block.TrapDoorBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
 //import net.minecraft.client.renderer.ItemRenderer;
 //import net.minecraft.client.renderer.texture.TextureManager;
@@ -45,7 +46,7 @@ public class ZyinHUDUtil {
 	private static Minecraft mc = Minecraft.getInstance();
 
 	public static boolean doesScreenShowHUD(Screen screen) {
-		return (screen == null || screen instanceof ChatScreen);
+		return (screen == null || screen instanceof ChatScreen || screen instanceof DeathScreen);
 	}
 
 	/***
@@ -69,7 +70,7 @@ public class ZyinHUDUtil {
 	 * @param block the block
 	 * @return boolean
 	 */
-	public static boolean IsBlockRightClickable(Class<? extends Block> block) {
+	public static boolean isBlockRightClickable(Class<? extends Block> block) {
 		//couldn't find a way to see if a block is 'right click-able' without running the onBlockActivated() method
 		//for that block, which we don't want to do
 		/*Consider adding:

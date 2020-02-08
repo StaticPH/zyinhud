@@ -102,9 +102,6 @@ public class ZyinHUD {
 //    }Unload
 	private void setupClient(final FMLClientSetupEvent event) {
 		MinecraftForge.EVENT_BUS.register(this);
-		MinecraftForge.EVENT_BUS.register(ZyinHUDKeyHandlers.instance);
-//        MinecraftForge.EVENT_BUS.register(ZyinHUDGuiEvents.instance);     temporarily disabled because gui stuff is HARD
-		MinecraftForge.EVENT_BUS.register(ZyinHUDRenderer.instance);
 		MinecraftForge.EVENT_BUS.register(Miscellaneous.instance);
 		MinecraftForge.EVENT_BUS.register(HealthMonitor.instance);
 

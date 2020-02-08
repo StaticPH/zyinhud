@@ -190,7 +190,7 @@ public class PotionAid extends ZyinHUDModuleBase {
 	 *
 	 * @return the index in your inventory that has the most appropriate potion to drink (9-34), or -1 if no appropriate potions found.
 	 */
-	public int getMostAppropriatePotionItemIndexFromInventory() {//_CHECK that i dont actually want to use container.inventorySlots instead
+	public static int getMostAppropriatePotionItemIndexFromInventory() {//_CHECK that i dont actually want to use container.inventorySlots instead
 		List inventorySlots = mc.player.inventory.mainInventory;
 
 		//indexes of potions in the player's inventory

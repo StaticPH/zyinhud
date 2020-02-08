@@ -1389,12 +1389,12 @@
 //						"durabilityinfo.options.textmode", DurabilityInfo.TextMode.getFriendlyName());
 //					break;
 //				case 1111:    //Auto unequip Armor
-//					DurabilityInfo.ToggleAutoUnequipArmor();
+//					DurabilityInfo.toggleAutoUnequipArmor();
 //					button.displayString = getButtonLabel_Boolean(
 //						"durabilityinfo.options.autounequiparmor", DurabilityInfo.autoUnequipArmor);
 //					break;
 //				case 1112:    //Auto unequip Tools
-//					DurabilityInfo.ToggleAutoUnequipTools();
+//					DurabilityInfo.toggleAutoUnequipTools();
 //					button.displayString = getButtonLabel_Boolean(
 //						"durabilityinfo.options.autounequiptools", DurabilityInfo.autoUnequipTools);
 //					break;
@@ -1407,7 +1407,7 @@
 //					DurabilityInfo.durabilityScale = ((GuiNumberSlider) button).getValueAsFloat();
 //					break;
 //				case 1118:
-//					DurabilityInfo.ToggleHideDurabilityInfoInChat();
+//					DurabilityInfo.toggleHideDurabilityInfoInChat();
 //					button.displayString = getButtonLabel_Boolean(
 //						"durabilityinfo.options.hidedurabilityinfoinchat", DurabilityInfo.hideDurabilityInfoInChat);
 //					break;

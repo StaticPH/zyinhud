@@ -62,7 +62,7 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void onClientTickEvent(ClientTickEvent event) {
+	public static void onClientTickEvent(ClientTickEvent event) {
 		//only play the sound if it's not playing already
 		if (HealthMonitor.isEnabled && !isPlayingLowHealthSound) {
 			playLowHealthSoundIfHurt();
@@ -105,7 +105,7 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 	/**
 	 * Plays the low health warning sound right now.
 	 */
-	public static void playLowHealthSound() {
+	private static void playLowHealthSound() {
 		ZyinHUDSound.play(mode.getSoundName(), volume);
 	}
 

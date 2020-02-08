@@ -192,7 +192,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 		int originZ = screenHeight - invHeight - 48;
 
 		if (targetInvSlot > -1) {
-			String labelText = currentInventory.get(targetInvSlot).getDisplayName().toString();
+			String labelText = currentInventory.get(targetInvSlot).getDisplayName().getString();
 			//String labelText = currentInventory[targetInvSlot].getChatComponent().getFormattedText();
 			int labelWidth = mc.fontRenderer.getStringWidth(labelText);
 			mc.fontRenderer.drawStringWithShadow(

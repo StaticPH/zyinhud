@@ -153,7 +153,7 @@ public class InfoLine extends ZyinHUDModuleBase {
 		int xCoord = MathHelper.floor(mc.player.posX);
 		int zCoord = MathHelper.floor(mc.player.posZ);
 
-		String biomeName = mc.world.getBiome(new BlockPos(xCoord, 64, zCoord)).getDisplayName().toString();
+		String biomeName = mc.world.getBiome(new BlockPos(xCoord, 64, zCoord)).getDisplayName().getString();
 		return TextFormatting.WHITE + biomeName;
 	}
 

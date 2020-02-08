@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.client.event.InputEvent.MouseInputEvent;
@@ -13,6 +14,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
+import net.minecraftforge.fml.common.Mod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -36,6 +38,7 @@ import javax.annotation.Nonnull;
 import static java.util.Arrays.stream;
 import static com.zyin.zyinhud.ZyinHUDConfig.enableLoggingKeybindInputs;
 
+@Mod.EventBusSubscriber(value = Dist.CLIENT)
 public class ZyinHUDKeyHandlers {
 	private static final Minecraft mc = Minecraft.getInstance();
 	private static final MouseHelper mouseHelper = new MouseHelper(mc);
@@ -127,9 +130,11 @@ public class ZyinHUDKeyHandlers {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void onKeyInputEvent(KeyInputEvent event) {
+	public static void onKeyInputEvent(KeyInputEvent event) {
 		//KeyInputEvent will not fire when looking at a GuiScreen - 1.7.2
-
+//TODO: figure out how to make these keybinds work once per press, rather than until the press ends.
+//TODO??:?? Migrate these individual handlers to their associated modules, and then add a method in this class that
+//		calls MinecraftForge.EVENT_BUS.register on an instance of each class, in which all event methods are to be static and annotated with @SubscribeEvent
 		if (doLogKeybindInputs) {
 			stream(KEY_BINDINGS)
 				.filter(KeyBinding::isKeyDown)
@@ -165,7 +170,7 @@ public class ZyinHUDKeyHandlers {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void onMouseEvent(InputEvent event) {
+	public static void onMouseEvent(InputEvent event) {
 //		logger.debug("Mouse event triggered");
 		if ((event instanceof MouseScrollEvent) && ((MouseScrollEvent) event).getScrollDelta() != 0) {
 			if (KEY_BINDINGS[11].isKeyDown()) { ItemSelectorKeyHandler.onMouseWheelScroll((MouseScrollEvent) event); }
@@ -181,7 +186,30 @@ public class ZyinHUDKeyHandlers {
 			}
 		}
 	}
+	// Alternative to these isXKeyDown methods, use Screen.hasXDown methods
+	public static boolean isCtrlKeyDown() {
+		long handle = Minecraft.getInstance().mainWindow.getHandle();
+		// prioritize CONTROL, but allow OPTION as well on Mac (note: GuiScreen's isCtrlKeyDown only checks for the OPTION key on Mac)
+		boolean isCtrlKeyDown = InputMappings.isKeyDown(handle, GLFW.GLFW_KEY_LEFT_CONTROL) ||
+		                        InputMappings.isKeyDown(handle, GLFW.GLFW_KEY_RIGHT_CONTROL);
+		if (!isCtrlKeyDown && Minecraft.IS_RUNNING_ON_MAC) {
+			return InputMappings.isKeyDown(handle, GLFW.GLFW_KEY_LEFT_SUPER) ||
+			       InputMappings.isKeyDown(handle, GLFW.GLFW_KEY_RIGHT_SUPER);
+		}
+		return isCtrlKeyDown;
+	}
 
+	public static boolean isShiftKeyDown() {
+		long handle = Minecraft.getInstance().mainWindow.getHandle();
+		return InputMappings.isKeyDown(handle, GLFW.GLFW_KEY_LEFT_SHIFT) ||
+		       InputMappings.isKeyDown(handle, GLFW.GLFW_KEY_RIGHT_SHIFT);
+	}
+
+	public static boolean isAltKeyDown() {
+		long handle = Minecraft.getInstance().mainWindow.getHandle();
+		return InputMappings.isKeyDown(handle, GLFW.GLFW_KEY_LEFT_ALT) ||
+		       InputMappings.isKeyDown(handle, GLFW.GLFW_KEY_RIGHT_ALT);
+	}
 
 	/**
 	 * Client tick event.
@@ -189,7 +217,7 @@ public class ZyinHUDKeyHandlers {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void onClientTickEvent(TickEvent.ClientTickEvent event) {
+	public static void onClientTickEvent(TickEvent.ClientTickEvent event) {
 		if (event.phase == TickEvent.Phase.END && (mc.currentScreen == null || mc.currentScreen.passEvents)) {
 			//This tick handler is to overcome the Screen + KeyInputEvent limitation
 			//for Coordinates and QuickDeposit
@@ -226,18 +254,10 @@ public class ZyinHUDKeyHandlers {
 //            useBlockButtonDown = InputMappings.isKeyDown(mc.gameSettings.keyBindUseItem.getKey().getKeyCode());
 		useBlockButtonDown = mc.gameSettings.keyBindUseItem.isKeyDown();
 //    	}
-		if (useBlockButtonDown & !useBlockButtonPreviouslyDown) { onUseBlockPressed(); }
-		else if (!useBlockButtonDown & useBlockButtonPreviouslyDown) { onUseBlockReleased(); }
+		if (useBlockButtonDown & !useBlockButtonPreviouslyDown) { TorchAid.onPressed(); }
+		else if (!useBlockButtonDown & useBlockButtonPreviouslyDown) { TorchAid.onReleased(); }
 
 		useBlockButtonPreviouslyDown = useBlockButtonDown;
-	}
-
-	private static void onUseBlockPressed() {
-		TorchAid.instance.onPressed();
-	}
-
-	private static void onUseBlockReleased() {
-		TorchAid.instance.onReleased();
 	}
 
 	@Nonnull

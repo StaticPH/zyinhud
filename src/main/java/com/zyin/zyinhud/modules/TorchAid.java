@@ -1,6 +1,5 @@
 package com.zyin.zyinhud.modules;
 
-
 import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.helper.TagHelper.ItemLike;
 import com.zyin.zyinhud.util.InventoryUtil;
@@ -49,18 +48,18 @@ public class TorchAid extends ZyinHUDModuleBase {
 	 */
 	private static int previousTorchIndex = -1;
 
-	public void onPressed() {
+	public static void onPressed() {
 		if (TorchAid.isEnabled) { equipTorchIfToolIsEquipped(); }
 	}
 
-	public void onReleased() {
+	public static void onReleased() {
 		if (TorchAid.isEnabled) { unequipTorch(); }
 	}
 
 	/**
 	 * Makes the player place a Torch if they are currently using a tool.
 	 */
-	public void equipTorchIfToolIsEquipped() {
+	public static void equipTorchIfToolIsEquipped() {
 		if (mc.currentScreen == null && mc.mouseHelper.isMouseGrabbed()) {
 			ItemStack currentItemStack = mc.player.getHeldItemMainhand();
 			if (currentItemStack.isEmpty()) { return; }
@@ -73,7 +72,7 @@ public class TorchAid extends ZyinHUDModuleBase {
 	/**
 	 * Makes the player place a Torch if they have one by selecting a Torch in their inventory then right clicking.
 	 */
-	public void useTorch() {
+	public static void useTorch() {
 //        if (EatingAid.instance.isEating())
 //        {
 //            EatingAid.instance.stopEating();    //it's not good if we have a torch selected and hold right click down...
@@ -108,7 +107,7 @@ public class TorchAid extends ZyinHUDModuleBase {
 	 *
 	 * @param inventoryIndex 9-35
 	 */
-	private void equipItemFromInventory(int inventoryIndex) {
+	private static void equipItemFromInventory(int inventoryIndex) {
 		if (inventoryIndex < 9 || inventoryIndex > 35) { return; }
 
 		int currentItemInventoryIndex = InventoryUtil.getCurrentlySelectedItemInventoryIndex();
@@ -121,7 +120,7 @@ public class TorchAid extends ZyinHUDModuleBase {
 	 *
 	 * @param hotbarIndex 36-44
 	 */
-	private void equipItemFromHotbar(int hotbarIndex) {
+	private static void equipItemFromHotbar(int hotbarIndex) {
 		if (hotbarIndex < 36 || hotbarIndex > 44) { return; }
 
 		hotbarIndex = InventoryUtil.translateInventoryIndexToHotbarIndex(hotbarIndex);
@@ -133,7 +132,7 @@ public class TorchAid extends ZyinHUDModuleBase {
 	 * Uses the <code>previousTorchIndex</code> variable to determine how to unequip the currently held torch.
 	 * after placing one.
 	 */
-	private void unequipTorch() {
+	private static void unequipTorch() {
 		if (previousTorchIndex < 0) { return; }
 		else {
 			if (previousTorchIndex >= 36 && previousTorchIndex <= 44) {    //on the hotbar

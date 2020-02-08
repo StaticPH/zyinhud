@@ -28,7 +28,7 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 
 
 	@SubscribeEvent
-	public void onGuiOpenEvent(GuiOpenEvent event) {
+	public static void onGuiOpenEvent(GuiOpenEvent event) {
 		if (useQuickPlaceSign && event.getGui() instanceof EditSignScreen && mc.player.isSneaking()) {
 			event.setCanceled(true);
 			event.getGui().onClose();
@@ -36,7 +36,7 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	}
 
 	@SubscribeEvent
-	public void onDrawScreenEvent(DrawScreenEvent.Post event) {
+	public static void onDrawScreenEvent(DrawScreenEvent.Post event) {
 		if (showAnvilRepairs && event.getGui() instanceof AnvilScreen) {
 			drawGuiRepairCounts((AnvilScreen) event.getGui());
 		}
@@ -47,54 +47,43 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	 *
 	 * @param guiRepair the gui repair
 	 */
-	public void drawGuiRepairCounts(AnvilScreen guiRepair) {
+	public static void drawGuiRepairCounts(AnvilScreen guiRepair) {
 		RepairContainer anvil = guiRepair.getContainer();
 		IInventory inputSlots = ZyinHUDUtil.getFieldByReflection(
 			RepairContainer.class, anvil, "inputSlots", "field_82853_g"
 		); //Not sure if this should/can be saved in a static final field...
 
-		//_CHECK: verify that reflection is not in fact needed for the RepairContainer Object itself
-//		RepairContainer anvil = ZyinHUDUtil.getFieldByReflection(AnvilScreen.class, guiRepair, "anvil", "field_147002_h"); // WAS field_147092_v in ContainerScreen.class
-//    	IInventory inputSlots = ZyinHUDUtil.getFieldByReflection(RepairContainer.class, anvil, "inputSlots", "field_82853_g");
-
 		int xSize = guiRepair.getXSize();
 		int ySize = guiRepair.getYSize();
 
-		int guiRepairXOrigin = guiRepair.width / 2 - xSize / 2;
-		int guiRepairYOrigin = guiRepair.height / 2 - ySize / 2;
+		int guiRepairXOrigin = (guiRepair.width - xSize) / 2;
+		int guiRepairYOrigin = (guiRepair.height - ySize) / 2;
+
+		assert inputSlots != null;
 
 		ItemStack leftItemStack = inputSlots.getStackInSlot(0);
 		ItemStack rightItemStack = inputSlots.getStackInSlot(1);
-		ItemStack finalItemStack = inputSlots.getStackInSlot(2);
+//		ItemStack finalItemStack = inputSlots.getStackInSlot(2);
 
-		//TODO: These look like they could be refactored into a method
 		if (!leftItemStack.isEmpty()) {
 			int timesRepaired = getTimesRepaired(leftItemStack);
-			String leftItemRepairCost;
-
-			if (timesRepaired >= maxRepairTimes) {
-				leftItemRepairCost = TextFormatting.RED.toString() + timesRepaired +
-				                     TextFormatting.DARK_GRAY + '/' + maxRepairTimes;
-			}
-			else { leftItemRepairCost = TextFormatting.DARK_GRAY.toString() + timesRepaired + '/' + maxRepairTimes; }
+			String leftItemRepairCost = timesRepaired >= maxRepairTimes ?
+			                            TextFormatting.RED + "" + timesRepaired + TextFormatting.DARK_GRAY + '/' + maxRepairTimes :
+			                            TextFormatting.DARK_GRAY + "" + timesRepaired + '/' + maxRepairTimes;
 
 			mc.fontRenderer.drawString(leftItemRepairCost, guiRepairXOrigin + 26, guiRepairYOrigin + 37, 0xffffff);
 		}
 		if (!rightItemStack.isEmpty()) {
 			int timesRepaired = getTimesRepaired(rightItemStack);
-			String rightItemRepairCost;
-
-			if (timesRepaired >= maxRepairTimes) {
-				rightItemRepairCost = TextFormatting.RED.toString() + timesRepaired +
-				                      TextFormatting.DARK_GRAY + '/' + maxRepairTimes;
-			}
-			else { rightItemRepairCost = TextFormatting.DARK_GRAY.toString() + timesRepaired + '/' + maxRepairTimes; }
+			String rightItemRepairCost = timesRepaired >= maxRepairTimes ?
+			                             TextFormatting.RED + "" + timesRepaired + TextFormatting.DARK_GRAY + '/' + maxRepairTimes :
+			                             TextFormatting.DARK_GRAY + "" + timesRepaired + '/' + maxRepairTimes;
 
 			mc.fontRenderer.drawString(rightItemRepairCost, guiRepairXOrigin + 76, guiRepairYOrigin + 37, 0xffffff);
 		}
 		if (!leftItemStack.isEmpty() && !rightItemStack.isEmpty()) {
 			int timesRepaired = getTimesRepaired(leftItemStack) + getTimesRepaired(rightItemStack) + 1;
-			String finalItemRepairCost = TextFormatting.DARK_GRAY.toString() + timesRepaired + '/' + maxRepairTimes;
+			String finalItemRepairCost = TextFormatting.DARK_GRAY + "" + timesRepaired + '/' + maxRepairTimes;
 
 			if (timesRepaired <= maxRepairTimes) {
 				mc.fontRenderer.drawString(
@@ -110,7 +99,7 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	 * @param itemStack the item stack
 	 * @return int
 	 */
-	protected static int getTimesRepaired(ItemStack itemStack) {//_CHECK: I vaguely recall the repair costs being adjusted in some update
+	protected static int getTimesRepaired(ItemStack itemStack) {
 		/*
     	times repaired: repair cost, xp
     	0: 0, 2
@@ -144,7 +133,7 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	 * @param event the event
 	 */
 	@SubscribeEvent()
-	public void onClientTickEvent(ClientTickEvent event) {
+	public static void onClientTickEvent(ClientTickEvent event) {
 		if (mc.isSingleplayer() && useUnlimitedSprintingSP) {
 			makeSprintingUnlimited();
 		}
