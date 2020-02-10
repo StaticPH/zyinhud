@@ -20,7 +20,7 @@ import java.util.function.Function;
 public class TagHelper {
 	static class ZHItemTags extends TagHelper {
 		public static final Tag<Item> tag_TORCHES = forgeTag("torches");
-		public static final Tag<Item> tag_TORCH_PLACERS = forgeTag("torchplacers");
+		public static final Tag<Item> tag_TORCH_PLACERS = forgeTag("torch_placers");
 
 		static Tag<Item> forgeTag(String name) {
 			return tag("forge", name);
