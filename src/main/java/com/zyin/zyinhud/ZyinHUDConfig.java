@@ -2,6 +2,7 @@ package com.zyin.zyinhud;
 
 import com.electronwill.nightconfig.core.EnumGetMethod;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.*;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -18,7 +19,7 @@ import static net.minecraftforge.common.ForgeConfigSpec.IntValue;
 /**
  * This class is responsible for interacting with the configuration file.
  */
-@Mod.EventBusSubscriber
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ZyinHUDConfig {
 
 	private static ForgeConfigSpec SPEC; // Will hold the built config when done
@@ -107,6 +108,8 @@ public class ZyinHUDConfig {
 	public static EnumValue<CoordinateOptions.CoordinateModes> coordinatesMode;
 	// Shows how far into the 16x16 chunk you're in
 	public static BooleanValue showChunkCoordinates;
+	// Shows the coordinates and dimension where you died
+	public static BooleanValue showDeathLocation;
 	// Color code the Y (height) coordinate based on what ores can spawn at that level
 	public static BooleanValue useYCoordinateColors;
 
@@ -477,6 +480,10 @@ public class ZyinHUDConfig {
 			coordinatesMode = builder
 				.comment("Sets the coordinates mode.")
 				.defineEnum("coordinatesMode", CoordinateOptions.CoordinateModes.XYZ, EnumGetMethod.NAME_IGNORECASE);
+			// Shows the coordinates and dimension where you died
+			showDeathLocation = builder
+				.comment("Print to the player's chat the coordinates and dimension at the moment of their death.")
+				.define("showDeathLocation", CoordinateOptions.defaultShowDeathLocation);
 			showChunkCoordinates = builder
 				.comment("Shows how far into the 16x16 chunk you're in")
 				.define("showChunkCoordinates", CoordinateOptions.defaultShowChunkCoordinates);
@@ -1004,7 +1011,6 @@ public class ZyinHUDConfig {
 	public static void onLoad(final ModConfig.Loading configEvent) {
 		ZyinHUD.ZyinLogger.debug("Loaded Zyin's HUD config file {}", configEvent.getConfig().getFileName());
 	}
-
 
 	@SubscribeEvent
 	public static void onFileChange(final ModConfig.ConfigReloading configEvent) {

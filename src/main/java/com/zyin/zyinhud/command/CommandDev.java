@@ -36,6 +36,7 @@ public class CommandDev implements ICommandBase {
 	//TODO: Implement datapack subcommand(s) to
 	//      List Tags in a datapack/namespace
 	//      Find which namespace(s) contain a particular Tag name
+	//      ??Localized feedback strings??
 
 	private static final SuggestionProvider<CommandSource> SUGGEST_ANY_PACK = (srcContext, suggestionBuilder) -> {
 		return ISuggestionProvider.suggest(
@@ -118,7 +119,7 @@ public class CommandDev implements ICommandBase {
                     .then(T1CommandSetupTestWorld.tier1SetupTestWorld)
                     .executes((command) -> {
 	                    respond(command.getSource(), "No operation provided.");
-	                    return 1;
+	                    return -1;
                     })
 		);
 		//FIXME: completion doesnt work for the /zhd alias
@@ -173,8 +174,8 @@ public class CommandDev implements ICommandBase {
 			return Commands.literal("withTag")
 			               .then(argBlockTagName())
 			               .executes(ctx -> {
-				               respond(ctx.getSource(), "No ItemTag name provided");
-				               return 1;
+				               respond(ctx.getSource(), "No BlockTag name provided");
+				               return -1;
 			               });
 		}
 
@@ -258,7 +259,7 @@ public class CommandDev implements ICommandBase {
 			               .then(argItemTagName())
 			               .executes(ctx -> {
 				               respond(ctx.getSource(), "No ItemTag name provided");
-				               return 1;
+				               return -1;
 			               });
 		}
 

@@ -36,6 +36,10 @@ public class Compass extends ZyinHUDModuleBase {
 	private static String east = Localization.get("compass.east");
 	private static String southeast = Localization.get("compass.southeast");
 
+	//TODO: Add option to display =/- X/Z directions in addition to or instead of N/E/S/W
+	//      North = -Z  South = +Z
+	//      West = -X   East = +X
+
 	/**
 	 * Calculates the direction the player is facing
 	 *

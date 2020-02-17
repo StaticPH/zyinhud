@@ -160,6 +160,10 @@ public class ItemSelector extends ZyinHUDModuleBase {
 		isCurrentlyRendering = true;
 	}
 
+	public static void onHotkeyAbort(){
+		if (ItemSelector.isEnabled) {cleanupWhenDone();}
+	}
+
 	public static void onHotkeyReleased() {
 		if (!ItemSelector.isEnabled) { return; }
 
@@ -176,6 +180,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 		if (!ItemSelector.isEnabled || !isCurrentlyRendering) { return; }
 
 		//stop the item selecting if another modifier key is pressed so we don't get stuck in the selecting state
+		//TODO: This may need some modifications
 		if (
 			GLFW.glfwGetKey(mc.mainWindow.getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS ||
 		    GLFW.glfwGetKey(mc.mainWindow.getHandle(), GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS
@@ -242,8 +247,15 @@ public class ItemSelector extends ZyinHUDModuleBase {
 						GL11.glScalef(1.0F / f2, (f2 + 1.0F) / 2.0F, 1.0F);
 						GL11.glTranslatef(-(dimX + 8), -(dimZ + 12), 0.0F);
 					}
-
-					itemRenderer.renderItemAndEffectIntoGUI(itemStack, dimX, dimZ);
+					try { itemRenderer.renderItemAndEffectIntoGUI(itemStack, dimX, dimZ); }
+					catch (NullPointerException e){
+						//This call seems to throw NPEs from time to time. Not quite sure how or why, because the
+						// stacktrace just ENDS at this line, and I've been unable to reproduce it intentionally.
+						//Maybe I'll be able to figure out the problem if I can see it occurring in real time,
+						// rather than just knowing it was something that the renderer didin't like.
+						e.printStackTrace();
+						break;
+					}
 
 					if (anim > 0.0F) { GL11.glPopMatrix(); }
 

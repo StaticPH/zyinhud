@@ -27,8 +27,8 @@ package com.zyin.zyinhud;
 import com.zyin.zyinhud.command.CommandDev;
 import com.zyin.zyinhud.command.CommandFps;
 //import com.zyin.zyinhud.command.CommandZyinHUDOptions;
+import com.zyin.zyinhud.modules.Coordinates;
 import com.zyin.zyinhud.modules.HealthMonitor;
-import com.zyin.zyinhud.modules.Miscellaneous;
 import com.zyin.zyinhud.util.ModCompatibility;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -102,9 +102,6 @@ public class ZyinHUD {
 //    }Unload
 	private void setupClient(final FMLClientSetupEvent event) {
 		MinecraftForge.EVENT_BUS.register(this);
-		MinecraftForge.EVENT_BUS.register(Miscellaneous.instance);
-		MinecraftForge.EVENT_BUS.register(HealthMonitor.instance);
-
 		ModCompatibility.TConstruct.isLoaded = ModList.get().isLoaded("TConstruct");
 	}
 

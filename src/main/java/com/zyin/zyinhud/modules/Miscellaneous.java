@@ -1,23 +1,32 @@
 package com.zyin.zyinhud.modules;
 
 import com.zyin.zyinhud.ZyinHUDConfig;
-import net.minecraft.client.gui.screen.inventory.AnvilScreen;
 import net.minecraft.client.gui.screen.EditSignScreen;
-import net.minecraft.inventory.container.RepairContainer;
+import net.minecraft.client.gui.screen.inventory.AnvilScreen;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.container.RepairContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.GuiScreenEvent.DrawScreenEvent;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import com.zyin.zyinhud.util.ZyinHUDUtil;
+import javax.annotation.CheckForNull;
+import java.lang.reflect.Field;
+
+import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.findField;
 
 /**
  * The Miscellaneous module has other functionality not relating to anything specific.
  */
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class Miscellaneous extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger(Miscellaneous.class);
 	public static final Miscellaneous instance = new Miscellaneous();
 
 	public static boolean useQuickPlaceSign = ZyinHUDConfig.useQuickPlaceSign.get();
@@ -26,6 +35,10 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 
 	private static final int maxRepairTimes = 6;
 
+	/**
+	 * The private RepairContainer field "inputSlots"
+	 */
+	private static final Field anvilInputSlots = findField(RepairContainer.class, "field_82853_g");
 
 	@SubscribeEvent
 	public static void onGuiOpenEvent(GuiOpenEvent event) {
@@ -42,24 +55,28 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 		}
 	}
 
+	@CheckForNull
+	private static IInventory getAnvilInputSlots(AnvilScreen gui) {
+		RepairContainer anvil = gui.getContainer();
+		try { return (IInventory) anvilInputSlots.get(anvil); }
+		catch (IllegalAccessException e) { e.printStackTrace(); }
+		return null;
+	}
+
 	/**
 	 * Draws text above the anvil's repair slots showing how many more times it can be repaired
 	 *
 	 * @param guiRepair the gui repair
 	 */
 	public static void drawGuiRepairCounts(AnvilScreen guiRepair) {
-		RepairContainer anvil = guiRepair.getContainer();
-		IInventory inputSlots = ZyinHUDUtil.getFieldByReflection(
-			RepairContainer.class, anvil, "inputSlots", "field_82853_g"
-		); //Not sure if this should/can be saved in a static final field...
+		IInventory inputSlots = getAnvilInputSlots(guiRepair);
+		if (inputSlots == null) { return; }
 
 		int xSize = guiRepair.getXSize();
 		int ySize = guiRepair.getYSize();
 
 		int guiRepairXOrigin = (guiRepair.width - xSize) / 2;
 		int guiRepairYOrigin = (guiRepair.height - ySize) / 2;
-
-		assert inputSlots != null;
 
 		ItemStack leftItemStack = inputSlots.getStackInSlot(0);
 		ItemStack rightItemStack = inputSlots.getStackInSlot(1);
@@ -94,7 +111,7 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	}
 
 	/**
-	 * Returns how many times an item has been used with an Anvil
+	 * Returns how many times an item has been used with an anvil
 	 *
 	 * @param itemStack the item stack
 	 * @return int
@@ -139,7 +156,6 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 		}
 	}
 
-
 	/**
 	 * Lets the player sprint longer than 30 seconds at a time. Needs to be called on every game tick to be effective.
 	 */
@@ -149,7 +165,6 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 		//sprintingTicksLeft is set to 600 when EntityPlayerSP.setSprinting() is called
 		mc.player.sprintingTicksLeft = mc.player.isSprinting() ? 600 : 0;
 	}
-
 
 	/**
 	 * Toggles quick sign placement ability

@@ -2,12 +2,28 @@ package com.zyin.zyinhud.modules;
 
 import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.CoordinateOptions;
+import com.zyin.zyinhud.util.Localization;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.dimension.DimensionType;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import javax.annotation.Nonnull;
 
 /**
  * The Coordinates calculates the player's position.
  */
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class Coordinates extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger("ZHCoordinates");
 	/**
 	 * Enables/Disables this module
 	 */
@@ -39,6 +55,7 @@ public class Coordinates extends ZyinHUDModuleBase {
 	 * Use colors to show what ores spawn at the elevation level
 	 */
 	private static boolean useYCoordinateColors = ZyinHUDConfig.useYCoordinateColors.get();
+	private static boolean showDeathLocation = ZyinHUDConfig.showDeathLocation.get();
 
 
 	private static final int[] oreBoundaries = {
@@ -115,23 +132,52 @@ public class Coordinates extends ZyinHUDModuleBase {
 	 */
 	public static void shareCoordinatesInChat() {
 		if (mc.currentScreen == null) {
-			String coordinateString = Coordinates.chatStringFormat;
-			coordinateString = coordinateString.replace("{x}", Integer.toString(Coordinates.getXCoordinate()));
-			coordinateString = coordinateString.replace("{y}", Integer.toString(Coordinates.getYCoordinate()));
-			coordinateString = coordinateString.replace("{z}", Integer.toString(Coordinates.getZCoordinate()));
-
-			mc.player.sendChatMessage(coordinateString);
+			mc.player.sendChatMessage(fmtCoordinateString());
 		}
 	}
 
+	//TODO: I'd love to be able to have this occur AFTER the normal death message is shown...
+	@SubscribeEvent
+	public static void showDeathLocation(LivingDeathEvent event) {
+		if (showDeathLocation) {
+			Entity entity = event.getEntity();
+			if (entity instanceof PlayerEntity && !entity.world.isRemote) {
+				//TODO: Decide how to handle localization for this message
+				mc.ingameGUI.getChatGUI().printChatMessage(new StringTextComponent(
+					entity.getName().getString() + " died in " +
+					getDimensionStr(entity.dimension) + " at " + fmtCoordinateString()
+				));
+			}
+		}
+	}
+
+	@Nonnull
+	public static String fmtCoordinateString() {
+		return chatStringFormat.replace("{x}", Integer.toString(Coordinates.getXCoordinate()))
+		                       .replace("{y}", Integer.toString(Coordinates.getYCoordinate()))
+		                       .replace("{z}", Integer.toString(Coordinates.getZCoordinate()));
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	public static String getDimensionStr(DimensionType dimType) {
+		ResourceLocation r = dimType.getRegistryName();
+		String name = Localization.toTitleCase(
+			Localization.get(r.getPath()).trim().replace('_', ' ').toLowerCase()
+		);
+		return name.startsWith("The") ? name : "The " + name;
+	}
+
+	@SuppressWarnings("ConstantConditions")
 	public static int getXCoordinate() {
 		return (int) Math.floor(mc.getRenderViewEntity().posX);
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	public static int getYCoordinate() {
 		return (int) Math.floor(mc.getRenderViewEntity().posY);
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	public static int getZCoordinate() {
 		return (int) Math.floor(mc.getRenderViewEntity().posZ);
 	}

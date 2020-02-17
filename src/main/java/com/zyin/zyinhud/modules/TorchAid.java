@@ -11,7 +11,7 @@ import net.minecraft.util.math.RayTraceResult;
 
 import static com.zyin.zyinhud.helper.TagHelper.ItemLike.canItemPlaceTorches;
 import static com.zyin.zyinhud.util.ZyinHUDUtil.useItem;
-
+//TODO: reject action if it would open a gui
 /**
  * TorchAid Aid allows the player to easily use a torch without having it selected. It does this by
  * selecting a torch before the Use Block key is pressed, then unselecting the torch after the Use Block
@@ -98,7 +98,7 @@ public class TorchAid extends ZyinHUDModuleBase {
 				equipItemFromHotbar(torchHotbarIndex);
 			}
 			useItem();
-
+			//TODO: Find a way to swap back if the player opens a gui/screen
 		}
 	}
 

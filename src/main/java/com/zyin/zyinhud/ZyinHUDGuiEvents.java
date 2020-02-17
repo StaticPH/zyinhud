@@ -9,7 +9,7 @@
 ///**
 // * Used to capture GUI Events for vanilla screens in order to add custom functionality to them.
 // */
-//@Mod.EventBusSubscriber(value = Dist.CLIENT)
+//@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 //public class ZyinHUDGuiEvents {
 //	public static final ZyinHUDGuiEvents instance = new ZyinHUDGuiEvents();
 //

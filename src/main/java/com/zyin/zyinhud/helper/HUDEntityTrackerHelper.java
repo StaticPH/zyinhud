@@ -59,7 +59,7 @@ public class HUDEntityTrackerHelper {
 	 The resulting vector components are typically the same for at least the first 3 digits after the decimal.
 	 */
 	@Nonnull
-	static Vec3d customPlayerFacing(PlayerEntity player) {
+	private static Vec3d customPlayerFacing(PlayerEntity player) {
 		double pitch = ((player.rotationPitch + 90) * Math.PI) / 180;
 		double yaw = ((player.rotationYaw + 90) * Math.PI) / 180;
 		return new Vec3d(

@@ -1,6 +1,7 @@
 package com.zyin.zyinhud.keyhandlers;
 
 //import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
+
 import com.zyin.zyinhud.modules.ItemSelector;
 
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
@@ -12,7 +13,7 @@ public class ItemSelectorKeyHandler implements ZyinHUDKeyHandlerBase {
 
 	public static void onMouseWheelScroll(MouseScrollEvent event) { //should event be .Post?
 		if (!mc.mouseHelper.isMouseGrabbed() || !ItemSelector.isEnabled) { return; }
-        ItemSelector.scroll(event.getScrollDelta() > 0 ? ItemSelector.WHEEL_UP : ItemSelector.WHEEL_DOWN);
+		ItemSelector.scroll(event.getScrollDelta() > 0 ? ItemSelector.WHEEL_UP : ItemSelector.WHEEL_DOWN);
 		event.setCanceled(true);
 	}
 
@@ -28,7 +29,10 @@ public class ItemSelectorKeyHandler implements ZyinHUDKeyHandlerBase {
 
 	public static void onPressed(KeyInputEvent event) {
 		//don't activate if the user is looking at a GUI or has a modifier pressed
-		if (mc.currentScreen == null) { ItemSelector.onHotkeyPressed(); }
+		if (mc.currentScreen == null) {
+			if (mc.gameSettings.keyBindAttack.isKeyDown()) { ItemSelector.onHotkeyAbort(); }
+			else { ItemSelector.onHotkeyPressed(); }
+		}
 	}
 
 	public static void onReleased(KeyInputEvent event) {

@@ -81,6 +81,7 @@ public class DistanceMeasurer extends ZyinHUDModuleBase {
 				double playerZ = mc.player.posZ;
 				//_CHECK: Might be able to replace this pretty much this entire block with something
 				// like mc.player.getPositionVector().distanceTo(mc.player.getLookVec());
+				//TODO: See about making it configurable whether to calculate distance from the player's head or feet position(at least while standing)
 				double blockX = objectMouseOver.getHitVec().x;  //might also work with Entity.*look* returns some Vec?
 				double blockY = objectMouseOver.getHitVec().y;  //EX: mc.player.getLookVec().getY();
 				double blockZ = objectMouseOver.getHitVec().z;

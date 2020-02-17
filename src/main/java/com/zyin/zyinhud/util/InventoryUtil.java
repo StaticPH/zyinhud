@@ -20,11 +20,14 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 
+import javax.annotation.CheckForNull;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.function.Predicate;
 
+import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.findField;
 import static net.minecraftforge.items.ItemHandlerHelper.canItemStacksStack;
 
 /**
@@ -59,6 +62,13 @@ public class InventoryUtil {
 	private Timer timer = new Timer();
 
 	/**
+	 * The private MerchantScreen field "selectedMerchantRecipe"
+	 * field_70473_e used to work in 1.6.4
+	 * field_147041_z works in 1.7.2, and appears to still be the same for 1.14.4
+	 */
+	private static final Field selectedMerchantRecipe = findField(MerchantScreen.class, "field_147041_z");
+
+	/**
 	 * Minimum suggested delay between swapping items around.
 	 * We should use a higher value for laggier servers.
 	 */
@@ -69,11 +79,9 @@ public class InventoryUtil {
 	 */
 	public static InventoryUtil instance = new InventoryUtil();
 
-
 	private InventoryUtil() {
 		suggestedItemSwapDelay = getSuggestedItemSwapDelay();
 	}
-
 
 	/**
 	 * Determines an appropriate duration in milliseconds that should be used as the delay for swapping items
@@ -116,7 +124,6 @@ public class InventoryUtil {
 		else { return useItemInHotbar(object); }
 	}
 
-
 	/**
 	 * Uses an item in the players hotbar by changing the selected index, using it, then changing it back.
 	 *
@@ -128,7 +135,6 @@ public class InventoryUtil {
 
 		return useItemInHotbar(object, itemHotbarIndex);
 	}
-
 
 	/**
 	 * Uses an item in the players hotbar by changing the selected index, using it, then changing it back.
@@ -159,7 +165,6 @@ public class InventoryUtil {
 		return wasUsedSuccessfully;
 	}
 
-
 	/**
 	 * Uses an item in the players inventory by quickly swap()ing it into the hotbar, using it, then swap()ing it back.
 	 *
@@ -171,7 +176,6 @@ public class InventoryUtil {
 
 		return useItemInInventory(object, itemInventoryIndex);
 	}
-
 
 	/**
 	 * Uses an item in the players inventory by quickly swap()ing it into the hotbar, using it, then swap()ing it back.
@@ -284,7 +288,6 @@ public class InventoryUtil {
 		}
 		return swapTimerTask;
 	}
-
 
 	/**
 	 * Swaps 2 items in your inventory GUI.
@@ -567,6 +570,23 @@ public class InventoryUtil {
 		}
 	}
 
+	@CheckForNull
+	private static MerchantOffer getCurrentMerchantOffer() {
+		if (!(mc.currentScreen instanceof MerchantScreen)) { return null; }
+
+		MerchantScreen guiMerchant = ((MerchantScreen) mc.currentScreen);
+		MerchantOffers merchantRecipeList = guiMerchant.getContainer().getOffers();
+		if (merchantRecipeList.isEmpty()) { return null; }
+		try {
+			int offerIndex = selectedMerchantRecipe.getInt(guiMerchant);
+			return merchantRecipeList.get(offerIndex);
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	/**
 	 * Deposits all items in the players inventory, including any item being held on the cursor, into the chest
 	 * as long as there is a matching item already in the chest.
@@ -582,22 +602,13 @@ public class InventoryUtil {
 		//slot 1 = right buy slot
 		//slot 2 = sell slot
 		//the last 4 rows (9*4=36) are the player's inventory
-		int numDisplayedSlots = mc.player.openContainer.inventorySlots.size();
+		final int numDisplayedSlots = mc.player.openContainer.inventorySlots.size();
 
-		int numInventorySlots = 36;
-		int numMerchantSlots = numDisplayedSlots - numInventorySlots;
-		//_CHECK that the guiMerchant and merchantRecipeList work
+		final int numInventorySlots = 36;
+		final int numMerchantSlots = numDisplayedSlots - numInventorySlots;
 
-		MerchantScreen guiMerchant = ((MerchantScreen) mc.currentScreen);
-		MerchantOffers merchantRecipeList = guiMerchant.getContainer().getOffers();
-
-		if (merchantRecipeList == null || merchantRecipeList.isEmpty()) { return false; }
-
-		//field_70473_e used to work in 1.6.4
-		//field_147041_z works in 1.7.2, and appears to still be the same for 1.14.4
-		int currentRecipeIndex = ZyinHUDUtil.getFieldByReflection(
-			MerchantScreen.class, guiMerchant, "selectedMerchantRecipe", "field_147041_z");
-		MerchantOffer merchantRecipe = merchantRecipeList.get(currentRecipeIndex);
+		MerchantOffer merchantRecipe = getCurrentMerchantOffer();
+		if (merchantRecipe == null) { return false; }
 
 		ItemStack buyingItemStack1 = merchantRecipe.getBuyingStackFirst(); // Get first item the trade requires
 		ItemStack buyingItemStack2 = merchantRecipe.getBuyingStackSecond(); // Get second item the trade requires
@@ -1300,7 +1311,7 @@ public class InventoryUtil {
 	/**
 	 * Helper class whose purpose is to release right click and reselect the player's last selected item.
 	 */
-	class SwapTimerTask extends TimerTask {
+	static class SwapTimerTask extends TimerTask {
 		private int srcIndex;
 		private int destIndex;
 

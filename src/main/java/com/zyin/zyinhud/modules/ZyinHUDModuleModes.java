@@ -133,6 +133,7 @@ public class ZyinHUDModuleModes {
 		 * Use colors to show what ores spawn at the elevation level
 		 */
 		public static final boolean defaultUseYCoordinateColors = true;
+		public static final boolean defaultShowDeathLocation = true;
 
 		/**
 		 * The enum for the different modes available to the Coordinates module

@@ -1,11 +1,12 @@
 package com.zyin.zyinhud.keyhandlers;
 
-import com.zyin.zyinhud.ZyinHUDKeyHandlers;
 import com.zyin.zyinhud.modules.QuickDeposit;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 import org.lwjgl.glfw.GLFW;
+
+import static com.zyin.zyinhud.ZyinHUDKeyHandlers.quickDepositKey;
 
 public class QuickDepositKeyHandler implements ZyinHUDKeyHandlerBase {
 	public static final String hotkeyDescription = "key.zyinhud.quickdeposit";
@@ -25,10 +26,10 @@ public class QuickDepositKeyHandler implements ZyinHUDKeyHandlerBase {
 			else { QuickDeposit.quickDepositItemsInChest(true); }
 		}
 	}
-
+	//FIXME:UNUSED?
 	public static void onClientTickEvent(ClientTickEvent event) {
 		long handle = mc.mainWindow.getHandle();
-		int keyState = GLFW.glfwGetKey(handle, ZyinHUDKeyHandlers.KEY_BINDINGS[7].getKey().getKeyCode());
+		int keyState = GLFW.glfwGetKey(handle, quickDepositKey.getKey().getKeyCode());
 
 		if (mc.currentScreen instanceof ContainerScreen) {
 			if (keyState == GLFW.GLFW_PRESS){

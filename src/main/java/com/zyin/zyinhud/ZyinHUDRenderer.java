@@ -33,7 +33,7 @@ import com.zyin.zyinhud.modules.SafeOverlay;
 /**
  * This class is in charge of rendering things onto the HUD and into the game world.
  */
-@Mod.EventBusSubscriber(value = Dist.CLIENT)
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ZyinHUDRenderer {
 	public static final ZyinHUDRenderer instance = new ZyinHUDRenderer();
 	private static Minecraft mc = Minecraft.getInstance();
@@ -268,7 +268,20 @@ public class ZyinHUDRenderer {
 	public static void renderFloatingText(
 		String[] text, float x, float y, float z, int color, boolean renderBlackBackground, float partialTickTime
 	) {
-		//TODO: See how much of this can be replaced with EntityRenderer:renderLivingLabel and GameRenderer.drawNameplate
+		/*
+		 Without doing away with the showTextBackgrounds config option, there doesnt seem to be much that can be done
+		 as far as replacing this with EntityRenderer:renderLivingLabel and GameRenderer.drawNameplate
+
+		 If for whatever reason that option is removed, try replacing calls to this method with something like this:
+			for (int i =0, len = multilineOverlayArray.size(); i < len ; i++){
+				GameRenderer.drawNameplate(
+					mc.fontRenderer, multilineOverlayArray.get(i),
+					x, (y + entity.getHeight() + 0.25f), z, 10 * i,
+					mc.getRenderManager().playerViewY, mc.getRenderManager().playerViewX, false
+				);
+			}
+		 */
+
 		//Thanks to Electric-Expansion mod for the majority of this code
 		//https://github.com/Alex-hawks/Electric-Expansion/blob/master/src/electricexpansion/client/render/RenderFloatingText.java
 		beforeGL11DrawInWorld(x, y, z, 0.03f, 0.5f, partialTickTime);
@@ -285,7 +298,7 @@ public class ZyinHUDRenderer {
 			if (thisMessageWidth > textWidth) { textWidth = thisMessageWidth; }
 		}
 
-		int lineHeight = 10;
+		final int lineHeight = 10;
 
 		if (renderBlackBackground && text.length > 0) {
 			int stringMiddle = textWidth / 2;
@@ -308,6 +321,8 @@ public class ZyinHUDRenderer {
             */
 
 			//This code taken from 1.8.8 net.minecraft.client.renderer.entity.Render.renderLivingLabel()
+			//Now mostly located in net.minecraft.client.renderer.GameRenderer.drawNamePlace(),
+			// with part in net.minecraft.client.renderer.entity.renderLivingLabel()
 			worldrenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 			worldrenderer.pos(-stringMiddle - 1, -1, 0.0D)
 			             .color(0.0F, 0.0F, 0.0F, 0.25F)
@@ -328,7 +343,7 @@ public class ZyinHUDRenderer {
 
 		int i = 0;
 		for (String message : text) {
-			mc.fontRenderer.drawString(message, -textWidth / 2, i * lineHeight, color);
+			mc.fontRenderer.drawString(message, (float)(-textWidth / 2), i * lineHeight, color);
 			i++;
 		}
 		GlStateManager.enableDepthTest();

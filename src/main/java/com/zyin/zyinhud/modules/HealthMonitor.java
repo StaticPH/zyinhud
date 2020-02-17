@@ -6,16 +6,22 @@ import java.util.TimerTask;
 import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.HealthMonitorOptions;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent.ClientTickEvent;
 
 import com.zyin.zyinhud.ZyinHUDSound;
 
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Plays a warning sound when the player is low on health.
  */
+@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class HealthMonitor extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger("ZHHealthMonitor");
 	/**
 	 * Enables/Disables this module
 	 */
@@ -46,12 +52,10 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 	private static boolean isPlayingLowHealthSound = false;
 	private static final int repeatDelay = 1000;
 
-	public static final HealthMonitor instance = new HealthMonitor();
-
 	/**
 	 * Instantiates a new Health monitor.
 	 */
-	public HealthMonitor() {}
+	private HealthMonitor() {}
 
 	/**
 	 * We use a ClientTickEvent instead of a LivingHurtEvent because a LivingHurtEvent will only

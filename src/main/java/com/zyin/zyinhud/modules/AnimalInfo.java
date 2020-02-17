@@ -199,7 +199,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		}
 	}
 
-	//FIXME? May need to include a check here to prevent rendering through blocks
+	//FIXME? May need to include an optional check here to prevent rendering through blocks
 	// see how Neat does it https://github.com/Vazkii/Neat/blob/master/src/main/java/vazkii/neat/HealthBarRenderer.java#L98
 
 	/**
@@ -276,7 +276,6 @@ public class AnimalInfo extends ZyinHUDModuleBase {
         }
         */
 
-		//???: I wonder if it'd be better to do something like using a StringBuilder or Stream.reduce instead here
 		String[] multilineOverlayMessage = new String[1];
 		multilineOverlayMessage = multilineOverlayArray.toArray(multilineOverlayMessage);
 
