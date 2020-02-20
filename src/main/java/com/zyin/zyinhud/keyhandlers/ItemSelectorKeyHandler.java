@@ -7,6 +7,7 @@ import com.zyin.zyinhud.modules.ItemSelector;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.client.event.InputEvent.MouseInputEvent;
 import net.minecraftforge.client.event.InputEvent.MouseScrollEvent;
+import net.minecraftforge.client.event.InputEvent.RawMouseEvent;
 
 public class ItemSelectorKeyHandler implements ZyinHUDKeyHandlerBase {
 	public static final String hotkeyDescription = "key.zyinhud.itemselector";
@@ -29,13 +30,15 @@ public class ItemSelectorKeyHandler implements ZyinHUDKeyHandlerBase {
 
 	public static void onPressed(KeyInputEvent event) {
 		//don't activate if the user is looking at a GUI or has a modifier pressed
-		if (mc.currentScreen == null) {
-			if (mc.gameSettings.keyBindAttack.isKeyDown()) { ItemSelector.onHotkeyAbort(); }
-			else { ItemSelector.onHotkeyPressed(); }
-		}
+		if (mc.currentScreen == null) { ItemSelector.onHotkeyPressed(); }
 	}
 
 	public static void onReleased(KeyInputEvent event) {
 		ItemSelector.onHotkeyReleased();
+	}
+
+	public static void onAbort(RawMouseEvent event) {
+		ItemSelector.onHotkeyAbort();
+		event.setCanceled(true);
 	}
 }

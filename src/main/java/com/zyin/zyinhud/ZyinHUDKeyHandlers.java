@@ -8,6 +8,7 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.client.event.InputEvent.MouseInputEvent;
 import net.minecraftforge.client.event.InputEvent.MouseScrollEvent;
+import net.minecraftforge.client.event.InputEvent.RawMouseEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -32,8 +33,9 @@ import com.zyin.zyinhud.keyhandlers.ZyinHUDOptionsKeyHandler;
 import com.zyin.zyinhud.modules.TorchAid;
 
 
-import static com.zyin.zyinhud.ZHKeyBindingHelper.*;
+import static com.zyin.zyinhud.helper.ZHKeyBindingHelper.*;
 import static com.zyin.zyinhud.ZyinHUDConfig.enableLoggingKeybindInputs;
+import static com.zyin.zyinhud.util.ZyinHUDUtil.doesScreenAllowKeybinds;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ZyinHUDKeyHandlers {
@@ -54,11 +56,10 @@ public class ZyinHUDKeyHandlers {
 		DistanceMeasurerKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 		mapKey(GLFW.GLFW_KEY_K), ZyinHUD.MODNAME
 	));//[2]
-	public static KeyBinding eatingAidKey = addKeyBind(new KeyBinding(
-//			EatingAidKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
-		"WIP: Eating Aid", KeyConflictContext.IN_GAME,
-		mapKey(GLFW.GLFW_KEY_G), ZyinHUD.MODNAME
-	));//[3]
+	//	public static KeyBinding eatingAidKey = addKeyBind(new KeyBinding(
+//		EatingAidKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
+//		mapKey(GLFW.GLFW_KEY_G), ZyinHUD.MODNAME
+//	));//[3]
 	public static KeyBinding enderPearlKey = addKeyBind(new KeyBinding(
 		EnderPearlAidKeyHandler.hotkeyDescription, KeyConflictContext.IN_GAME,
 		mapKey(GLFW.GLFW_KEY_C), ZyinHUD.MODNAME
@@ -104,9 +105,11 @@ public class ZyinHUDKeyHandlers {
 	 */
 	@SubscribeEvent
 	public static void onKeyInputEvent(KeyInputEvent event) {
+		if (!doesScreenAllowKeybinds(mc.currentScreen)) { return; }
+
 		//KeyInputEvent will not fire when looking at a GuiScreen - 1.7.2
 		if (doLogKeybindInputs) {
-			ZHKeyBindings.get()
+			ZHKeyBindings.getValue()
 			             .filter(KeyBinding::isKeyDown)
 			             .forEach(key -> logger.debug(
 				             "Keybinding {} (bound to '{}') is being held", key.getLocalizedName(),
@@ -146,18 +149,22 @@ public class ZyinHUDKeyHandlers {
 	 */
 	@SubscribeEvent
 	public static void onMouseEvent(InputEvent event) {
-//		logger.debug("Mouse event triggered");
 		if ((event instanceof MouseScrollEvent) && ((MouseScrollEvent) event).getScrollDelta() != 0) {
 			if (itemSelectorKey.isKeyDown()) { ItemSelectorKeyHandler.onMouseWheelScroll((MouseScrollEvent) event); }
 		}
 
-		//Mouse side buttons
-		if (
-			event instanceof MouseInputEvent &&
-			(((MouseInputEvent) event).getButton() == 3 || ((MouseInputEvent) event).getButton() == 4)
-		) {
-			if (mouseHelper.isLeftDown() || mouseHelper.isRightDown()) {
-				ItemSelectorKeyHandler.onMouseSideButton((MouseInputEvent) event);
+		if (event instanceof MouseInputEvent) {
+			//Mouse side buttons
+			if (((MouseInputEvent) event).getButton() == 3 || ((MouseInputEvent) event).getButton() == 4) {
+				if (mouseHelper.isLeftDown() || mouseHelper.isRightDown()) {
+					ItemSelectorKeyHandler.onMouseSideButton((MouseInputEvent) event);
+				}
+			}
+		}
+
+		if (event instanceof RawMouseEvent) {
+			if (itemSelectorKey.isKeyDown() && mc.gameSettings.keyBindAttack.isPressed()) {
+				ItemSelectorKeyHandler.onAbort((RawMouseEvent) event);
 			}
 		}
 	}
@@ -185,27 +192,13 @@ public class ZyinHUDKeyHandlers {
 		}
 	}
 
-
 	private static boolean useBlockButtonPreviouslyDown = false;
 
 	private static void onFireUseBlockEvents() {//TODO: Migrate either to a dedicated TorchAid event helper, or to TorchAid itself
-		//.keyBindUseItem		isButtonDown()
-
-		boolean useBlockButtonDown;
-
 		//For now, we're just going to assume that nobody uses anything other than the default left and right click bindings
 		// for attacking and using items
 		// that way, I can just use reflection to get Minecraft.rightClickMouse(), and not bother with other scenarios.
-//    	if(mc.gameSettings.keyBindUseItem.getKey().getKeyCode() < 0)	//the Use Block hotkey is bound to the mouse
-//    	{
-//            useBlockButtonDown = Mouse.isButtonDown(100 + mc.gameSettings.keyBindUseItem.getKey().getKeyCode());
-//		useBlockButtonDown = mouseHelper.isRightDown();
-//    	}
-//    	else	//the Use Block hotkey is bound to the keyboard
-//    	{
-//            useBlockButtonDown = InputMappings.isKeyDown(mc.gameSettings.keyBindUseItem.getKey().getKeyCode());
-		useBlockButtonDown = mc.gameSettings.keyBindUseItem.isKeyDown();
-//    	}
+		boolean useBlockButtonDown = mc.gameSettings.keyBindUseItem.isKeyDown();
 		if (useBlockButtonDown & !useBlockButtonPreviouslyDown) { TorchAid.onPressed(); }
 		else if (!useBlockButtonDown & useBlockButtonPreviouslyDown) { TorchAid.onReleased(); }
 

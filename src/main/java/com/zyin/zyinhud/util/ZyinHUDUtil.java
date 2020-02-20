@@ -17,8 +17,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
-//import net.minecraft.client.renderer.ItemRenderer;
-//import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
@@ -39,14 +38,16 @@ import java.util.stream.Stream;
  * General utility class for ZyinHUD.
  */
 public class ZyinHUDUtil {
-//	private static final ItemRenderer itemRenderer = mc.getItemRenderer();
-//	private static final TextureManager textureManager = mc.getTextureManager();
-	private static final Method itemUseMethod =     // the private method: rightClickMouse()
+	private static final Method itemUseMethod =     // the private method: Minecraft.rightClickMouse()
 		ObfuscationReflectionHelper.findMethod(Minecraft.class, "func_147121_ag");
 	private static Minecraft mc = Minecraft.getInstance();
 
 	public static boolean doesScreenShowHUD(Screen screen) {
 		return (screen == null || screen instanceof ChatScreen || screen instanceof DeathScreen);
+	}
+
+	public static boolean doesScreenAllowKeybinds(Screen screen){
+		return (screen == null || screen instanceof ContainerScreen);
 	}
 
 	/***

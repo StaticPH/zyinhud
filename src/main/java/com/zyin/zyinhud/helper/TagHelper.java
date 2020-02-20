@@ -13,11 +13,14 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.Tags;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.function.Function;
 
 @SuppressWarnings({"SameParameterValue"})
 public class TagHelper {
+	private static final Logger logger = LogManager.getLogger("ZHTagHelper");
 	static class ZHItemTags extends TagHelper {
 		public static final Tag<Item> tag_TORCHES = forgeTag("torches");
 		public static final Tag<Item> tag_TORCH_PLACERS = forgeTag("torch_placers");

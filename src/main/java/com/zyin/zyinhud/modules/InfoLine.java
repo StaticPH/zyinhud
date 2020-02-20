@@ -134,7 +134,7 @@ public class InfoLine extends ZyinHUDModuleBase {
 			int x = (int) (mc.fontRenderer.getStringWidth(infoLineMessageUpToThisPoint) / scaler);
 			int y = -1;
 
-			itemRenderer.renderItemAndEffectIntoGUI(new ItemStack(Items.SNOWBALL), x, y);
+			itemRenderer.getValue().renderItemAndEffectIntoGUI(new ItemStack(Items.SNOWBALL), x, y);
 
 			GL11.glDisable(GL11.GL_LIGHTING);
 			GL11.glScalef(1 / scaler, 1 / scaler, 1 / scaler);

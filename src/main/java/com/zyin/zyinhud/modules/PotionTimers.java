@@ -36,6 +36,8 @@
 //	 * @return The state the module was changed to
 //	 */
 //	public static boolean toggleEnabled() {
+//		ZyinHUDConfig.enablePotionTimers.set(!isEnabled);
+//		ZyinHUDConfig.enablePotionTimers.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
 //		return isEnabled = !isEnabled;
 //	}
 //

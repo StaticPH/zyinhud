@@ -107,7 +107,7 @@ public class InventoryUtil {
 //    }
 
 	/**
-	 * Uses an item locaed in your inventory or hotbar.
+	 * Uses an item located in your inventory or hotbar.
 	 * <p>
 	 * If it is in your hotbar, it will change the selected hotbar index in order to use it.
 	 * <br>If it is in your inventory, it will swap the item into your hotbar in order to use it.

@@ -982,7 +982,7 @@ public class ZyinHUDConfig {
 		// Torch Aid Module
 		// ######################################################################
 		builder.comment(
-			"Torch Aid lets you right click while holding an axe, pickaxe, shovel, or when you have nothing in your hand to place a torch."
+			"Torch Aid lets you sneak + right click while holding an axe, pickaxe, shovel, or when you have nothing in your hand to place a torch."
 		).push(CATEGORY_TORCHAID);
 		{
 			enableTorchAid = builder

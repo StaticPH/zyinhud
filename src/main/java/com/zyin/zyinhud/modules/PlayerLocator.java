@@ -334,7 +334,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	}
 
 	private static void renderItemIconIntoGUI(ItemStack itemStack, int x, int y) {
-		itemRenderer.renderItemIntoGUI(itemStack, x, y - 4);
+		itemRenderer.getValue().renderItemIntoGUI(itemStack, x, y - 4);
 		GL11.glDisable(GL11.GL_LIGHTING);
 	}
 

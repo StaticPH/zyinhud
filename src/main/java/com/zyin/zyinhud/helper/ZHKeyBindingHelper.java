@@ -1,8 +1,9 @@
-package com.zyin.zyinhud;
+package com.zyin.zyinhud.helper;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.client.util.InputMappings;
+import net.minecraft.util.LazyLoadBase;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -13,14 +14,13 @@ import org.lwjgl.glfw.GLFW;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class ZHKeyBindingHelper {
 	private static final Logger logger = LogManager.getLogger(ZHKeyBindingHelper.class);
 	private static final Minecraft mc = Minecraft.getInstance();
 	private static List<KeyBinding> keyBindings = new ArrayList<KeyBinding>();
-	public static Supplier<Stream<KeyBinding>> ZHKeyBindings = () -> keyBindings.stream();
+	public static LazyLoadBase<Stream<KeyBinding>> ZHKeyBindings = new LazyLoadBase<>(() -> keyBindings.stream());
 
 	@Nonnull
 	public static KeyBinding addKeyBind(@Nonnull KeyBinding kb) {

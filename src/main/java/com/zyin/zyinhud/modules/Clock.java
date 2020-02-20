@@ -96,7 +96,7 @@ public class Clock extends ZyinHUDModuleBase {
 			else if (Clock.mode == ClockOptions.ClockModes.GRAPHIC) {
 				int infoLineWidth = mc.fontRenderer.getStringWidth(infoLineMessageUpToThisPoint);
 
-				itemRenderer.renderItemAndEffectIntoGUI(
+				itemRenderer.getValue().renderItemAndEffectIntoGUI(
 					new ItemStack(Items.CLOCK),
 					infoLineWidth + InfoLine.getHorizontalLocation(),
 					InfoLine.getVerticalLocation()

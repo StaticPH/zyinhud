@@ -176,10 +176,10 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);    //so the enchanted item effect is rendered properly
 
 		//render the item with enchant effect
-		itemRenderer.renderItemAndEffectIntoGUI(itemStack, x, y);
+		itemRenderer.getValue().renderItemAndEffectIntoGUI(itemStack, x, y);
 
 		//render the item's durability bar
-		itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, itemStack, x, y, null);
+		itemRenderer.getValue().renderItemOverlayIntoGUI(mc.fontRenderer, itemStack, x, y, null);
 
 		GL11.glDisable(GL11.GL_LIGHTING);    //the itemRenderer.renderItem() method enables lighting
 

@@ -3,15 +3,13 @@ package com.zyin.zyinhud.modules;
 import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.helper.TagHelper.ItemLike;
 import com.zyin.zyinhud.util.InventoryUtil;
-//import com.zyin.zyinhud.util.ModCompatibility;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
-//import net.minecraft.item.ToolItem;
 import net.minecraft.util.math.RayTraceResult;
 
 import static com.zyin.zyinhud.helper.TagHelper.ItemLike.canItemPlaceTorches;
 import static com.zyin.zyinhud.util.ZyinHUDUtil.useItem;
-//TODO: reject action if it would open a gui
+
 /**
  * TorchAid Aid allows the player to easily use a torch without having it selected. It does this by
  * selecting a torch before the Use Block key is pressed, then unselecting the torch after the Use Block
@@ -49,7 +47,9 @@ public class TorchAid extends ZyinHUDModuleBase {
 	private static int previousTorchIndex = -1;
 
 	public static void onPressed() {
-		if (TorchAid.isEnabled) { equipTorchIfToolIsEquipped(); }
+		// FIXME: resorting to requiring sneak to use this feature was a cop-out,
+		//  because I was having a hard time using events to make this behave more intelligently
+		if (TorchAid.isEnabled && mc.player.isSneaking()) { equipTorchIfToolIsEquipped(); }
 	}
 
 	public static void onReleased() {
@@ -62,8 +62,7 @@ public class TorchAid extends ZyinHUDModuleBase {
 	public static void equipTorchIfToolIsEquipped() {
 		if (mc.currentScreen == null && mc.mouseHelper.isMouseGrabbed()) {
 			ItemStack currentItemStack = mc.player.getHeldItemMainhand();
-			if (currentItemStack.isEmpty()) { return; }
-			else if (canItemPlaceTorches(currentItemStack.getItem())) {
+			if (!currentItemStack.isEmpty() && canItemPlaceTorches(currentItemStack.getItem())) {
 				useTorch();
 			}
 		}

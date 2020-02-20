@@ -10,18 +10,19 @@ import net.minecraft.entity.monster.WitherSkeletonEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.ParametersAreNonnullByDefault;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static com.zyin.zyinhud.ZyinHUDConfig.enableLoggingAllEntitiesFound;
+import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.findField;
 
 public class EntityTrackerHelper {
 	public static final Predicate<Entity> playerLocatorMaybeTrack = (entity) -> (
@@ -32,6 +33,11 @@ public class EntityTrackerHelper {
 	public static final Predicate<Entity> animalInfoMaybeTrack = (entity) -> (
 		entity instanceof LivingEntity && !(entity instanceof PlayerEntity)
 	);
+
+	/**
+	 * The private final field "entitiesById" in ClientWorld
+	 */
+	private static final Field entitiesByIdField = findField(ClientWorld.class, "field_217429_b");
 
 	@Nonnull
 	public static Collection<Entity> findEntities(ClientWorld clientWorld) {
@@ -50,10 +56,8 @@ public class EntityTrackerHelper {
 
 	public static Collection<Entity> findEntities(ClientWorld clientWorld, Predicate<Entity> matching, Logger logger) {
 		// Best guess at a way to iterate through all loaded entities
-		// if unmapped name doesnt work, try entitiesById
 		//_CHECK: ClientWorld or ServerWorld?
-		Int2ObjectMap<Entity> entitiesById =
-			ObfuscationReflectionHelper.getPrivateValue(ClientWorld.class, clientWorld, "field_217429_b");
+		Int2ObjectMap<Entity> entitiesById = getEntitiesById(clientWorld);
 		if (entitiesById == null) { return new ArrayList<Entity>(); }
 		else {
 			return entitiesById.values().parallelStream()
@@ -69,6 +73,13 @@ public class EntityTrackerHelper {
 			                   })
 			                   .collect(Collectors.toList());
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static Int2ObjectMap<Entity> getEntitiesById(ClientWorld world) {
+		try { return (Int2ObjectMap<Entity>) entitiesByIdField.get(world); }
+		catch (IllegalAccessException e) { e.printStackTrace(); }
+		return null;
 	}
 
 	@ParametersAreNonnullByDefault

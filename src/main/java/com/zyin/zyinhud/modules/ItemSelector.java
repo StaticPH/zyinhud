@@ -14,6 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
@@ -23,6 +25,7 @@ import org.lwjgl.opengl.GL12;
  * hotbar item with something in their inventory.
  */
 public class ItemSelector extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger("ZHItemSelector");
 	/**
 	 * Enables/Disables this module
 	 */
@@ -160,7 +163,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 		isCurrentlyRendering = true;
 	}
 
-	public static void onHotkeyAbort(){
+	public static void onHotkeyAbort() {
 		if (ItemSelector.isEnabled) {cleanupWhenDone();}
 	}
 
@@ -183,7 +186,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 		//TODO: This may need some modifications
 		if (
 			GLFW.glfwGetKey(mc.mainWindow.getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS ||
-		    GLFW.glfwGetKey(mc.mainWindow.getHandle(), GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS
+			GLFW.glfwGetKey(mc.mainWindow.getHandle(), GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS
 		) {
 			cleanupWhenDone();
 			return;
@@ -247,19 +250,12 @@ public class ItemSelector extends ZyinHUDModuleBase {
 						GL11.glScalef(1.0F / f2, (f2 + 1.0F) / 2.0F, 1.0F);
 						GL11.glTranslatef(-(dimX + 8), -(dimZ + 12), 0.0F);
 					}
-					try { itemRenderer.renderItemAndEffectIntoGUI(itemStack, dimX, dimZ); }
-					catch (NullPointerException e){
-						//This call seems to throw NPEs from time to time. Not quite sure how or why, because the
-						// stacktrace just ENDS at this line, and I've been unable to reproduce it intentionally.
-						//Maybe I'll be able to figure out the problem if I can see it occurring in real time,
-						// rather than just knowing it was something that the renderer didin't like.
-						e.printStackTrace();
-						break;
-					}
+
+					itemRenderer.getValue().renderItemAndEffectIntoGUI(itemStack, dimX, dimZ);
 
 					if (anim > 0.0F) { GL11.glPopMatrix(); }
 
-					itemRenderer.renderItemOverlayIntoGUI(mc.fontRenderer, itemStack, dimX, dimZ, null);
+					itemRenderer.getValue().renderItemOverlayIntoGUI(mc.fontRenderer, itemStack, dimX, dimZ, null);
 				}
 
 				idx++;
