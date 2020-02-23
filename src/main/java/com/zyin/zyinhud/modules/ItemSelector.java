@@ -18,14 +18,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
+
+import static org.lwjgl.opengl.GL12.GL_RESCALE_NORMAL;
 
 /**
  * Item Selector allows the player to conveniently swap their currently selected
  * hotbar item with something in their inventory.
  */
 public class ItemSelector extends ZyinHUDModuleBase {
-	private static final Logger logger = LogManager.getLogger("ZHItemSelector");
+	private static final Logger logger = LogManager.getLogger(ItemSelector.class);
 	/**
 	 * Enables/Disables this module
 	 */
@@ -50,27 +51,25 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	/**
 	 * Determines if the side buttons of supported mice can be used for item selection
 	 */
-	protected static boolean useMouseSideButtons = ZyinHUDConfig.itemSelectorSideButtons.get();
+	static boolean useMouseSideButtons = ZyinHUDConfig.itemSelectorSideButtons.get();
 
 	protected static final ResourceLocation widgetTexture = new ResourceLocation("textures/gui/widgets.png");
 
 	public static final int WHEEL_UP = -1;
 	public static final int WHEEL_DOWN = 1;
 
-	protected static int timeout = ZyinHUDConfig.itemSelectorTimeout.get();
-	protected static final int minTimeout = ItemSelectorOptions.minTimeout;
-	protected static final int maxTimeout = ItemSelectorOptions.maxTimeout;
+	static int timeout = ZyinHUDConfig.itemSelectorTimeout.get();
 
 	private static int[] slotMemory = new int[PlayerInventory.getHotbarSize()];
 
-	protected static boolean isCurrentlySelecting = false;
-	protected static boolean isCurrentlyRendering = false;
-	protected static int ticksToShow = 0;
-	protected static int scrollAmount = 0;
+	private static boolean isCurrentlySelecting = false;
+	private static boolean isCurrentlyRendering = false;
+	private static int ticksToShow = 0;
+	private static int scrollAmount = 0;
 	private static int previousDir = 0;
 	private static int targetInvSlot = -1;
 	private static int currentHotbarSlot = 0;
-	protected static NonNullList<ItemStack> currentInventory = null;
+	private static NonNullList<ItemStack> currentInventory = null;
 
 	/**
 	 * Scrolls the selector towards the specified direction. This will cause the item selector overlay to show.
@@ -164,7 +163,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	}
 
 	public static void onHotkeyAbort() {
-		if (ItemSelector.isEnabled) {cleanupWhenDone();}
+		if (ItemSelector.isEnabled) { cleanupWhenDone(); }
 	}
 
 	public static void onHotkeyReleased() {
@@ -209,7 +208,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 			);
 		}
 
-		GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+		GL11.glEnable(GL_RESCALE_NORMAL);
 		GL11.glEnable(GL11.GL_DEPTH_TEST); // so the enchanted item effect is rendered properly
 
 		RenderHelper.enableGUIStandardItemLighting();
@@ -263,7 +262,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 		}
 
 		RenderHelper.disableStandardItemLighting();
-		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+		GL11.glDisable(GL_RESCALE_NORMAL);
 		GlStateManager.disableLighting();    // the itemRenderer.renderItem method enables lighting
 
 		if (isCurrentlySelecting) {
@@ -316,6 +315,11 @@ public class ItemSelector extends ZyinHUDModuleBase {
 		isCurrentlySelecting = false;
 	}
 
+
+	public static boolean getIsCurrentlyRendering() {
+		return isCurrentlyRendering;
+	}
+
 	/**
 	 * Get timeout int.
 	 *
@@ -331,7 +335,7 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	 * @param value the value
 	 */
 	public static void setTimeout(int value) {//TODO: this sort of thing would need to pass the update to the config :/
-		timeout = MathHelper.clamp(value, minTimeout, maxTimeout);
+		timeout = MathHelper.clamp(value, ItemSelectorOptions.minTimeout, ItemSelectorOptions.maxTimeout);
 	}
 
 	public static boolean shouldUseMouseSideButtons() {

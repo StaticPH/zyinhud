@@ -14,7 +14,7 @@ import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
  */
 public class ZyinHUDOptionsKeyHandler implements ZyinHUDKeyHandlerBase {
 	public static final String hotkeyDescription = "key.zyinhud.zyinhudoptions";
-	private static Logger logger = LogManager.getLogger("OptionsKeyHandler");
+	private static Logger logger = LogManager.getLogger(ZyinHUDOptionsKeyHandler.class);
 
 	/**
 	 * onPressed.

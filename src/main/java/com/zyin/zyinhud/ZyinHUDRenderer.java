@@ -18,6 +18,8 @@ import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import net.minecraftforge.fml.common.Mod;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 import com.zyin.zyinhud.helper.HUDEntityTrackerHelper;
@@ -35,6 +37,7 @@ import com.zyin.zyinhud.modules.SafeOverlay;
  */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ZyinHUDRenderer {
+	private static final Logger logger = LogManager.getLogger(ZyinHUDRenderer.class);
 	public static final ZyinHUDRenderer instance = new ZyinHUDRenderer();
 	private static Minecraft mc = Minecraft.getInstance();
 

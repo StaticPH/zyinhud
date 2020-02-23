@@ -17,6 +17,8 @@ import net.minecraft.entity.passive.horse.LlamaEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import net.minecraft.util.text.TextFormatting;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.CheckForNull;
 import java.text.DecimalFormat;
@@ -29,6 +31,8 @@ import static com.zyin.zyinhud.util.ZyinHUDUtil.doesScreenShowHUD;
  */
 @SuppressWarnings({"FieldCanBeLocal", "RedundantSuppression"})
 public class AnimalInfo extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger(AnimalInfo.class);
+
 	/**
 	 * Enables/Disables this module
 	 */
@@ -55,21 +59,18 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 	/**
 	 * Animals that are farther away than this will not have their info shown
 	 */
-	public static int viewDistanceCutoff = ZyinHUDConfig.animalInfoMaxViewDistance.get();        //how far away we will render the overlay
-	// the min cutoff is not actually used here at the moment, but it's here for consistency if nothing else
-	private static int minViewDistanceCutoff = AnimalInfoOptions.minViewDistanceCutoff;
-	private static int maxViewDistanceCutoff = AnimalInfoOptions.maxViewDistanceCutoff;
+	static int viewDistanceCutoff = ZyinHUDConfig.animalInfoMaxViewDistance.get();        //how far away we will render the overlay
 
 	/**
 	 * Sets the number of decimal places that will be rendered when displaying horse stats
 	 */
-	public static int numberOfDecimalsDisplayed = ZyinHUDConfig.animalInfoNumberOfDecimalsDisplayed.get();
+	static int numberOfDecimalsDisplayed = ZyinHUDConfig.animalInfoNumberOfDecimalsDisplayed.get();
 
-	private static boolean showBreedingIcons = ZyinHUDConfig.showBreedingIcons.get();
+	static boolean showBreedingIcons = ZyinHUDConfig.showBreedingIcons.get();
 	//private static boolean showBreedingTimers;
-	private static boolean showHorseStatsOnF3Menu = ZyinHUDConfig.showHorseStatsOnF3Menu.get();
-	private static boolean showHorseStatsOverlay = ZyinHUDConfig.showHorseStatsOverlay.get();
-	private static boolean showTextBackgrounds = ZyinHUDConfig.showTextBackgrounds.get();
+	static boolean showHorseStatsOnF3Menu = ZyinHUDConfig.showHorseStatsOnF3Menu.get();
+	static boolean showHorseStatsOverlay = ZyinHUDConfig.showHorseStatsOverlay.get();
+	static boolean showTextBackgrounds = ZyinHUDConfig.showTextBackgrounds.get();
 
 	//values above the perfect value are aqua
 	//values between the perfect and good values are green
@@ -116,7 +117,7 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 			if (statValue > this.perfectStatThreshold) { return TextFormatting.AQUA; }
 			else if (statValue > this.goodStatThreshold) { return TextFormatting.GREEN; }
 			else if (statValue > this.badStatThreshold) { return TextFormatting.YELLOW; }
-			else {return TextFormatting.RED; }
+			else { return TextFormatting.RED; }
 		}
 	}
 
@@ -209,19 +210,21 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 	 * @param partialTickTime the partial tick time
 	 */
 	public static void renderEntityInfoInWorld(Entity entity, float partialTickTime) {
-		//we only care about ageable entities
+		//we only care about ageable entities...???:Maybe I should just change the parameter to only accept AgeableEntity?
 		if (!(entity instanceof AgeableEntity)) { return; }//|| entity.isBeingRidden()
 
 		//if the player is in the world
 		//and not looking at a menu
 		//and F3 not pressed
-		if (AnimalInfo.isEnabled && mode == AnimalInfoOptions.AnimalInfoModes.ON &&
-		    (mc.mouseHelper.isMouseGrabbed() || doesScreenShowHUD(mc.currentScreen))
-		    && !mc.gameSettings.showDebugInfo) {
+		if (
+			AnimalInfo.isEnabled && mode == AnimalInfoOptions.AnimalInfoModes.ON &&
+		    (mc.mouseHelper.isMouseGrabbed() || doesScreenShowHUD(mc.currentScreen)) &&
+		    !mc.gameSettings.showDebugInfo
+		) {
 			//_CHECK: my use of doesScreenShowHUD here may remove the need to check that the debugInfo is not being shown
 
 			// FIXME: I don't really want to do the math required to make info render in the right place while not in first person view
-			if (mc.gameRenderer.getActiveRenderInfo().isThirdPerson()){return;}
+			if (mc.gameRenderer.getActiveRenderInfo().isThirdPerson()) { return; }
 
 			//_CHECK:Will need to see if this triggers for entities being ridden by others...I expect it will, but I'm not sure.
 			//don't render stats of the horse/animal we are currently riding
@@ -230,9 +233,11 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 			//only show entities that are close by
 			double distanceFromMe = mc.player.getDistance(entity);
 
-			if (distanceFromMe > maxViewDistanceCutoff || distanceFromMe > viewDistanceCutoff) { return; }
+			if (distanceFromMe > AnimalInfoOptions.maxViewDistanceCutoff || distanceFromMe > viewDistanceCutoff) {
+				return;
+			}
 
-			renderAnimalOverlay((AgeableEntity)entity, partialTickTime);
+			renderAnimalOverlay((AgeableEntity) entity, partialTickTime);
 		}
 	}
 
@@ -320,15 +325,16 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		if (animal instanceof AbstractHorseEntity && ((AbstractHorseEntity) animal).isTame()) {
 			return animal instanceof LlamaEntity ? Blocks.HAY_BLOCK.asItem() : Items.GOLDEN_CARROT;
 		}
-		else if (animal instanceof CowEntity) {return Items.WHEAT; }
-		else if (animal instanceof SheepEntity) {return Items.WHEAT; }
-		else if (animal instanceof PigEntity) {return Items.CARROT; }
-		else if (animal instanceof ChickenEntity) {return Items.WHEAT_SEEDS; }
-		else if (animal instanceof RabbitEntity) {return Items.CARROT; }
-		else if (animal instanceof WolfEntity && ((WolfEntity) animal).isTamed()) {return Items.BEEF; }// TODO: see how hard it would be to have this cycle through valid items
+		else if (animal instanceof CowEntity) { return Items.WHEAT; }
+		else if (animal instanceof SheepEntity) { return Items.WHEAT; }
+		else if (animal instanceof PigEntity) { return Items.CARROT; }
+		else if (animal instanceof ChickenEntity) { return Items.WHEAT_SEEDS; }
+		else if (animal instanceof RabbitEntity) { return Items.CARROT; }
+		// TODO: see how hard it would be to have this cycle through valid items
+		else if (animal instanceof WolfEntity && ((WolfEntity) animal).isTamed()) { return Items.BEEF; }
 //      Bones are for taming, not breeding; maybe this should be another function?
 //		else if (animal instanceof WolfEntity && !((WolfEntity) animal).isTamed()) { return Items.BONE; }
-		else if (animal instanceof OcelotEntity) { return Items.TROPICAL_FISH;}
+		else if (animal instanceof OcelotEntity) { return Items.TROPICAL_FISH; }
 		return null;
 	}
 

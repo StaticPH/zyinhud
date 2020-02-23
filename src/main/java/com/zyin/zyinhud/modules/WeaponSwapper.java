@@ -17,6 +17,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
 import net.minecraft.util.NonNullList;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +27,10 @@ import java.util.List;
 /**
  * Weapon Swap allows the player to quickly equip their sword and bow.
  */
+@SuppressWarnings("ConstantConditions")
 public class WeaponSwapper extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger(WeaponSwapper.class);
+
 	/**
 	 * Enables/Disables this module
 	 */

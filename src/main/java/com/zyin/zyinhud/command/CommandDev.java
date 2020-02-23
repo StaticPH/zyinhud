@@ -21,6 +21,8 @@ import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextComponent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
@@ -31,12 +33,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/*****
+ * Useful commands for development
+ * NOTE: NONE of this will work on a multiplayer server, due to the lack of a client-side command handler
+ * This could be remedied by intercepting chat input, checking if a message starts with '/', and parsing it independently.
+ * The caveat is that the command would then not show up in the tab completion list or help command output,
+ * wouldn't have an output for '/help CommandName', and wouldn't have tab completion for subcommands and accepted values.
+ *****/
+
 @SuppressWarnings({"CodeBlock2Expr", "UnnecessaryInterfaceModifier", "RedundantSuppression"})
 public class CommandDev implements ICommandBase {
 	//TODO: Implement datapack subcommand(s) to
 	//      List Tags in a datapack/namespace
 	//      Find which namespace(s) contain a particular Tag name
 	//      ??Localized feedback strings??
+	private static final Logger logger = LogManager.getLogger(CommandDev.class);
 
 	private static final SuggestionProvider<CommandSource> SUGGEST_ANY_PACK = (srcContext, suggestionBuilder) -> {
 		return ISuggestionProvider.suggest(

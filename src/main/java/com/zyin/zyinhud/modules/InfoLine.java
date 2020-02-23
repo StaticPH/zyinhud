@@ -8,6 +8,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.math.MathHelper;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 //import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
@@ -19,6 +21,8 @@ import org.lwjgl.opengl.GL11;
  * their message into the Info Line.
  */
 public class InfoLine extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger(InfoLine.class);
+
 	/**
 	 * Enables/Disables this module
 	 */
@@ -38,16 +42,16 @@ public class InfoLine extends ZyinHUDModuleBase {
 		return isEnabled = !isEnabled;
 	}
 
-	private static boolean showBiome = ZyinHUDConfig.showBiome.get();
-	private static boolean showCanSnow = ZyinHUDConfig.showCanSnow.get();
-	private static boolean showPing = ZyinHUDConfig.showPing.get();
+	static boolean showBiome = ZyinHUDConfig.showBiome.get();
+	static boolean showCanSnow = ZyinHUDConfig.showCanSnow.get();
+	static boolean showPing = ZyinHUDConfig.showPing.get();
 
 	/**
 	 * The padding string that is inserted between different elements of the Info Line
 	 */
 	private static final String SPACER = " ";
-	private static int infoLineLocX = ZyinHUDConfig.infoLineHorizontalPos.get();
-	private static int infoLineLocY = ZyinHUDConfig.infoLineVerticalPos.get();
+	static int infoLineLocX = ZyinHUDConfig.infoLineHorizontalPos.get();
+	static int infoLineLocY = ZyinHUDConfig.infoLineVerticalPos.get();
 
 //  UNUSED
 //    /*private static final int notificationDuration = 1200;	//measured in milliseconds
@@ -73,8 +77,9 @@ public class InfoLine extends ZyinHUDModuleBase {
 		//if the player is in the world (which can be inferred if the mouse is currently grabbed)
 		//and not looking at a menu (or is looking at either chat or the custom options gui)
 		//and debug info not shown
-		if (InfoLine.isEnabled && !mc.gameSettings.showDebugInfo &&
-		    (mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen instanceof ChatScreen/* || tabIsSelectedInOptionsGui()*/))
+		if (
+			InfoLine.isEnabled && !mc.gameSettings.showDebugInfo &&
+			(mc.mouseHelper.isMouseGrabbed() || (mc.currentScreen instanceof ChatScreen/* || tabIsSelectedInOptionsGui()*/))
 		) {
 			infoLineMessage = "";
 

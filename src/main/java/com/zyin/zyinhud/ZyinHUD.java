@@ -27,8 +27,6 @@ package com.zyin.zyinhud;
 import com.zyin.zyinhud.command.CommandDev;
 import com.zyin.zyinhud.command.CommandFps;
 //import com.zyin.zyinhud.command.CommandZyinHUDOptions;
-import com.zyin.zyinhud.modules.Coordinates;
-import com.zyin.zyinhud.modules.HealthMonitor;
 import com.zyin.zyinhud.util.ModCompatibility;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -94,12 +92,6 @@ public class ZyinHUD {
 
 	}
 
-	//    private void doSetupClient(final FMLClientSetupEvent event){
-//        DistExecutor.callWhenOn(Dist.CLIENT,()->{
-//            setupClient(event);
-//            return null;
-//        });
-//    }Unload
 	private void setupClient(final FMLClientSetupEvent event) {
 		MinecraftForge.EVENT_BUS.register(this);
 		ModCompatibility.TConstruct.isLoaded = ModList.get().isLoaded("TConstruct");
@@ -119,7 +111,7 @@ public class ZyinHUD {
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public void serverStarting(FMLServerStartingEvent event) {
+	public static void serverStarting(FMLServerStartingEvent event) {
 	//FIXME: Perhaps command registration should be moved to the player login event PlayerLoggedInEvent...or is it the login event LoggedInEvent? need to find out the difference
 		CommandFps.register(event.getCommandDispatcher());
 		CommandDev.register(event.getCommandDispatcher());

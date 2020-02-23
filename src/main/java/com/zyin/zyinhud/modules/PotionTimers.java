@@ -28,7 +28,7 @@
 //	/**
 //	 * Enables/Disables this module
 //	 */
-//	public static boolean isEnabled;
+//	public static boolean isEnabled = ZyinHUDConfig.enablePotionTimers.get();
 //
 //	/**
 //	 * Toggles this module on or off
@@ -46,12 +46,12 @@
 //	 */
 //	public static PotionTimerOptions.PotionTimerModes mode = ZyinHUDConfig.potionTimerMode.get();
 //
-//	private static boolean showPotionIcons = ZyinHUDConfig.showPotionIcons.get();
+//	static boolean showPotionIcons = ZyinHUDConfig.showPotionIcons.get();
 ////	private static boolean showEffectName;
 ////	private static boolean showEffectLevel;
 ////	private static boolean UsePotionColors;     UNUSED
-//	private static float potionScale = ZyinHUDConfig.potionScale.get().floatValue();
-//	private static boolean hidePotionEffectsInInventory = ZyinHUDConfig.hidePotionEffectsInInventory.get();
+//	static float potionScale = ZyinHUDConfig.potionScale.get().floatValue();
+//	static boolean hidePotionEffectsInInventory = ZyinHUDConfig.hidePotionEffectsInInventory.get();
 ////	private static boolean hideBeaconPotionEffects;
 ////	private static boolean showVanillaStatusEffectHUD;
 //

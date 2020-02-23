@@ -27,28 +27,28 @@ public class ZyinHUDConfig {
 	public static ForgeConfigSpec SPEC_OVERRIDE;
 	public static Builder BUILDER_OVERRIDE;
 
-	public static final String CATEGORY_DEBUG = "debug options";
+	private static final String CATEGORY_DEBUG = "debug options";
 
-	public static final String CATEGORY_ANIMALINFO = "animalinfo";
-	public static final String CATEGORY_CLOCK = "clock";
-	public static final String CATEGORY_COMPASS = "compass";
-	public static final String CATEGORY_COORDINATES = "coordinates";
-	public static final String CATEGORY_DISTANCEMEASURER = "distancemeasurer";
-	public static final String CATEGORY_DURABILITYINFO = "durabilityinfo";
-	//    public static final String CATEGORY_EATINGAID = "eatingaid";
-	public static final String CATEGORY_ENDERPEARLAID = "enderpearlaid";
-	public static final String CATEGORY_FPS = "fps";
-	public static final String CATEGORY_HEALTHMONITOR = "healthmonitor";
-	public static final String CATEGORY_INFOLINE = "infoline";
-	public static final String CATEGORY_ITEMSELECTOR = "itemselector";
-	public static final String CATEGORY_MISCELLANEOUS = "miscellaneous";
-	public static final String CATEGORY_PLAYERLOCATOR = "playerlocator";
-	public static final String CATEGORY_POTIONAID = "potionaid";
-	//    public static final String CATEGORY_POTIONTIMERS = "potiontimers";
-	public static final String CATEGORY_QUICKDEPOSIT = "quickdeposit";
-	public static final String CATEGORY_SAFEOVERLAY = "safeoverlay";
-	public static final String CATEGORY_TORCHAID = "torchaid";
-	public static final String CATEGORY_WEAPONSWAP = "weaponswap";
+	private static final String CATEGORY_ANIMALINFO = "animalinfo";
+	private static final String CATEGORY_CLOCK = "clock";
+	private static final String CATEGORY_COMPASS = "compass";
+	private static final String CATEGORY_COORDINATES = "coordinates";
+	private static final String CATEGORY_DISTANCEMEASURER = "distancemeasurer";
+	private static final String CATEGORY_DURABILITYINFO = "durabilityinfo";
+	//    private static final String CATEGORY_EATINGAID = "eatingaid";
+	private static final String CATEGORY_ENDERPEARLAID = "enderpearlaid";
+	private static final String CATEGORY_FPS = "fps";
+	private static final String CATEGORY_HEALTHMONITOR = "healthmonitor";
+	private static final String CATEGORY_INFOLINE = "infoline";
+	private static final String CATEGORY_ITEMSELECTOR = "itemselector";
+	private static final String CATEGORY_MISCELLANEOUS = "miscellaneous";
+	private static final String CATEGORY_PLAYERLOCATOR = "playerlocator";
+	private static final String CATEGORY_POTIONAID = "potionaid";
+	//    private static final String CATEGORY_POTIONTIMERS = "potiontimers";
+	private static final String CATEGORY_QUICKDEPOSIT = "quickdeposit";
+	private static final String CATEGORY_SAFEOVERLAY = "safeoverlay";
+	private static final String CATEGORY_TORCHAID = "torchaid";
+	private static final String CATEGORY_WEAPONSWAP = "weaponswap";
 
 	// ######################################################################
 	// Mod Debugging Options
@@ -365,7 +365,7 @@ public class ZyinHUDConfig {
 		// Mod Debugging Options
 		// ######################################################################
 		builder.comment(
-			"These options control certain logging/debugging code for this mod.",
+			"These options control certain logging/debugging code for this mod. May require a restart",
 			"NOTE: these options may result in decreased performance, very large log files, and/or console spam.",
 			"You probably shouldn't change these unless you know what you're doing."
 		).push(CATEGORY_DEBUG);
@@ -967,6 +967,7 @@ public class ZyinHUDConfig {
 					"Enable/Disable showing unsafe areas through walls. Toggle in game with 'Ctrl' + the " +
 					CATEGORY_SAFEOVERLAY + " keybind (default: 'L')"
 				)
+				.comment("Note: This may cause noticeable fps drops.")
 				.define("safeOverlaySeeThroughWalls", SafeOverlayOptions.defaultRenderThroughWalls);
 			safeOverlayTransparency = builder
 				.comment("The transparency of the unsafe marks")

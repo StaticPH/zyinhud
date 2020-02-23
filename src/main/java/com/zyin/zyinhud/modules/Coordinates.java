@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
  */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class Coordinates extends ZyinHUDModuleBase {
-	private static final Logger logger = LogManager.getLogger("ZHCoordinates");
+	private static final Logger logger = LogManager.getLogger(Coordinates.class);
 	/**
 	 * Enables/Disables this module
 	 */
@@ -50,12 +50,12 @@ public class Coordinates extends ZyinHUDModuleBase {
 	 */
 	public static String chatStringFormat = ZyinHUDConfig.coordinatesChatStringFormat.get();
 
-	private static boolean showChunkCoordinates = ZyinHUDConfig.showChunkCoordinates.get();
+	static boolean showChunkCoordinates = ZyinHUDConfig.showChunkCoordinates.get();
 	/**
 	 * Use colors to show what ores spawn at the elevation level
 	 */
-	private static boolean useYCoordinateColors = ZyinHUDConfig.useYCoordinateColors.get();
-	private static boolean showDeathLocation = ZyinHUDConfig.showDeathLocation.get();
+	static boolean useYCoordinateColors = ZyinHUDConfig.useYCoordinateColors.get();
+	static boolean showDeathLocation = ZyinHUDConfig.showDeathLocation.get();
 
 
 	private static final int[] oreBoundaries = {

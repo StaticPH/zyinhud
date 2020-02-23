@@ -17,27 +17,31 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Quick Deposit allows you to intelligently deposit every item in your inventory quickly into a chest.
  */
 public class QuickDeposit extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger(QuickDeposit.class);
+
 	//TODO: Add blacklist option(s) for additional items
 	//      consider expanding "arrows" to "ammunition" in general?
 	/**
 	 * Enables/Disables this module
 	 */
 	public static boolean isEnabled = ZyinHUDConfig.enableQuickDeposit.get();
-	public static boolean blacklistClockCompass = ZyinHUDConfig.blacklistClockCompass.get();
-	public static boolean blacklistWeapons = ZyinHUDConfig.blacklistWeapons.get();
-	public static boolean blacklistArrow = ZyinHUDConfig.blacklistArrow.get();
-	public static boolean blacklistEnderPearl = ZyinHUDConfig.blacklistEnderPearl.get();
-	public static boolean blacklistFood = ZyinHUDConfig.blacklistFood.get();
-	public static boolean blacklistTools = ZyinHUDConfig.blacklistTools.get();
-	public static boolean blacklistTorch = ZyinHUDConfig.blacklistTorch.get();
-	public static boolean blacklistWaterBucket = ZyinHUDConfig.blacklistWaterBucket.get();
-	public static boolean closeChestAfterDepositing = ZyinHUDConfig.closeChestAfterDepositing.get();
-	public static boolean ignoreItemsInHotbar = ZyinHUDConfig.ignoreItemsInHotbar.get();
+	static boolean blacklistClockCompass = ZyinHUDConfig.blacklistClockCompass.get();
+	static boolean blacklistWeapons = ZyinHUDConfig.blacklistWeapons.get();
+	static boolean blacklistArrow = ZyinHUDConfig.blacklistArrow.get();
+	static boolean blacklistEnderPearl = ZyinHUDConfig.blacklistEnderPearl.get();
+	static boolean blacklistFood = ZyinHUDConfig.blacklistFood.get();
+	static boolean blacklistTools = ZyinHUDConfig.blacklistTools.get();
+	static boolean blacklistTorch = ZyinHUDConfig.blacklistTorch.get();
+	static boolean blacklistWaterBucket = ZyinHUDConfig.blacklistWaterBucket.get();
+	static boolean closeChestAfterDepositing = ZyinHUDConfig.closeChestAfterDepositing.get();
+	static boolean ignoreItemsInHotbar = ZyinHUDConfig.ignoreItemsInHotbar.get();
 
 
 	/**
@@ -74,7 +78,7 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 				InventoryUtil.depositAllMatchingItemsInMerchant();
 			}
 			else if (mc.currentScreen instanceof FurnaceScreen) {
-				InventoryUtil.depositAllMatchingItemsInFurance();
+				InventoryUtil.depositAllMatchingItemsInFurnace();
 			}
 			else if (mc.currentScreen instanceof BrewingStandScreen) {
 				InventoryUtil.depositAllMatchingItemsInBrewingStand();

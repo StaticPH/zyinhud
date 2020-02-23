@@ -20,7 +20,7 @@ import java.util.function.Function;
 
 @SuppressWarnings({"SameParameterValue"})
 public class TagHelper {
-	private static final Logger logger = LogManager.getLogger("ZHTagHelper");
+	private static final Logger logger = LogManager.getLogger(TagHelper.class);
 	static class ZHItemTags extends TagHelper {
 		public static final Tag<Item> tag_TORCHES = forgeTag("torches");
 		public static final Tag<Item> tag_TORCH_PLACERS = forgeTag("torch_placers");
@@ -62,7 +62,7 @@ public class TagHelper {
 		}
 
 		public static boolean isArrowLike(Item item, boolean excludeSpecialArrows) {
-			if (!excludeSpecialArrows) {return isArrowLike(item);}
+			if (!excludeSpecialArrows) { return isArrowLike(item); }
 			return !isSpecialArrowLike(item) && isArrowLike(item);
 		}
 
@@ -73,7 +73,7 @@ public class TagHelper {
 		}
 
 		public static boolean isCrossbowAmmo(Item item, boolean excludeFireworks) {
-			if (!excludeFireworks) {return isCrossbowAmmo(item);}
+			if (!excludeFireworks) { return isCrossbowAmmo(item); }
 			return isArrowLike(item);
 		}
 

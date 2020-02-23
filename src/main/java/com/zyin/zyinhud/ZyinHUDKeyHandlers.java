@@ -4,11 +4,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHelper;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.client.event.InputEvent.MouseInputEvent;
 import net.minecraftforge.client.event.InputEvent.MouseScrollEvent;
-import net.minecraftforge.client.event.InputEvent.RawMouseEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -123,13 +121,15 @@ public class ZyinHUDKeyHandlers {
 
 	private static void onKeyPress(KeyInputEvent event) {
 		if (animalInfoKey.isKeyDown()) { AnimalInfoKeyHandler.onPressed(event); }
-		else if (coordinateKey.isKeyDown()) { CoordinatesKeyHandler.onPressed(event);} //THIS WILL NOT FIRE ON A Screen
+		//THIS WILL NOT FIRE ON A Screen
+		else if (coordinateKey.isKeyDown()) { CoordinatesKeyHandler.onPressed(event); }
 		else if (distanceKey.isKeyDown()) { DistanceMeasurerKeyHandler.onPressed(event); }
 //		else if (eatingAidKey.isKeyDown()) { EatingAidKeyHandler.onPressed(event); }
 		else if (enderPearlKey.isKeyDown()) { EnderPearlAidKeyHandler.onPressed(event); }
 		else if (playerLocatorKey.isKeyDown()) { PlayerLocatorKeyHandler.onPressed(event); }
 		else if (potionAidKey.isKeyDown()) { PotionAidKeyHandler.onPressed(event); }
-		else if (quickDepositKey.isKeyDown()) { QuickDepositKeyHandler.onPressed(event);} //THIS WILL NOT FIRE ON A Screen
+		//THIS WILL NOT FIRE ON A Screen
+		else if (quickDepositKey.isKeyDown()) { QuickDepositKeyHandler.onPressed(event); }
 		else if (safeOverlayKey.isKeyDown()) { SafeOverlayKeyHandler.onPressed(event); }
 		else if (weaponSwapperKey.isKeyDown()) { WeaponSwapperKeyHandler.onPressed(event); }
 		else if (optionsKey.isKeyDown()) { ZyinHUDOptionsKeyHandler.onPressed(event); }
@@ -143,28 +143,39 @@ public class ZyinHUDKeyHandlers {
 	}
 
 	/**
-	 * Mouse event.
+	 * Mouse scroll event.
 	 *
 	 * @param event the event
 	 */
 	@SubscribeEvent
-	public static void onMouseEvent(InputEvent event) {
-		if ((event instanceof MouseScrollEvent) && ((MouseScrollEvent) event).getScrollDelta() != 0) {
-			if (itemSelectorKey.isKeyDown()) { ItemSelectorKeyHandler.onMouseWheelScroll((MouseScrollEvent) event); }
-		}
-
-		if (event instanceof MouseInputEvent) {
-			//Mouse side buttons
-			if (((MouseInputEvent) event).getButton() == 3 || ((MouseInputEvent) event).getButton() == 4) {
-				if (mouseHelper.isLeftDown() || mouseHelper.isRightDown()) {
-					ItemSelectorKeyHandler.onMouseSideButton((MouseInputEvent) event);
-				}
+	public static void onMouseScrollEvent(MouseScrollEvent event) {
+		// Ignore mouse scrolling if ItemSelector is not currently rendering,
+		// because it shouldn't do things if you cant see what you're doing.
+		if (event.getScrollDelta() != 0) {
+			if (itemSelectorKey.isKeyDown() && ItemSelectorKeyHandler.isCurrentlyRendering()) {
+				ItemSelectorKeyHandler.onMouseWheelScroll(event);
 			}
 		}
+	}
 
-		if (event instanceof RawMouseEvent) {
-			if (itemSelectorKey.isKeyDown() && mc.gameSettings.keyBindAttack.isPressed()) {
-				ItemSelectorKeyHandler.onAbort((RawMouseEvent) event);
+	/**
+	 * Mouse button event.
+	 *
+	 * @param event the event
+	 */
+	@SubscribeEvent
+	public static void onMouseInputEvent(MouseInputEvent event) {
+		// Ignore the mouse buttons if ItemSelector is not currently rendering,
+		// because it shouldn't do things if you cant see what you're doing.
+		if (ItemSelectorKeyHandler.isCurrentlyRendering()) {
+			//Mouse side buttons
+			if (event.getButton() == 3 || event.getButton() == 4) {
+				if (mouseHelper.isLeftDown() || mouseHelper.isRightDown()) {
+					ItemSelectorKeyHandler.onMouseSideButton(event);
+				}
+			}
+			else if (itemSelectorKey.isKeyDown() && mc.gameSettings.keyBindAttack.isPressed()) {
+				ItemSelectorKeyHandler.onAbort(event);
 			}
 		}
 	}

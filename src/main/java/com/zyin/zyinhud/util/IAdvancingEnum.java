@@ -19,7 +19,7 @@ public interface IAdvancingEnum<E extends Enum<E> & IAdvancingEnum<E>> {
 	@SuppressWarnings("unchecked")
 	default E[] getValues() {
 		//Note: getEnumConstants will be null if IAdvancingEnum is used implemented by something other than an enum; though that shouldn't be allowed
-//		if (!(this.getClass().isEnum())){return null;}
+//		if (!(this.getClass().isEnum())){ return null; }
 		return (E[]) getClass().getEnumConstants();
 	}
 

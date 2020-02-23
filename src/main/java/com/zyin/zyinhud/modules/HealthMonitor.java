@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
  */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class HealthMonitor extends ZyinHUDModuleBase {
-	private static final Logger logger = LogManager.getLogger("ZHHealthMonitor");
+	private static final Logger logger = LogManager.getLogger(HealthMonitor.class);
 	/**
 	 * Enables/Disables this module
 	 */
@@ -45,9 +45,9 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 
 	private static Timer timer = new Timer();
 
-	private static int lowHealthSoundThreshold = ZyinHUDConfig.lowHealthSoundThreshold.get();
-	private static float volume = ZyinHUDConfig.healthMonitorVolume.get().floatValue();
-	public static boolean playFasterNearDeath = ZyinHUDConfig.playFasterNearDeath.get();
+	static int lowHealthSoundThreshold = ZyinHUDConfig.lowHealthSoundThreshold.get();
+	static float volume = ZyinHUDConfig.healthMonitorVolume.get().floatValue();
+	static boolean playFasterNearDeath = ZyinHUDConfig.playFasterNearDeath.get();
 
 	private static boolean isPlayingLowHealthSound = false;
 	private static final int repeatDelay = 1000;

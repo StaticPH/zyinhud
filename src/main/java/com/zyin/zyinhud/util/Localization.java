@@ -49,7 +49,7 @@ public class Localization {
 	@SuppressWarnings("deprecation")
 	@Nullable
 	public static String toTitleCase(String str) {
-		if (str == null || str.trim().isEmpty()) {return str;}
+		if (str == null || str.trim().isEmpty()) { return str; }
 
 		final char[] old = str.toCharArray();
 		old[0] = Character.toTitleCase(old[0]);

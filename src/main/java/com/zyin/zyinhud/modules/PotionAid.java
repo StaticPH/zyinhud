@@ -11,6 +11,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.PotionItem;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.PotionUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.AWTException;
 import java.awt.Robot;
@@ -24,6 +26,8 @@ import java.util.TimerTask;
  * Potion Aid allows the player to drink potions in their inventory by calling its Drink() method.
  */
 public class PotionAid extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger(PotionAid.class);
+
 	/**
 	 * Enables/Disables this module
 	 */
@@ -190,8 +194,8 @@ public class PotionAid extends ZyinHUDModuleBase {
 	 *
 	 * @return the index in your inventory that has the most appropriate potion to drink (9-34), or -1 if no appropriate potions found.
 	 */
-	public static int getMostAppropriatePotionItemIndexFromInventory() {//_CHECK that i dont actually want to use container.inventorySlots instead
-		List inventorySlots = mc.player.inventory.mainInventory;
+	public static int getMostAppropriatePotionItemIndexFromInventory() {
+		List inventorySlots = mc.player.container.inventorySlots;
 
 		//indexes of potions in the player's inventory
 		int fireResistancePotionIndex = -1;

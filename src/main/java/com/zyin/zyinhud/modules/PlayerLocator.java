@@ -24,6 +24,8 @@ import net.minecraft.item.Items;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nonnull;
@@ -40,6 +42,8 @@ import static com.zyin.zyinhud.util.ZyinHUDUtil.doesScreenShowHUD;
  * The Player Locator checks for nearby players and displays their name on screen wherever they are.
  */
 public class PlayerLocator extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger(PlayerLocator.class);
+
 	/**
 	 * Enables/Disables this module
 	 */
@@ -64,11 +68,11 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	/**
 	 * Shows how far you are from other players next to their name
 	 */
-	private static boolean showDistanceToPlayers = ZyinHUDConfig.showDistanceToPlayers.get();
-	private static boolean showPlayerHealth = ZyinHUDConfig.showPlayerHealth.get();
-	private static boolean showWitherSkeletons = ZyinHUDConfig.showWitherSkeletons.get();
-	private static boolean showWolves = ZyinHUDConfig.showWolves.get();
-	private static boolean useWolfColors = ZyinHUDConfig.useWolfColors.get();
+	static boolean showDistanceToPlayers = ZyinHUDConfig.showDistanceToPlayers.get();
+	static boolean showPlayerHealth = ZyinHUDConfig.showPlayerHealth.get();
+	static boolean showWitherSkeletons = ZyinHUDConfig.showWitherSkeletons.get();
+	static boolean showWolves = ZyinHUDConfig.showWolves.get();
+	static boolean useWolfColors = ZyinHUDConfig.useWolfColors.get();
 
 	private static final ResourceLocation iconsResourceLocation = new ResourceLocation("textures/gui/icons.png");
 
@@ -79,7 +83,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	/**
 	 * Don't render players that are closer than this
 	 */
-	private static int viewDistanceCutoff = ZyinHUDConfig.playerLocatorMinViewDistance.get();
+	static int viewDistanceCutoff = ZyinHUDConfig.playerLocatorMinViewDistance.get();
 	private static final int minViewDistanceCutoff = LocatorOptions.minViewDistanceCutoff;
 	private static final int maxViewDistanceCutoff = LocatorOptions.maxViewDistanceCutoff;    //realistic max distance the game will render entities: up to ~115 blocks away
 

@@ -5,6 +5,8 @@ import com.zyin.zyinhud.modules.ZyinHUDModuleModes.ClockOptions;
 import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -13,6 +15,8 @@ import org.lwjgl.opengl.GL11;
  * @See {@link "http://www.minecraftwiki.net/wiki/Day-night_cycle"}
  */
 public class Clock extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger(Clock.class);
+
 	/**
 	 * Enables/Disables this module
 	 */
@@ -44,6 +48,7 @@ public class Clock extends ZyinHUDModuleBase {
 	private static final long bedTime = 12540;
 
 	//TODO: consider adjusting time display to be constant if mc.gameSettings.doDaylightCycle == false
+
 	/**
 	 * Calculates time
 	 *
@@ -57,7 +62,7 @@ public class Clock extends ZyinHUDModuleBase {
 
 				//0 game time is 6am, so add 6000
 				long hours = (time + 6000) / 1000;
-				if (hours >= 24) { hours = hours - 24;}
+				if (hours >= 24) { hours = hours - 24; }
 				long seconds = (long) (((time + 6000) % 1000) * (60.0 / 1000.0));
 
 				if (isNight()) {

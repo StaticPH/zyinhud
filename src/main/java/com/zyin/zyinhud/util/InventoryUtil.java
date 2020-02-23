@@ -19,6 +19,8 @@ import net.minecraft.util.ActionResultType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.CheckForNull;
 import java.lang.reflect.Field;
@@ -57,7 +59,7 @@ public class InventoryUtil {
 	 * -------------
 	 *
 	 */
-
+	private static final Logger logger = LogManager.getLogger(InventoryUtil.class);
 	private static Minecraft mc = Minecraft.getInstance();
 	private Timer timer = new Timer();
 
@@ -363,7 +365,7 @@ public class InventoryUtil {
 	 * as long as there is a matching item already in the chest.
 	 * <br>
 	 * <br>Only works with single chest, double chest, donkey/mules, hopper, dropper, and dispenser. For other containers,
-	 * use their specific methods: depositAllMatchingItemsInMerchant(), depositAllMatchingItemsInFurance(), and
+	 * use their specific methods: depositAllMatchingItemsInMerchant(), depositAllMatchingItemsInFurnace(), and
 	 * depositAllMatchingItemsInBrewingStand().
 	 *
 	 * @param onlyDepositMatchingItems only deposit an item if another one exists in the chest already
@@ -685,15 +687,15 @@ public class InventoryUtil {
 	}
 
 	/**
-	 * Deposit all matching items in furance boolean.
+	 * Deposit all matching items in furnace boolean.
 	 *
 	 * @return the boolean
 	 */
 	@SuppressWarnings("DuplicatedCode")
-	public static boolean depositAllMatchingItemsInFurance() {
+	public static boolean depositAllMatchingItemsInFurnace() {
 		if (!(mc.currentScreen instanceof FurnaceScreen)) { return false; }
 
-		//furance container = 39 big
+		//furnace container = 39 big
 		//slot 0 = input
 		//slot 1 = fuel
 		//slot 2 = output
@@ -723,16 +725,16 @@ public class InventoryUtil {
 		int iStart = numFurnaceSlots;    //furnaces have 3 container slots
 		int iEnd = numDisplayedSlots;
 
-		//find items in our inventory that match the items in the furance fuel/input slot
+		//find items in our inventory that match the items in the furnace fuel/input slot
 		for (int i = iStart; i < iEnd; i++) {
 			Slot slot = (Slot) furnaceSlots.get(i);
 			ItemStack itemStack = slot.getStack();
 			if (!itemStack.isEmpty()) {
 				if (!inputStack.isEmpty() && areItemStacksEqualIgnoreAmount(itemStack, inputStack)) {
-					depositItemInFurance(i, 0);
+					depositItemInFurnace(i, 0);
 				}
 				else if (!fuelStack.isEmpty() && areItemStacksEqualIgnoreAmount(itemStack, fuelStack)) {
-					depositItemInFurance(i, 1);
+					depositItemInFurnace(i, 1);
 				}
 			}
 		}
@@ -741,7 +743,7 @@ public class InventoryUtil {
 		if (!outputStack.isEmpty()) {
 			int openSlot = getFirstEmptyIndexInContainerInventory(outputStack);
 			if (openSlot > 0) {
-				depositItemInFurance(
+				depositItemInFurnace(
 					2, openSlot);    //'deposit' it from the output slot into an empty slot in our inventory
 			}
 		}
@@ -749,7 +751,7 @@ public class InventoryUtil {
 		return true;
 	}
 
-	private static boolean depositItemInFurance(int srcIndex, int destIndex) {
+	private static boolean depositItemInFurnace(int srcIndex, int destIndex) {
 		/*
 		if(destIndex < 0 || destIndex > 1)
 			return false;
@@ -849,7 +851,7 @@ public class InventoryUtil {
 		int iStart = numFurnaceSlots;    //furnaces have 3 container slots
 		int iEnd = numDisplayedSlots;
 
-		//find items in our inventory that match the items in the furance fuel/input slot
+		//find items in our inventory that match the items in the furnace fuel/input slot
 		for (int i = iStart; i < iEnd; i++) {
 			Slot slot = (Slot) brewingStandSlots.get(i);
 			ItemStack itemStack = slot.getStack();
@@ -863,17 +865,14 @@ public class InventoryUtil {
 					if (outputStack1.isEmpty()) {
 						depositItemInBrewingStand(i, 0);
 						outputStack1 = mc.player.openContainer.inventorySlots.get(0).getStack();
-						continue;
 					}
 					else if (outputStack2.isEmpty()) {
 						depositItemInBrewingStand(i, 1);
 						outputStack2 = mc.player.openContainer.inventorySlots.get(1).getStack();
-						continue;
 					}
 					else if (outputStack3.isEmpty()) {
 						depositItemInBrewingStand(i, 2);
 						outputStack3 = mc.player.openContainer.inventorySlots.get(2).getStack();
-						continue;
 					}
 				}
 			}

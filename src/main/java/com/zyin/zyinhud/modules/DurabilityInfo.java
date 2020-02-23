@@ -1,6 +1,5 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUD;
 import com.zyin.zyinhud.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.ZyinHUDSound;
@@ -15,6 +14,8 @@ import net.minecraft.item.*;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
@@ -24,7 +25,8 @@ import java.util.ArrayList;
  * and then displays info about them onto the HUD.
  */
 public class DurabilityInfo extends ZyinHUDModuleBase {
-	private static boolean doLogUnequips = ZyinHUDConfig.enableLoggingUnequip.get();
+	private static final Logger logger = LogManager.getLogger(DurabilityInfo.class);
+	static boolean doLogUnequips = ZyinHUDConfig.enableLoggingUnequip.get();
 	/**
 	 * Enables/Disables this module
 	 */
@@ -46,45 +48,45 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 	 */
 	protected static DurabilityInfoOptions.DurabilityInfoTextModes mode = ZyinHUDConfig.durabilityInfoTextMode.get();
 
-	protected static final ResourceLocation durabilityIconsResourceLocation =
+	private static final ResourceLocation durabilityIconsResourceLocation =
 		new ResourceLocation("zyinhud:textures/durability_icons.png");
 
-	private static boolean autoUnequipArmor = ZyinHUDConfig.autoUnequipArmor.get();
-	private static boolean autoUnequipTools = ZyinHUDConfig.autoUnequipTools.get();
-	private static boolean showArmorDurability = ZyinHUDConfig.showArmorDurability.get();
+	static boolean autoUnequipArmor = ZyinHUDConfig.autoUnequipArmor.get();
+	static boolean autoUnequipTools = ZyinHUDConfig.autoUnequipTools.get();
+	static boolean showArmorDurability = ZyinHUDConfig.showArmorDurability.get();
 	//	public static boolean showDamageAsPercentage; //_Consider: implement this?
-	private static boolean showItemDurability = ZyinHUDConfig.showItemDurability.get();
-	private static boolean showIndividualArmorIcons = ZyinHUDConfig.showIndividualArmorIcons.get();
-	private static boolean useColoredNumbers = ZyinHUDConfig.useColoredNumbers.get();
+	static boolean showItemDurability = ZyinHUDConfig.showItemDurability.get();
+	static boolean showIndividualArmorIcons = ZyinHUDConfig.showIndividualArmorIcons.get();
+	static boolean useColoredNumbers = ZyinHUDConfig.useColoredNumbers.get();
 
-	private static float durabilityIconScale = ZyinHUDConfig.durabilityScale.get().floatValue();
-	public static boolean hideDurabilityInfoInChat = ZyinHUDConfig.hideDurabilityInfoInChat.get();
+	static float durabilityIconScale = ZyinHUDConfig.durabilityScale.get().floatValue();
+	static boolean hideDurabilityInfoInChat = ZyinHUDConfig.hideDurabilityInfoInChat.get();
 	private static final int durabilityUpdateFrequency = 600;
 
-	protected static float armorDurabilityScaler = 0.2f;
+	private static float armorDurabilityScaler = 0.2f;
 	/** X coordinate of the texture inside of the image */
 	protected static int armorDurabilityIconU = 0;
 	/** Y coordinate of the texture inside of the image */
 	protected static int armorDurabilityIconV = 0;
 	/** Width of the image */
-	protected static int armorDurabilityIconWidth = (int) (5 * 16 * armorDurabilityScaler);
+	private static int armorDurabilityIconWidth = (int) (5 * 16 * armorDurabilityScaler);
 	/** Height of the image */
-	protected static int armorDurabilityIconHeight = (int) (7.5 * 16 * armorDurabilityScaler);
+	private static int armorDurabilityIconHeight = (int) (7.5 * 16 * armorDurabilityScaler);
 
 	//the height/width of the tools being rendered
-	public static int toolIconWidth = DurabilityInfoOptions.toolIconWidth;
-	public static int toolIconHeight = DurabilityInfoOptions.toolIconHeight;
+	private static int toolIconWidth = DurabilityInfoOptions.toolIconWidth;
+	private static int toolIconHeight = DurabilityInfoOptions.toolIconHeight;
 
 	//where the armor icon is rendered
-	private static int durabilityLocX = ZyinHUDConfig.durabilityHorizontalPos.get();
-	private static int durabilityLocY = ZyinHUDConfig.durabilityVerticalPos.get();
+	static int durabilityLocX = ZyinHUDConfig.durabilityHorizontalPos.get();
+	static int durabilityLocY = ZyinHUDConfig.durabilityVerticalPos.get();
 
 	//where the tool icons are rendered; SEEMS TO BE UNUTILIZED
 //	protected static int equipmentLocX = 20 + armorDurabilityIconWidth;
 //	protected static int equipmentLocY = 20;
 
-	private static float armorDurabilityDisplayThreshold = ZyinHUDConfig.armorDurabilityDisplayThreshold.get().floatValue();
-	private static float itemDurabilityDisplayThreshold = ZyinHUDConfig.itemDurabilityDisplayThreshold.get().floatValue();
+	static float armorDurabilityDisplayThreshold = ZyinHUDConfig.armorDurabilityDisplayThreshold.get().floatValue();
+	static float itemDurabilityDisplayThreshold = ZyinHUDConfig.itemDurabilityDisplayThreshold.get().floatValue();
 
 	//used to push items into the list of broken equipment to render
 	private static ArrayList<ItemStack> damagedItemsList = new ArrayList<ItemStack>(13);
@@ -213,11 +215,9 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 
 			int damageStringX = x + toolIconWidth - mc.fontRenderer.getStringWidth(damageStringText);
 			int damageStringY = y + toolIconHeight - mc.fontRenderer.FONT_HEIGHT - 2;
-			int damageStringColor = 0xffffff;
-
-			if (useColoredNumbers) {
-				damageStringColor = getDamageColor(itemStack.getDamage(), itemStack.getMaxDamage());
-			}
+			int damageStringColor = useColoredNumbers ?
+			                        getDamageColor(itemStack.getDamage(), itemStack.getMaxDamage()) :
+			                        0xffffff;
 
 			GL11.glDisable(GL11.GL_DEPTH_TEST);    //so the text renders above the item
 			mc.fontRenderer.drawStringWithShadow(damageStringText, damageStringX, damageStringY, damageStringColor);
@@ -380,7 +380,7 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 							itemStack.getDisplayName().getString()
 						);
 						if (doLogUnequips) {
-							ZyinHUD.ZyinLogger.info(
+							logger.info(
 								"Unequipped {} because it was at low durability ({}/{})",
 								itemStack.getDisplayName().getString(), itemDamage, maxDamage
 							);
@@ -404,8 +404,8 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 
 				if (
 					item instanceof ToolItem || item instanceof SwordItem ||
-				    item instanceof BowItem || item instanceof HoeItem ||
-				    item instanceof ShearsItem || item instanceof FishingRodItem
+					item instanceof BowItem || item instanceof HoeItem ||
+					item instanceof ShearsItem || item instanceof FishingRodItem
 				) {
 					int itemDamage = itemStack.getDamage();
 					int maxDamage = itemStack.getMaxDamage();
@@ -413,8 +413,8 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 
 					if (
 						maxDamage != 0 &&
-					    maxDamage - itemDamage < threshold &&                //less than 15 durability
-					    (float) itemDamage / (float) maxDamage > 0.9        //less than 10%
+						maxDamage - itemDamage < threshold &&                //less than 15 durability
+						(float) itemDamage / (float) maxDamage > 0.9        //less than 10%
 					) {
 						InventoryUtil.moveHeldItemIntoPlayerInventory();
 						ZyinHUDSound.playPlopSound();
@@ -424,7 +424,7 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 							item.getDisplayName(itemStack).getString()
 						);
 						if (doLogUnequips) {
-							ZyinHUD.ZyinLogger.info(
+							logger.info(
 								"Unequipped {} because it was at low durability ({}/{})",
 								item.getDisplayName(itemStack).getString(), itemDamage, maxDamage
 							);

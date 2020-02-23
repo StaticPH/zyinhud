@@ -23,6 +23,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -38,6 +40,7 @@ import java.util.stream.Stream;
  * General utility class for ZyinHUD.
  */
 public class ZyinHUDUtil {
+	private static final Logger logger = LogManager.getLogger(ZyinHUDUtil.class);
 	private static final Method itemUseMethod =     // the private method: Minecraft.rightClickMouse()
 		ObfuscationReflectionHelper.findMethod(Minecraft.class, "func_147121_ag");
 	private static Minecraft mc = Minecraft.getInstance();
@@ -253,7 +256,9 @@ public class ZyinHUDUtil {
 		/**
 		 * @return the internal double[]
 		 */
-		public double[] get() {return this.array;}
+		public double[] get() {
+			return this.array;
+		}
 	}
 
 	// Because lwjgl3 doesnt provide glu anymore, we're just going to have to provide the functions we needed ourselves,

@@ -7,7 +7,7 @@ import com.zyin.zyinhud.modules.ItemSelector;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 import net.minecraftforge.client.event.InputEvent.MouseInputEvent;
 import net.minecraftforge.client.event.InputEvent.MouseScrollEvent;
-import net.minecraftforge.client.event.InputEvent.RawMouseEvent;
+import net.minecraftforge.eventbus.api.Event.Result;
 
 public class ItemSelectorKeyHandler implements ZyinHUDKeyHandlerBase {
 	public static final String hotkeyDescription = "key.zyinhud.itemselector";
@@ -37,8 +37,13 @@ public class ItemSelectorKeyHandler implements ZyinHUDKeyHandlerBase {
 		ItemSelector.onHotkeyReleased();
 	}
 
-	public static void onAbort(RawMouseEvent event) {
+	public static void onAbort(MouseInputEvent event) {
 		ItemSelector.onHotkeyAbort();
-		event.setCanceled(true);
+		if (event.hasResult()){ event.setResult(Result.DENY); }
+		if (event.isCancelable()){ event.setCanceled(true); }
+	}
+
+	public static boolean isCurrentlyRendering() {
+		return ItemSelector.getIsCurrentlyRendering();
 	}
 }

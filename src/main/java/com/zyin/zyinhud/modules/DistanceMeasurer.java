@@ -9,12 +9,16 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.math.RayTraceResult;
 
 import com.zyin.zyinhud.util.Localization;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The Distance Measurer calculates the distance from the player to whatever the player's
  * crosshairs is looking at.
  */
 public class DistanceMeasurer extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger(DistanceMeasurer.class);
+
 	/**
 	 * Enables/Disables this module
 	 */
@@ -44,7 +48,8 @@ public class DistanceMeasurer extends ZyinHUDModuleBase {
 		//if the player is in the world
 		//and not looking at a menu
 		//and F3 not pressed
-		if (DistanceMeasurer.isEnabled &&
+		if (
+			DistanceMeasurer.isEnabled &&
 		    mode != DistanceMeasurerOptions.DistanceMeasurerModes.OFF &&
 		    !mc.gameSettings.showDebugInfo &&
 		    (mc.mouseHelper.isMouseGrabbed() || ((mc.currentScreen instanceof ChatScreen)))

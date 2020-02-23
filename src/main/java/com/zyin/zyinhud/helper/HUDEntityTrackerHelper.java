@@ -98,7 +98,7 @@ public class HUDEntityTrackerHelper {
 			for (Entity entity : findEntities(mc.world, playerLocatorMaybeTrack, logger)) {
 				// This shouldn't be necessary, given that the predicate will always fails for null values...
 				// But the inspector is being obnoxious, and this shuts it up
-				if (entity == null) {continue;}
+				if (entity == null) { continue; }
 
 				// direction to target entity
 				Vec3d toEntity = entity.getPositionVec().subtract(player.getPositionVec());

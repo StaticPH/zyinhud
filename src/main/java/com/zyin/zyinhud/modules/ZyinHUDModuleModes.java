@@ -157,8 +157,8 @@ public class ZyinHUDModuleModes {
 			 * @return modes
 			 */
 			public static CoordinateModes getMode(String modeName) {
-				try {return CoordinateModes.valueOf(modeName);}
-				catch (IllegalArgumentException e) {return XZY;}
+				try { return CoordinateModes.valueOf(modeName); }
+				catch (IllegalArgumentException e) { return XZY; }
 			}
 
 			/**
@@ -267,8 +267,8 @@ public class ZyinHUDModuleModes {
 			 * @return text modes
 			 */
 			public static DurabilityInfoTextModes getMode(String modeName) {
-				try {return DurabilityInfoTextModes.valueOf(modeName);}
-				catch (IllegalArgumentException e) {return values()[1];}
+				try { return DurabilityInfoTextModes.valueOf(modeName); }
+				catch (IllegalArgumentException e) { return values()[1]; }
 			}
 
 			/**
@@ -311,8 +311,8 @@ public class ZyinHUDModuleModes {
 			 * @return text modes
 			 */
 			public static EatingAidModes getMode(String modeName) {
-				try {return EatingAidModes.valueOf(modeName);}
-				catch (IllegalArgumentException e) {return values()[1];}
+				try { return EatingAidModes.valueOf(modeName); }
+				catch (IllegalArgumentException e) { return values()[1]; }
 			}
 
 			/**
@@ -490,8 +490,8 @@ public class ZyinHUDModuleModes {
 			 * @return modes
 			 */
 			public static LocatorModes getMode(String modeName) {
-				try { return LocatorModes.valueOf(modeName);}
-				catch (IllegalArgumentException e) { return OFF;}
+				try { return LocatorModes.valueOf(modeName); }
+				catch (IllegalArgumentException e) { return OFF; }
 			}
 
 			/**

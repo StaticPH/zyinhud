@@ -6,6 +6,8 @@ import com.zyin.zyinhud.util.InventoryUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.RayTraceResult;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static com.zyin.zyinhud.helper.TagHelper.ItemLike.canItemPlaceTorches;
 import static com.zyin.zyinhud.util.ZyinHUDUtil.useItem;
@@ -16,6 +18,8 @@ import static com.zyin.zyinhud.util.ZyinHUDUtil.useItem;
  * key is released.
  */
 public class TorchAid extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger(TorchAid.class);
+
 	/**
 	 * Enables/Disables this module
 	 */

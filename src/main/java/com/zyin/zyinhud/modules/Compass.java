@@ -4,11 +4,15 @@ import com.zyin.zyinhud.ZyinHUDConfig;
 import net.minecraft.util.text.TextFormatting;
 
 import com.zyin.zyinhud.util.Localization;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The Compass determines what direction the player is facing.
  */
 public class Compass extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger(Compass.class);
+
 	/**
 	 * Enables/Disables this module
 	 */
@@ -25,7 +29,7 @@ public class Compass extends ZyinHUDModuleBase {
 		return isEnabled = !isEnabled;
 	}
 
-	public static boolean renderCompassTextInMiddle = ZyinHUDConfig.renderCompassTextInMiddle.get();
+	static boolean renderCompassTextInMiddle = ZyinHUDConfig.renderCompassTextInMiddle.get();
 
 	private static String south = Localization.get("compass.south");
 	private static String southwest = Localization.get("compass.southwest");

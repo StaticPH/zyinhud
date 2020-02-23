@@ -10,6 +10,7 @@ import net.minecraft.entity.monster.WitherSkeletonEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.CheckForNull;
@@ -25,6 +26,9 @@ import static com.zyin.zyinhud.ZyinHUDConfig.enableLoggingAllEntitiesFound;
 import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.findField;
 
 public class EntityTrackerHelper {
+	private static final Logger logger = LogManager.getLogger(EntityTrackerHelper.class);
+	private static boolean allowLoggingEntitiesFound = enableLoggingAllEntitiesFound.get();
+
 	public static final Predicate<Entity> playerLocatorMaybeTrack = (entity) -> (
 		entity instanceof RemoteClientPlayerEntity ||
 		entity instanceof WolfEntity ||
@@ -63,7 +67,7 @@ public class EntityTrackerHelper {
 			return entitiesById.values().parallelStream()
 			                   .filter(matching)
 			                   .peek(entity -> {
-				                   if (enableLoggingAllEntitiesFound.get() && logger != null) {
+				                   if (allowLoggingEntitiesFound && logger != null) {
 					                   logger.info(
 						                   "Found entity UUID:{}  other:{}",
 						                   entity.getCachedUniqueIdString(),

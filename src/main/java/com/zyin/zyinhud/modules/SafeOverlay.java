@@ -21,6 +21,8 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.spawner.WorldEntitySpawner;
 import net.minecraft.world.dimension.DimensionType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -33,6 +35,8 @@ import java.util.List;
  * mobs can spawn on.
  */
 public class SafeOverlay extends ZyinHUDModuleBase {
+	private static final Logger logger = LogManager.getLogger(SafeOverlay.class);
+
 	/**
 	 * Enables/Disables this module
 	 */
@@ -49,7 +53,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 		return isEnabled = !isEnabled;
 	}
 
-	public static MobEntity zombie = null;
+	private static MobEntity zombie = null;
 
 	/**
 	 * The current mode for this module
@@ -71,20 +75,17 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * <br>
 	 * drawDistance = 175 = 42,875,000 blocks (max)
 	 */
-	protected static int drawDistance = ZyinHUDConfig.safeOverlayDrawDistance.get();
-	public static final int defaultDrawDistance = SafeOverlayOptions.defaultDrawDistance;
-	public static final int minDrawDistance = SafeOverlayOptions.minDrawDistance;
-	public static final int maxDrawDistance = SafeOverlayOptions.maxDrawDistance;
+	static int drawDistance = ZyinHUDConfig.safeOverlayDrawDistance.get();
 
 	/**
 	 * The transprancy of the "X" marks when rendered, between (0.1 and 1]
 	 */
-	private static float unsafeOverlayTransparency = ZyinHUDConfig.safeOverlayTransparency.get().floatValue();
+	static float unsafeOverlayTransparency = ZyinHUDConfig.safeOverlayTransparency.get().floatValue();
 	private static float minUnsafeOverlayTransparency = SafeOverlayOptions.minUnsafeOverlayTransparency;
 	private static float maxUnsafeOverlayTransparency = SafeOverlayOptions.maxUnsafeOverlayTransparency;
 
-	private static boolean displayInNether = ZyinHUDConfig.safeOverlayDisplayInNether.get();
-	private static boolean renderUnsafePositionsThroughWalls = ZyinHUDConfig.safeOverlaySeeThroughWalls.get();
+	static boolean displayInNether = ZyinHUDConfig.safeOverlayDisplayInNether.get();
+	static boolean renderUnsafePositionsThroughWalls = ZyinHUDConfig.safeOverlaySeeThroughWalls.get();
 
 	private BlockPos playerPosition;
 
@@ -261,7 +262,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 		GL11.glBegin(GL11.GL_LINES);    //begin drawing lines defined by 2 vertices
 
 		//render unsafe areas
-		unsafePositions.forEach(this::renderUnsafeMarker);
+		unsafePositions.forEach(SafeOverlay::renderUnsafeMarker);
 
 		//GL11.glColor4f(0, 0, 0, 1);    //change alpha back to 100% after we're done rendering
 		GL11.glEnd();
@@ -278,7 +279,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @param position A position defined by (x,y,z) coordinates
 	 */
-	protected void renderUnsafeMarker(BlockPos position) {
+	protected static void renderUnsafeMarker(BlockPos position) {
 		BlockState state = mc.player.world.getBlockState(position);
 		Block block = state.getBlock();
 		VoxelShape voxelshape = state.getShape(mc.player.world, position);
@@ -357,7 +358,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @return the draw distance radius
 	 */
-	public int getDrawDistance() {
+	public static int getDrawDistance() {
 		return drawDistance;
 	}
 
@@ -367,8 +368,10 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * @param newDrawDistance the new draw distance
 	 * @return the updated draw distance
 	 */
-	public int setDrawDistance(int newDrawDistance) {
-		drawDistance = MathHelper.clamp(newDrawDistance, minDrawDistance, maxDrawDistance);
+	public static int setDrawDistance(int newDrawDistance) {
+		drawDistance = MathHelper.clamp(
+			newDrawDistance, SafeOverlayOptions.minDrawDistance, SafeOverlayOptions.maxDrawDistance
+		);
 		return drawDistance;
 	}
 
@@ -377,7 +380,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @return the updated draw distance
 	 */
-	public int increaseDrawDistance() {
+	public static int increaseDrawDistance() {
 		return setDrawDistance(drawDistance + 3);
 	}
 
@@ -386,7 +389,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @return the updated draw distance
 	 */
-	public int decreaseDrawDistance() {
+	public static int decreaseDrawDistance() {
 		return setDrawDistance(drawDistance - 3);
 	}
 
@@ -396,7 +399,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * @param amount how much to increase the draw distance by
 	 * @return the updated draw distance
 	 */
-	public int increaseDrawDistance(int amount) {
+	public static int increaseDrawDistance(int amount) {
 		return setDrawDistance(drawDistance + amount);
 	}
 
@@ -406,7 +409,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * @param amount how much to increase the draw distance by
 	 * @return the updated draw distance
 	 */
-	public int decreaseDrawDistance(int amount) {
+	public static int decreaseDrawDistance(int amount) {
 		return setDrawDistance(drawDistance - amount);
 	}
 
@@ -415,7 +418,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @return boolean
 	 */
-	public boolean GetSeeUnsafePositionsThroughWalls() {
+	public static boolean GetSeeUnsafePositionsThroughWalls() {
 		return renderUnsafePositionsThroughWalls;
 	}
 
@@ -453,7 +456,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * @param safeOverlaySeeThroughWalls true or false
 	 * @return the updated see through wall mode
 	 */
-	public boolean setSeeUnsafePositionsThroughWalls(boolean safeOverlaySeeThroughWalls) {
+	public static boolean setSeeUnsafePositionsThroughWalls(boolean safeOverlaySeeThroughWalls) {
 		return renderUnsafePositionsThroughWalls = safeOverlaySeeThroughWalls;
 	}
 
@@ -462,7 +465,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 *
 	 * @return the udpated see through wall mode
 	 */
-	public boolean toggleSeeUnsafePositionsThroughWalls() {
+	public static boolean toggleSeeUnsafePositionsThroughWalls() {
 		return setSeeUnsafePositionsThroughWalls(!renderUnsafePositionsThroughWalls);
 	}
 

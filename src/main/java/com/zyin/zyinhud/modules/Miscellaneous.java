@@ -29,9 +29,9 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	private static final Logger logger = LogManager.getLogger(Miscellaneous.class);
 	public static final Miscellaneous instance = new Miscellaneous();
 
-	public static boolean useQuickPlaceSign = ZyinHUDConfig.useQuickPlaceSign.get();
-	public static boolean useUnlimitedSprintingSP = ZyinHUDConfig.useUnlimitedSprintingSP.get();
-	public static boolean showAnvilRepairs = ZyinHUDConfig.showAnvilRepairs.get();
+	static boolean useQuickPlaceSign = ZyinHUDConfig.useQuickPlaceSign.get();
+	static boolean useUnlimitedSprintingSP = ZyinHUDConfig.useUnlimitedSprintingSP.get();
+	static boolean showAnvilRepairs = ZyinHUDConfig.showAnvilRepairs.get();
 
 	private static final int maxRepairTimes = 6;
 
