@@ -3,7 +3,7 @@ package com.zyin.zyinhud.modules;
 
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.ItemSelectorOptions;
 import com.zyin.zyinhud.util.InventoryUtil;
@@ -30,35 +30,24 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableItemSelector.get();
-
-	/**
-	 * Toggles this module on or off
-	 *
-	 * @return The state the module was changed to
-	 */
-	public static boolean toggleEnabled() {
-		ZyinHUDConfig.enableItemSelector.set(!isEnabled);
-		ZyinHUDConfig.enableItemSelector.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return isEnabled = !isEnabled;
-	}
+	public static boolean isEnabled;
 
 	/**
 	 * The current mode for this module
 	 */
-	public static ItemSelectorOptions.ItemSelectorModes mode = ZyinHUDConfig.itemSelectorMode.get();
+	public static ItemSelectorOptions.ItemSelectorModes mode;
 
 	/**
 	 * Determines if the side buttons of supported mice can be used for item selection
 	 */
-	static boolean useMouseSideButtons = ZyinHUDConfig.itemSelectorSideButtons.get();
+	private static boolean useMouseSideButtons;
 
 	protected static final ResourceLocation widgetTexture = new ResourceLocation("textures/gui/widgets.png");
 
 	public static final int WHEEL_UP = -1;
 	public static final int WHEEL_DOWN = 1;
 
-	static int timeout = ZyinHUDConfig.itemSelectorTimeout.get();
+	private static int timeout;
 
 	private static int[] slotMemory = new int[PlayerInventory.getHotbarSize()];
 
@@ -70,6 +59,26 @@ public class ItemSelector extends ZyinHUDModuleBase {
 	private static int targetInvSlot = -1;
 	private static int currentHotbarSlot = 0;
 	private static NonNullList<ItemStack> currentInventory = null;
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableItemSelector.get();
+		mode = ZyinHUDConfig.itemSelectorMode.get();
+		useMouseSideButtons = ZyinHUDConfig.itemSelectorSideButtons.get();
+		timeout = ZyinHUDConfig.itemSelectorTimeout.get();
+	}
+
+	/**
+	 * Toggles this module on or off
+	 *
+	 * @return The state the module was changed to
+	 */
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableItemSelector.set(!isEnabled);
+		ZyinHUDConfig.enableItemSelector.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
+	}
 
 	/**
 	 * Scrolls the selector towards the specified direction. This will cause the item selector overlay to show.

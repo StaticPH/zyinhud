@@ -22,7 +22,7 @@ import java.util.Collection;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static com.zyin.zyinhud.ZyinHUDConfig.enableLoggingAllEntitiesFound;
+import static com.zyin.zyinhud.config.ZyinHUDConfig.enableLoggingAllEntitiesFound;
 import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.findField;
 
 public class EntityTrackerHelper {

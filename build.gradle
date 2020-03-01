@@ -17,11 +17,12 @@ apply plugin: 'maven-publish'
 //group = mod_group
 archivesBaseName = 'ZyinsHUD'
 
-version = "${minecraft_version}-${mod_version}"
-/** If on a build server, append the build number to the version string **/
-if (System.getenv().BUILD_NUMBER != null) {
-    version += ".${System.getenv().BUILD_NUMBER}"
-}
+/**
+ * If not on a build server, version is "${minecraft_version}-${mod_version}";
+ * otherwise, version is the same as before, but with the build number also appended
+ */
+version = "${minecraft_version}-${mod_version}" +
+        (System.getenv().BUILD_NUMBER == null ? "" : ".${System.getenv().BUILD_NUMBER}")
 
 /** Need this here so eclipse task generates correctly. **/
 sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8'
@@ -34,8 +35,8 @@ minecraft {
     // Simply re-run your setup task after changing the mappings to update your workspace.
     mappings channel: mappings_channel, version: mappings_version
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
-    
-     accessTransformer = file('src/resources/main/META-INF/accesstransformer.cfg')
+
+    accessTransformer = file('src/resources/main/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -128,13 +129,13 @@ dependencies {
 jar {
     manifest {
         attributes([
-            "Specification-Title": "ZyinsHUD",
-            "Specification-Vendor": mod_vendor,
-            "Specification-Version": "1", // We are version 1 of ourselves
-            "Implementation-Title": project.name,
-            "Implementation-Version": "${version}",
-            "Implementation-Vendor" :mod_vendor,
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+                "Specification-Title"     : "ZyinsHUD",
+                "Specification-Vendor"    : mod_vendor,
+                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Implementation-Title"    : project.name,
+                "Implementation-Version"  : "${version}",
+                "Implementation-Vendor"   : mod_vendor,
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
 }
@@ -142,6 +143,7 @@ jar {
 //Automatic json minification; sourced from Darkhax's Druidcraft fork
 import groovy.json.JsonSlurper
 import groovy.json.JsonOutput
+
 processResources {
 
     doLast {
@@ -180,8 +182,8 @@ publishing {
         }
     }
     repositories {
-       // maven {
-       //     url "file:///${project.projectDir}/mcmodsrepo"
-       // }
+        // maven {
+        //     url "file:///${project.projectDir}/mcmodsrepo"
+        // }
     }
 }

@@ -1,8 +1,8 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDSound;
-import com.zyin.zyinhud.helper.TagHelper.ItemLike;
+import com.zyin.zyinhud.compat.GeneralCompat.ItemLike;
 import com.zyin.zyinhud.util.InventoryUtil;
 import net.minecraft.client.gui.screen.EnchantmentScreen;
 import net.minecraft.client.gui.screen.inventory.AnvilScreen;
@@ -31,18 +31,33 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableQuickDeposit.get();
-	static boolean blacklistClockCompass = ZyinHUDConfig.blacklistClockCompass.get();
-	static boolean blacklistWeapons = ZyinHUDConfig.blacklistWeapons.get();
-	static boolean blacklistArrow = ZyinHUDConfig.blacklistArrow.get();
-	static boolean blacklistEnderPearl = ZyinHUDConfig.blacklistEnderPearl.get();
-	static boolean blacklistFood = ZyinHUDConfig.blacklistFood.get();
-	static boolean blacklistTools = ZyinHUDConfig.blacklistTools.get();
-	static boolean blacklistTorch = ZyinHUDConfig.blacklistTorch.get();
-	static boolean blacklistWaterBucket = ZyinHUDConfig.blacklistWaterBucket.get();
-	static boolean closeChestAfterDepositing = ZyinHUDConfig.closeChestAfterDepositing.get();
-	static boolean ignoreItemsInHotbar = ZyinHUDConfig.ignoreItemsInHotbar.get();
+	public static boolean isEnabled;
+	private static boolean blacklistClockCompass;
+	private static boolean blacklistWeapons;
+	private static boolean blacklistArrow;
+	private static boolean blacklistEnderPearl;
+	private static boolean blacklistFood;
+	private static boolean blacklistTools;
+	private static boolean blacklistTorch;
+	private static boolean blacklistWaterBucket;
+	private static boolean closeChestAfterDepositing;
+	private static boolean ignoreItemsInHotbar;
 
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableQuickDeposit.get();
+		blacklistClockCompass = ZyinHUDConfig.blacklistClockCompass.get();
+		blacklistWeapons = ZyinHUDConfig.blacklistWeapons.get();
+		blacklistArrow = ZyinHUDConfig.blacklistArrow.get();
+		blacklistEnderPearl = ZyinHUDConfig.blacklistEnderPearl.get();
+		blacklistFood = ZyinHUDConfig.blacklistFood.get();
+		blacklistTools = ZyinHUDConfig.blacklistTools.get();
+		blacklistTorch = ZyinHUDConfig.blacklistTorch.get();
+		blacklistWaterBucket = ZyinHUDConfig.blacklistWaterBucket.get();
+		closeChestAfterDepositing = ZyinHUDConfig.closeChestAfterDepositing.get();
+		ignoreItemsInHotbar = ZyinHUDConfig.ignoreItemsInHotbar.get();
+	}
 
 	/**
 	 * Toggles this module on or off
@@ -67,9 +82,9 @@ public class QuickDeposit extends ZyinHUDModuleBase {
 		try {
 			if (
 				mc.currentScreen instanceof BeaconScreen ||
-			    mc.currentScreen instanceof CraftingScreen ||
-			    mc.currentScreen instanceof EnchantmentScreen ||
-			    mc.currentScreen instanceof AnvilScreen
+				mc.currentScreen instanceof CraftingScreen ||
+				mc.currentScreen instanceof EnchantmentScreen ||
+				mc.currentScreen instanceof AnvilScreen
 			) {
 				//we don't support these
 				return;

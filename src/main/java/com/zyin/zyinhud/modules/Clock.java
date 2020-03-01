@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.ClockOptions;
 import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
@@ -20,7 +20,30 @@ public class Clock extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableClock.get();
+	public static boolean isEnabled;
+
+	/**
+	 * The current mode for this module
+	 */
+	public static ClockOptions.ClockModes mode;
+
+	//TODO: consider adding config option for using 24-hour time instead of 12-hour
+
+	private static final long mobSpawningStartTime = 13187;//in ticks
+
+	//mobs stop spawning at: 22813
+	//mobs start to burn at: 23600
+	private static final long mobSpawningStopTime = 23460;
+
+	//mc.world.isDaytime() always returns true on client, so it cant be used to determine bedtime
+	private static final long bedTime = 12540;
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableClock.get();
+		mode = ZyinHUDConfig.clockMode.get();
+	}
 
 	/**
 	 * Toggles this module on or off
@@ -32,22 +55,6 @@ public class Clock extends ZyinHUDModuleBase {
 		ZyinHUDConfig.enableClock.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
 		return isEnabled = !isEnabled;
 	}
-
-	/**
-	 * The current mode for this module
-	 */
-	public static ClockOptions.ClockModes mode = ZyinHUDConfig.clockMode.get();
-
-	private static final long mobSpawningStartTime = 13187;
-
-	//mobs stop spawning at: 22813
-	//mobs start to burn at: 23600
-	private static final long mobSpawningStopTime = 23600;
-
-	//mc.world.isDaytime() always returns true on client, so it cant be used to determine bedtime
-	private static final long bedTime = 12540;
-
-	//TODO: consider adjusting time display to be constant if mc.gameSettings.doDaylightCycle == false
 
 	/**
 	 * Calculates time

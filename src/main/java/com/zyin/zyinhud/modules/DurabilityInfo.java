@@ -1,13 +1,13 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.ZyinHUDSound;
 //import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
+import com.zyin.zyinhud.compat.TinkersConstructCompat;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.DurabilityInfoOptions;
 import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.Localization;
-import com.zyin.zyinhud.util.ModCompatibility;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.*;
@@ -26,11 +26,86 @@ import java.util.ArrayList;
  */
 public class DurabilityInfo extends ZyinHUDModuleBase {
 	private static final Logger logger = LogManager.getLogger(DurabilityInfo.class);
-	static boolean doLogUnequips = ZyinHUDConfig.enableLoggingUnequip.get();
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableDurabilityInfo.get();
+	public static boolean isEnabled;
+
+	/**
+	 * The current mode for this module
+	 */
+	protected static DurabilityInfoOptions.DurabilityInfoTextModes mode;
+
+	private static final ResourceLocation durabilityIconsResourceLocation =
+		new ResourceLocation("zyinhud:textures/durability_icons.png");
+
+
+	/** The height of the tools being rendered */
+	private static final int toolIconWidth = DurabilityInfoOptions.toolIconWidth;
+	/** The width of the tools being rendered */
+	private static final int toolIconHeight = DurabilityInfoOptions.toolIconHeight;
+	/** The limit on how often to update the status of damaged items */
+	private static final int durabilityUpdateFrequency = 600;   // In milliseconds? Should this be configurable?
+	/** X coordinate of the texture inside of the image */
+	protected static int armorDurabilityIconU = 0;
+	/** Y coordinate of the texture inside of the image */
+	protected static int armorDurabilityIconV = 0;
+	private static boolean doLogUnequips;
+	private static boolean autoUnequipArmor;
+	private static boolean autoUnequipTools;
+	private static boolean showArmorDurability;
+	//	private static boolean showDamageAsPercentage; //_Consider: implement this?
+	private static boolean showItemDurability;
+	private static boolean showIndividualArmorIcons;
+	private static boolean useColoredNumbers;
+	private static boolean hideDurabilityInfoInChat;
+	private static float durabilityIconScale;
+	private static float armorDurabilityScaler = 0.2f;
+	/** Width of the image */
+	private static int armorDurabilityIconWidth = (int) (5 * 16 * armorDurabilityScaler);
+	/** Height of the image */
+	private static int armorDurabilityIconHeight = (int) (7.5 * 16 * armorDurabilityScaler);
+
+	/** Where the armor icon is rendered */
+	private static int durabilityLocX;
+	private static int durabilityLocY;
+
+	private static float armorDurabilityDisplayThreshold;
+	private static float itemDurabilityDisplayThreshold;
+
+	//where the tool icons are rendered; SEEMS TO BE UNUSED
+//	protected static int equipmentLocX = 20 + armorDurabilityIconWidth;
+//	protected static int equipmentLocY = 20;
+
+	//used to push items into the list of broken equipment to render
+	private static ArrayList<ItemStack> damagedItemsList = new ArrayList<ItemStack>(13);
+
+
+	/**
+	 * The last time the item cache was generated
+	 */
+	private static long lastGenerate;
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		doLogUnequips = ZyinHUDConfig.enableLoggingUnequip.get();
+		isEnabled = ZyinHUDConfig.enableDurabilityInfo.get();
+		mode = ZyinHUDConfig.durabilityInfoTextMode.get();
+		autoUnequipArmor = ZyinHUDConfig.autoUnequipArmor.get();
+		autoUnequipTools = ZyinHUDConfig.autoUnequipTools.get();
+		showArmorDurability = ZyinHUDConfig.showArmorDurability.get();
+//		showDamageAsPercentage = ZyinHUDConfig.showDamageAsPercentage.get();
+		showItemDurability = ZyinHUDConfig.showItemDurability.get();
+		showIndividualArmorIcons = ZyinHUDConfig.showIndividualArmorIcons.get();
+		useColoredNumbers = ZyinHUDConfig.useColoredNumbers.get();
+		durabilityIconScale = ZyinHUDConfig.durabilityScale.get().floatValue();
+		hideDurabilityInfoInChat = ZyinHUDConfig.hideDurabilityInfoInChat.get();
+		durabilityLocX = ZyinHUDConfig.durabilityHorizontalPos.get();
+		durabilityLocY = ZyinHUDConfig.durabilityVerticalPos.get();
+		armorDurabilityDisplayThreshold = ZyinHUDConfig.armorDurabilityDisplayThreshold.get().floatValue();
+		itemDurabilityDisplayThreshold = ZyinHUDConfig.itemDurabilityDisplayThreshold.get().floatValue();
+	}
 
 	/**
 	 * Toggles this module on or off
@@ -42,60 +117,6 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 		ZyinHUDConfig.enableDurabilityInfo.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
 		return isEnabled = !isEnabled;
 	}
-
-	/**
-	 * The current mode for this module
-	 */
-	protected static DurabilityInfoOptions.DurabilityInfoTextModes mode = ZyinHUDConfig.durabilityInfoTextMode.get();
-
-	private static final ResourceLocation durabilityIconsResourceLocation =
-		new ResourceLocation("zyinhud:textures/durability_icons.png");
-
-	static boolean autoUnequipArmor = ZyinHUDConfig.autoUnequipArmor.get();
-	static boolean autoUnequipTools = ZyinHUDConfig.autoUnequipTools.get();
-	static boolean showArmorDurability = ZyinHUDConfig.showArmorDurability.get();
-	//	public static boolean showDamageAsPercentage; //_Consider: implement this?
-	static boolean showItemDurability = ZyinHUDConfig.showItemDurability.get();
-	static boolean showIndividualArmorIcons = ZyinHUDConfig.showIndividualArmorIcons.get();
-	static boolean useColoredNumbers = ZyinHUDConfig.useColoredNumbers.get();
-
-	static float durabilityIconScale = ZyinHUDConfig.durabilityScale.get().floatValue();
-	static boolean hideDurabilityInfoInChat = ZyinHUDConfig.hideDurabilityInfoInChat.get();
-	private static final int durabilityUpdateFrequency = 600;
-
-	private static float armorDurabilityScaler = 0.2f;
-	/** X coordinate of the texture inside of the image */
-	protected static int armorDurabilityIconU = 0;
-	/** Y coordinate of the texture inside of the image */
-	protected static int armorDurabilityIconV = 0;
-	/** Width of the image */
-	private static int armorDurabilityIconWidth = (int) (5 * 16 * armorDurabilityScaler);
-	/** Height of the image */
-	private static int armorDurabilityIconHeight = (int) (7.5 * 16 * armorDurabilityScaler);
-
-	//the height/width of the tools being rendered
-	private static int toolIconWidth = DurabilityInfoOptions.toolIconWidth;
-	private static int toolIconHeight = DurabilityInfoOptions.toolIconHeight;
-
-	//where the armor icon is rendered
-	static int durabilityLocX = ZyinHUDConfig.durabilityHorizontalPos.get();
-	static int durabilityLocY = ZyinHUDConfig.durabilityVerticalPos.get();
-
-	//where the tool icons are rendered; SEEMS TO BE UNUTILIZED
-//	protected static int equipmentLocX = 20 + armorDurabilityIconWidth;
-//	protected static int equipmentLocY = 20;
-
-	static float armorDurabilityDisplayThreshold = ZyinHUDConfig.armorDurabilityDisplayThreshold.get().floatValue();
-	static float itemDurabilityDisplayThreshold = ZyinHUDConfig.itemDurabilityDisplayThreshold.get().floatValue();
-
-	//used to push items into the list of broken equipment to render
-	private static ArrayList<ItemStack> damagedItemsList = new ArrayList<ItemStack>(13);
-
-
-	/**
-	 * The last time the item cache was generated
-	 */
-	private static long lastGenerate;
 
 	/**
 	 * Renders the main durability icon and any damaged tools onto the screen.
@@ -199,11 +220,11 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 				damageStringText = 100 - (int) ((double) itemDamage / itemMaxDamage * 100) + "%";
 			}
 			else if (mode == DurabilityInfoOptions.DurabilityInfoTextModes.TEXT) {
-				if (ModCompatibility.TConstruct.isTConstructItem(itemStack.getItem())) {
-					Integer temp = ModCompatibility.TConstruct.getDamage(itemStack);
+				if (TinkersConstructCompat.isTConstructItem(itemStack.getItem())) {
+					Integer temp = TinkersConstructCompat.getDamage(itemStack);
 					if (temp != null) {
 						itemDamage = temp;
-						itemMaxDamage = ModCompatibility.TConstruct.getMaxDamage(itemStack);
+						itemMaxDamage = TinkersConstructCompat.getMaxDamage(itemStack);
 						damageStringText = Integer.toString(itemMaxDamage - itemDamage);
 					}
 					else { damageStringText = ""; }
@@ -334,6 +355,7 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 	}
 
 	//FIXME: deprecate this
+
 	/**
 	 * Determines if the item is a tool. Pickaxe, sword, bow, shears, etc.
 	 *
@@ -348,9 +370,9 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 		       item instanceof ShearsItem ||
 		       item instanceof FishingRodItem ||
 		       item instanceof ShieldItem ||
-		       ModCompatibility.TConstruct.isTConstructHarvestTool(item) ||
-		       ModCompatibility.TConstruct.isTConstructWeapon(item) ||
-		       ModCompatibility.TConstruct.isTConstructBow(item);
+		       TinkersConstructCompat.isTConstructHarvestTool(item) ||
+		       TinkersConstructCompat.isTConstructWeapon(item) ||
+		       TinkersConstructCompat.isTConstructBow(item);
 	}
 
 	/**

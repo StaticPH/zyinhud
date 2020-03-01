@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.DistanceMeasurerOptions;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.util.math.BlockPos;
@@ -22,7 +22,19 @@ public class DistanceMeasurer extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableDistanceMeasurer.get();
+	public static boolean isEnabled;
+
+	/**
+	 * The current mode for this module
+	 */
+	public static DistanceMeasurerOptions.DistanceMeasurerModes mode;
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableDistanceMeasurer.get();
+		mode = ZyinHUDConfig.distanceMeasurerMode.get();
+	}
 
 	/**
 	 * Toggles this module on or off
@@ -36,12 +48,6 @@ public class DistanceMeasurer extends ZyinHUDModuleBase {
 	}
 
 	/**
-	 * The current mode for this module
-	 */
-	public static DistanceMeasurerOptions.DistanceMeasurerModes mode = ZyinHUDConfig.distanceMeasurerMode.get();
-
-
-	/**
 	 * Render onto hud.
 	 */
 	public static void renderOntoHUD() {
@@ -50,9 +56,9 @@ public class DistanceMeasurer extends ZyinHUDModuleBase {
 		//and F3 not pressed
 		if (
 			DistanceMeasurer.isEnabled &&
-		    mode != DistanceMeasurerOptions.DistanceMeasurerModes.OFF &&
-		    !mc.gameSettings.showDebugInfo &&
-		    (mc.mouseHelper.isMouseGrabbed() || ((mc.currentScreen instanceof ChatScreen)))
+			mode != DistanceMeasurerOptions.DistanceMeasurerModes.OFF &&
+			!mc.gameSettings.showDebugInfo &&
+			(mc.mouseHelper.isMouseGrabbed() || ((mc.currentScreen instanceof ChatScreen)))
 		) {
 			String distanceString = calculateDistanceString();
 

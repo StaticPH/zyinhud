@@ -19,10 +19,15 @@ import net.minecraft.client.gui.screen.DeathScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.item.AirItem;
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,6 +39,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -49,7 +58,7 @@ public class ZyinHUDUtil {
 		return (screen == null || screen instanceof ChatScreen || screen instanceof DeathScreen);
 	}
 
-	public static boolean doesScreenAllowKeybinds(Screen screen){
+	public static boolean doesScreenAllowKeybinds(Screen screen) {
 		return (screen == null || screen instanceof ContainerScreen);
 	}
 
@@ -59,7 +68,7 @@ public class ZyinHUDUtil {
 	 *
 	 * @return boolean
 	 */
-	public static boolean isMouseoveredBlockRightClickable() {
+	public static boolean isMousedOverBlockRightClickable() {
 		if (mc.objectMouseOver != null && mc.objectMouseOver.getType() == RayTraceResult.Type.BLOCK) {
 			Block block = getMousedOverBlock();
 
@@ -229,6 +238,18 @@ public class ZyinHUDUtil {
 		return false;
 	}
 
+	public static Item getItemFromResourceLocationStr(String resourceLocStr) {
+		return ForgeRegistries.ITEMS.getValue(ResourceLocation.tryCreate(resourceLocStr));
+	}
+
+	public static Collection<Item> csvStringConfig2ItemCollection(ForgeConfigSpec.ConfigValue<String> val) {
+		return Arrays.stream(val.get().split(","))
+		             .map(String::trim)//.sorted()
+		             .map(ZyinHUDUtil::getItemFromResourceLocationStr)
+		             .filter(item -> item != null && !(item instanceof AirItem))
+		             .collect(Collectors.toCollection(ArrayList::new));
+	}
+
 	/**
 	 * Extremely minimal Object for holding a <tt>double[]</tt> that must always contain exactly 3 values
 	 * The only available methods are the static <tt>create</tt> method, whose parameters cannot be null,
@@ -263,7 +284,7 @@ public class ZyinHUDUtil {
 
 	// Because lwjgl3 doesnt provide glu anymore, we're just going to have to provide the functions we needed ourselves,
 	// along with some wrapper calls for convenience
-	public static class ProjectionHelper {
+	public static final class ProjectionHelper {
 		private static final float[] in = new float[4];
 		private static final float[] out = new float[4];
 

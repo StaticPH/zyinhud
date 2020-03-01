@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.LocatorOptions;
 import com.zyin.zyinhud.util.Localization;
@@ -47,7 +47,50 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enablePlayerLocator.get();
+	public static boolean isEnabled;
+
+	/**
+	 * The current mode for this module
+	 */
+	public static LocatorOptions.LocatorModes mode;
+
+	/**
+	 * Shows how far you are from other players next to their name
+	 */
+	private static boolean showDistanceToPlayers;
+	private static boolean showPlayerHealth;
+	private static boolean showWitherSkeletons;
+	private static boolean showWolves;
+	private static boolean useWolfColors;
+
+	private static final ResourceLocation iconsResourceLocation = new ResourceLocation("textures/gui/icons.png");
+
+	private static final String sprintingMessagePrefix = "";
+	private static final String sneakingMessagePrefix = TextFormatting.ITALIC.toString();
+	private static final String ridingMessagePrefix = "    ";    //space for the saddle/minecart/boat/horse armor icon
+
+	/**
+	 * Don't render players that are closer than this
+	 */
+	private static int viewDistanceCutoff;
+	private static final int minViewDistanceCutoff = LocatorOptions.minViewDistanceCutoff;
+	private static final int maxViewDistanceCutoff = LocatorOptions.maxViewDistanceCutoff;    //realistic max distance the game will render entities: up to ~115 blocks away
+
+	private static int numOverlaysRendered;
+	private static final int maxNumberOfOverlays = 50;    //render only the first nearest 50 players
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enablePlayerLocator.get();
+		mode = ZyinHUDConfig.playerLocatorMode.get();
+		showDistanceToPlayers = ZyinHUDConfig.showDistanceToPlayers.get();
+		showPlayerHealth = ZyinHUDConfig.showPlayerHealth.get();
+		showWitherSkeletons = ZyinHUDConfig.showWitherSkeletons.get();
+		showWolves = ZyinHUDConfig.showWolves.get();
+		useWolfColors = ZyinHUDConfig.useWolfColors.get();
+		viewDistanceCutoff = ZyinHUDConfig.playerLocatorMinViewDistance.get();
+	}
 
 	/**
 	 * Toggles this module on or off
@@ -60,37 +103,7 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 		return isEnabled = !isEnabled;
 	}
 
-	/**
-	 * The current mode for this module
-	 */
-	public static LocatorOptions.LocatorModes mode = ZyinHUDConfig.playerLocatorMode.get();
-
-	/**
-	 * Shows how far you are from other players next to their name
-	 */
-	static boolean showDistanceToPlayers = ZyinHUDConfig.showDistanceToPlayers.get();
-	static boolean showPlayerHealth = ZyinHUDConfig.showPlayerHealth.get();
-	static boolean showWitherSkeletons = ZyinHUDConfig.showWitherSkeletons.get();
-	static boolean showWolves = ZyinHUDConfig.showWolves.get();
-	static boolean useWolfColors = ZyinHUDConfig.useWolfColors.get();
-
-	private static final ResourceLocation iconsResourceLocation = new ResourceLocation("textures/gui/icons.png");
-
-	private static final String sprintingMessagePrefix = "";
-	private static final String sneakingMessagePrefix = TextFormatting.ITALIC.toString();
-	private static final String ridingMessagePrefix = "    ";    //space for the saddle/minecart/boat/horse armor icon
-
-	/**
-	 * Don't render players that are closer than this
-	 */
-	static int viewDistanceCutoff = ZyinHUDConfig.playerLocatorMinViewDistance.get();
-	private static final int minViewDistanceCutoff = LocatorOptions.minViewDistanceCutoff;
-	private static final int maxViewDistanceCutoff = LocatorOptions.maxViewDistanceCutoff;    //realistic max distance the game will render entities: up to ~115 blocks away
-
-	private static int numOverlaysRendered;
-	private static final int maxNumberOfOverlays = 50;    //render only the first nearest 50 players
-
-	public static void resetNumOverlaysRendered(){
+	public static void resetNumOverlaysRendered() {
 		numOverlaysRendered = 0;
 	}
 
@@ -198,8 +211,8 @@ public class PlayerLocator extends ZyinHUDModuleBase {
 			y = (y > height - 20 && showPlayerHealth) ? height - 20 : y;
 			if (
 				y < 10 && InfoLine.getVerticalLocation() <= 1 &&
-			    (x > InfoLine.getHorizontalLocation() + mc.fontRenderer.getStringWidth(InfoLine.getInfoLineMessage()) ||
-			     x < InfoLine.getHorizontalLocation() - overlayMessageWidth)
+				(x > InfoLine.getHorizontalLocation() + mc.fontRenderer.getStringWidth(InfoLine.getInfoLineMessage()) ||
+				 x < InfoLine.getHorizontalLocation() - overlayMessageWidth)
 			) {
 				//if the text is to the right or left of the info line then allow it to render in that open space
 				y = Math.max(y, 0);

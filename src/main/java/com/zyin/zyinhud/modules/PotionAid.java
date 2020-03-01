@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.Localization;
@@ -31,11 +31,11 @@ public class PotionAid extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enablePotionAid.get();
+	public static boolean isEnabled;
 	/**
 	 * Use this instance for all instance method calls.
 	 */
-	public static PotionAid instance = new PotionAid();
+	public static PotionAid instance;
 	private static int potionDrinkDuration = 2000;
 	private Timer timer = new Timer();
 	private TimerTask swapTimerTask;
@@ -46,6 +46,15 @@ public class PotionAid extends ZyinHUDModuleBase {
 	private int potionItemIndex;
 	private int currentItemInventoryIndex;
 	private int currentItemHotbarIndex;
+
+	static {
+		loadFromConfig();
+		instance = new PotionAid();
+	}
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enablePotionAid.get();
+	}
 
 	private PotionAid() {   //TODO: try to avoid AWT
 		try {
@@ -75,7 +84,7 @@ public class PotionAid extends ZyinHUDModuleBase {
 	 */
 	public void drinkPotion() {
 		//make sure we're not about to click on a right-clickable thing
-		if (ZyinHUDUtil.isMouseoveredBlockRightClickable()) { return; }
+		if (ZyinHUDUtil.isMousedOverBlockRightClickable()) { return; }
 
 		if (isCurrentlyDrinking) {
 			//if we're drinking and we try to drink again, then cancel whatever we're drinking

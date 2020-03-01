@@ -1,7 +1,6 @@
 package com.zyin.zyinhud.keyhandlers;
 
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.SafeOverlayOptions;
-import com.zyin.zyinhud.modules.ZyinHUDModuleModes.SafeOverlayOptions.safeOverlayModes;
 import net.minecraftforge.client.event.InputEvent.KeyInputEvent;
 
 import org.lwjgl.glfw.GLFW;
@@ -21,8 +20,9 @@ public class SafeOverlayKeyHandler implements ZyinHUDKeyHandlerBase {
 		if (mc.currentScreen != null || !SafeOverlay.isEnabled) { return; }
 
 		//if "+" is pressed, increase the draw distance
-		if ((GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_EQUAL) == GLFW.GLFW_PRESS) ||    //keyboard "+" ("=")
-		    (GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_KP_ADD) == GLFW.GLFW_PRESS)    //numpad "+"
+		if (
+			(GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_EQUAL) == GLFW.GLFW_PRESS) ||    //keyboard "+" ("=")
+			(GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_KP_ADD) == GLFW.GLFW_PRESS)    //numpad "+"
 		) {
 			int drawDistance = SafeOverlay.increaseDrawDistance();
 
@@ -40,7 +40,7 @@ public class SafeOverlayKeyHandler implements ZyinHUDKeyHandlerBase {
 		}
 
 		//if "-" is pressed, decrease the draw distance
-		if ((GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_MINUS) == GLFW.GLFW_PRESS)) {
+		if (GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_MINUS) == GLFW.GLFW_PRESS) {
 			int drawDistance = SafeOverlay.decreaseDrawDistance();
 			ZyinHUDRenderer.displayNotification(Localization.get("safeoverlay.distance") + ' ' + drawDistance);
 
@@ -48,8 +48,9 @@ public class SafeOverlayKeyHandler implements ZyinHUDKeyHandlerBase {
 		}
 
 		//if "0" is pressed, set to the default draw distance
-		if ((GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_0) == GLFW.GLFW_PRESS) ||
-		    (GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_KP_0) == GLFW.GLFW_PRESS)
+		if (
+			(GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_0) == GLFW.GLFW_PRESS) ||
+			(GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_KP_0) == GLFW.GLFW_PRESS)
 		) {
 			int drawDistance = SafeOverlay.setDrawDistance(SafeOverlayOptions.defaultDrawDistance);
 			SafeOverlay.setSeeUnsafePositionsThroughWalls(false);
@@ -64,8 +65,9 @@ public class SafeOverlayKeyHandler implements ZyinHUDKeyHandlerBase {
 		}
 
 		//if Control is pressed, enable see through mode
-		if ((GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS) ||
-		    (GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_RIGHT_CONTROL) == GLFW.GLFW_PRESS)
+		if (
+			(GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS) ||
+			(GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_RIGHT_CONTROL) == GLFW.GLFW_PRESS)
 		) {
 			boolean seeThroughWalls = SafeOverlay.toggleSeeUnsafePositionsThroughWalls();
 
@@ -82,7 +84,7 @@ public class SafeOverlayKeyHandler implements ZyinHUDKeyHandlerBase {
 
 		//if nothing is pressed, do the default behavior
 
-		SafeOverlay.mode = (safeOverlayModes) SafeOverlay.mode.next();
+		SafeOverlay.mode = (SafeOverlayOptions.safeOverlayModes) SafeOverlay.mode.next();
 		ZyinHUDSound.playButtonPress();
 	}
 

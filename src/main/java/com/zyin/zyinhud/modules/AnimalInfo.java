@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.AnimalInfoOptions;
 import com.zyin.zyinhud.util.Localization;
@@ -36,48 +36,37 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableAnimalInfo.get();
-
-	/**
-	 * Toggles this module on or off
-	 *
-	 * @return The state the module was changed to
-	 */
-	public static boolean toggleEnabled() {
-		ZyinHUDConfig.enableAnimalInfo.set(!isEnabled);
-		ZyinHUDConfig.enableAnimalInfo.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return isEnabled = !isEnabled;
-	}
+	public static boolean isEnabled;
 
 	/**
 	 * The current mode for this module
 	 */
-	public static AnimalInfoOptions.AnimalInfoModes mode = ZyinHUDConfig.animalInfoMode.get();
+	public static AnimalInfoOptions.AnimalInfoModes mode;
 
-//_CHECK: It occurs to me, this sort of thing may not play nicely with dynamic config changes...
-// Maybe I'll want a public method that can be called whenever the config is updated, to update the values here?
 	/**
 	 * Animals that are farther away than this will not have their info shown
 	 */
-	static int viewDistanceCutoff = ZyinHUDConfig.animalInfoMaxViewDistance.get();        //how far away we will render the overlay
+	private static int viewDistanceCutoff;        //how far away we will render the overlay
 
 	/**
 	 * Sets the number of decimal places that will be rendered when displaying horse stats
 	 */
-	static int numberOfDecimalsDisplayed = ZyinHUDConfig.animalInfoNumberOfDecimalsDisplayed.get();
+	private static int numberOfDecimalsDisplayed;
 
-	static boolean showBreedingIcons = ZyinHUDConfig.showBreedingIcons.get();
+	private static boolean showBreedingIcons;
 	//private static boolean showBreedingTimers;
-	static boolean showHorseStatsOnF3Menu = ZyinHUDConfig.showHorseStatsOnF3Menu.get();
-	static boolean showHorseStatsOverlay = ZyinHUDConfig.showHorseStatsOverlay.get();
-	static boolean showTextBackgrounds = ZyinHUDConfig.showTextBackgrounds.get();
+	private static boolean showHorseStatsOnF3Menu;
+	private static boolean showHorseStatsOverlay;
+	private static boolean showTextBackgrounds;
 
-	//values above the perfect value are aqua
-	//values between the perfect and good values are green
-	//values between the good and bad values are yellow
-	//values below the bad value are red
-	//NOTE: It should be obvious that this number scale only really makes any sense for natural horses.
-	//      Commands/editors can be used to create horses with stats far outside these ranges.
+	/*
+	values above the perfect value are aqua
+	values between the perfect and good values are green
+	values between the good and bad values are yellow
+	values below the bad value are red
+	NOTE: It should be obvious that this number scale only really makes any sense for natural horses.
+	      Commands/editors can be used to create horses with stats far outside these ranges.
+	*/
 	private static final double perfectHorseSpeedThreshold = 13;    //max: 14.1?
 	private static final double goodHorseSpeedThreshold = 11;
 	private static final double badHorseSpeedThreshold = 9.5;        //min: ~7?
@@ -119,6 +108,32 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 			else if (statValue > this.badStatThreshold) { return TextFormatting.YELLOW; }
 			else { return TextFormatting.RED; }
 		}
+	}
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableAnimalInfo.get();
+		mode = ZyinHUDConfig.animalInfoMode.get();
+		viewDistanceCutoff = ZyinHUDConfig.animalInfoMaxViewDistance.get();
+		numberOfDecimalsDisplayed = ZyinHUDConfig.animalInfoNumberOfDecimalsDisplayed.get();
+		showBreedingIcons = ZyinHUDConfig.showBreedingIcons.get();
+		//private static boolean showBreedingTimers;
+		showHorseStatsOnF3Menu = ZyinHUDConfig.showHorseStatsOnF3Menu.get();
+		showHorseStatsOverlay = ZyinHUDConfig.showHorseStatsOverlay.get();
+		showTextBackgrounds = ZyinHUDConfig.showTextBackgrounds.get();
+	}
+
+
+	/**
+	 * Toggles this module on or off
+	 *
+	 * @return The state the module was changed to
+	 */
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableAnimalInfo.set(!isEnabled);
+		ZyinHUDConfig.enableAnimalInfo.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
 	}
 
 	/**
@@ -218,8 +233,8 @@ public class AnimalInfo extends ZyinHUDModuleBase {
 		//and F3 not pressed
 		if (
 			AnimalInfo.isEnabled && mode == AnimalInfoOptions.AnimalInfoModes.ON &&
-		    (mc.mouseHelper.isMouseGrabbed() || doesScreenShowHUD(mc.currentScreen)) &&
-		    !mc.gameSettings.showDebugInfo
+			(mc.mouseHelper.isMouseGrabbed() || doesScreenShowHUD(mc.currentScreen)) &&
+			!mc.gameSettings.showDebugInfo
 		) {
 			//_CHECK: my use of doesScreenShowHUD here may remove the need to check that the debugInfo is not being shown
 

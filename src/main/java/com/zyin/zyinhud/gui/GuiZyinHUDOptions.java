@@ -13,7 +13,7 @@
 //import org.lwjgl.opengl.GL11;
 //
 //import com.zyin.zyinhud.ZyinHUD;
-//import com.zyin.zyinhud.ZyinHUDConfig;
+//import com.zyin.zyinhud.config.ZyinHUDConfig;
 //import com.zyin.zyinhud.ZyinHUDKeyHandlers;
 //import com.zyin.zyinhud.gui.buttons.GuiHotkeyButton;
 //import com.zyin.zyinhud.gui.buttons.GuiLabeledButton;

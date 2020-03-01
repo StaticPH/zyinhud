@@ -27,7 +27,8 @@ package com.zyin.zyinhud;
 import com.zyin.zyinhud.command.CommandDev;
 import com.zyin.zyinhud.command.CommandFps;
 //import com.zyin.zyinhud.command.CommandZyinHUDOptions;
-import com.zyin.zyinhud.util.ModCompatibility;
+import com.zyin.zyinhud.compat.TinkersConstructCompat;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ExtensionPoint;
@@ -62,13 +63,13 @@ public class ZyinHUD {
 	public static final String MODID = "zyinhud";
 	public static final String MODNAME = "Zyin's HUD";
 	public static final String buildTime = "@BUILD_TIME@";
-//    public static final String updateJSON = "https://raw.githubusercontent.com/cyilin/zyinhud-update/master/update.json";
-//    public static final String dependencies = "required-after:forge@[14.23.1.2554,);";
+//	public static final String updateJSON = "https://raw.githubusercontent.com/cyilin/zyinhud-update/master/update.json";
+//	public static final String dependencies = "required-after:forge@[14.23.1.2554,);";
 
-	public static final Logger ZyinLogger = LogManager.getLogger(MODID);
+	private static final Logger ZyinLogger = LogManager.getLogger(MODID);
 
 //	@SuppressWarnings("Convert2MethodRef")
-//    public static CommonProxy proxy = DistExecutor.runForDist(()->()->new ClientProxy(), () -> CommonProxy::new);
+//	public static CommonProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> CommonProxy::new);
 
 	public ZyinHUD() {
 		//Make sure the mod being absent on the other network side does not cause the client to display the server as incompatible
@@ -79,13 +80,13 @@ public class ZyinHUD {
 
 		ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ZyinHUDConfig.getConfigSpec());
 		FMLJavaModLoadingContext.get().getModEventBus().register(ZyinHUDConfig.class);
-//        AddVersionChecker();
+//		AddVersionChecker();
 
-//        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupCommon);
+//		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupCommon);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setupClient);
-//        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
-//        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::postLoad);
+//		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::enqueueIMC);
+//		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::processIMC);
+//		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::postLoad);
 	}
 
 	private void setupCommon(final FMLCommonSetupEvent event) {
@@ -94,7 +95,7 @@ public class ZyinHUD {
 
 	private void setupClient(final FMLClientSetupEvent event) {
 		MinecraftForge.EVENT_BUS.register(this);
-		ModCompatibility.TConstruct.isLoaded = ModList.get().isLoaded("TConstruct");
+		TinkersConstructCompat.isLoaded = ModList.get().isLoaded("TConstruct");
 	}
 
 	private void enqueueIMC(final InterModEnqueueEvent event) {
@@ -112,14 +113,14 @@ public class ZyinHUD {
 	 */
 	@SubscribeEvent
 	public static void serverStarting(FMLServerStartingEvent event) {
-	//FIXME: Perhaps command registration should be moved to the player login event PlayerLoggedInEvent...or is it the login event LoggedInEvent? need to find out the difference
+		//FIXME: Perhaps command registration should be moved to the player login event PlayerLoggedInEvent...or is it the login event LoggedInEvent? need to find out the difference
 		CommandFps.register(event.getCommandDispatcher());
 		CommandDev.register(event.getCommandDispatcher());
-//        CommandZyinHUDOptions.register(event.getCommandDispatcher());
+//		CommandZyinHUDOptions.register(event.getCommandDispatcher());
 	}
 
 	@SubscribeEvent
-	public void postLoad(FMLLoadCompleteEvent event){
+	public void postLoad(FMLLoadCompleteEvent event) {
 
 	}
 

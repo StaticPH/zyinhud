@@ -32,7 +32,7 @@ import com.zyin.zyinhud.modules.TorchAid;
 
 
 import static com.zyin.zyinhud.helper.ZHKeyBindingHelper.*;
-import static com.zyin.zyinhud.ZyinHUDConfig.enableLoggingKeybindInputs;
+import static com.zyin.zyinhud.config.ZyinHUDConfig.enableLoggingKeybindInputs;
 import static com.zyin.zyinhud.util.ZyinHUDUtil.doesScreenAllowKeybinds;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)

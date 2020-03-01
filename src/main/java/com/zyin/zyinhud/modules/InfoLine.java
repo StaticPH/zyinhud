@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.item.Items;
 import net.minecraft.item.ItemStack;
@@ -26,32 +26,18 @@ public class InfoLine extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableInfoLine.get();
+	public static boolean isEnabled;
+
 	private static long time = 0;
 	private static int lastPing = 0;
 	private static TextFormatting pingColor;
 
-	/**
-	 * Toggles this module on or off
-	 *
-	 * @return The state the module was changed to
-	 */
-	public static boolean toggleEnabled() {
-		ZyinHUDConfig.enableInfoLine.set(!isEnabled);
-		ZyinHUDConfig.enableInfoLine.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return isEnabled = !isEnabled;
-	}
+	private static boolean showBiome;
+	private static boolean showCanSnow;
+	private static boolean showPing;
 
-	static boolean showBiome = ZyinHUDConfig.showBiome.get();
-	static boolean showCanSnow = ZyinHUDConfig.showCanSnow.get();
-	static boolean showPing = ZyinHUDConfig.showPing.get();
-
-	/**
-	 * The padding string that is inserted between different elements of the Info Line
-	 */
-	private static final String SPACER = " ";
-	static int infoLineLocX = ZyinHUDConfig.infoLineHorizontalPos.get();
-	static int infoLineLocY = ZyinHUDConfig.infoLineVerticalPos.get();
+	private static int infoLineLocX;
+	private static int infoLineLocY;
 
 //  UNUSED
 //    /*private static final int notificationDuration = 1200;	//measured in milliseconds
@@ -64,10 +50,36 @@ public class InfoLine extends ZyinHUDModuleBase {
 //	public static String notificationMessage = "";
 
 	/**
+	 * The padding string that is inserted between different elements of the Info Line
+	 */
+	private static final String SPACER = " ";
+
+	/**
 	 * The info line string currently being rendered
 	 */
 	private static String infoLineMessage;
 
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableInfoLine.get();
+		showBiome = ZyinHUDConfig.showBiome.get();
+		showCanSnow = ZyinHUDConfig.showCanSnow.get();
+		showPing = ZyinHUDConfig.showPing.get();
+		infoLineLocX = ZyinHUDConfig.infoLineHorizontalPos.get();
+		infoLineLocY = ZyinHUDConfig.infoLineVerticalPos.get();
+	}
+
+	/**
+	 * Toggles this module on or off
+	 *
+	 * @return The state the module was changed to
+	 */
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableInfoLine.set(!isEnabled);
+		ZyinHUDConfig.enableInfoLine.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
+	}
 
 	/**
 	 * Renders the on screen message consisting of everything that gets put into the top let message area,

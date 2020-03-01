@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import net.minecraft.item.Items;
 
 import com.zyin.zyinhud.ZyinHUDRenderer;
@@ -14,7 +14,13 @@ public class EnderPearlAid extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableEnderPearlAid.get();
+	public static boolean isEnabled;
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableEnderPearlAid.get();
+	}
 
 	/**
 	 * Toggles this module on or off
@@ -37,8 +43,7 @@ public class EnderPearlAid extends ZyinHUDModuleBase {
         	return;
         }*/
 
-//        if (EatingAid.instance.isEating())
-//        {
+//        if (EatingAid.instance.isEating()) {
 //            EatingAid.instance.stopEating();    //it's not good if we have an ender pearl selected and hold right click down...
 //        }
 

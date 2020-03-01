@@ -3,7 +3,7 @@ package com.zyin.zyinhud.modules;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.HealthMonitorOptions;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.api.distmarker.Dist;
@@ -25,7 +25,36 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableHealthMonitor.get();
+	public static boolean isEnabled;
+
+	/**
+	 * The current mode for this module
+	 */
+	public static HealthMonitorOptions.HealthMonitorModes mode;
+
+	private static Timer timer = new Timer();
+
+	private static int lowHealthSoundThreshold;
+	private static float volume;
+	private static boolean playFasterNearDeath;
+
+	private static boolean isPlayingLowHealthSound = false;
+	private static final int repeatDelay = 1000;
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableHealthMonitor.get();
+		mode = ZyinHUDConfig.healthMonitorMode.get();
+		lowHealthSoundThreshold = ZyinHUDConfig.lowHealthSoundThreshold.get();
+		volume = ZyinHUDConfig.healthMonitorVolume.get().floatValue();
+		playFasterNearDeath = ZyinHUDConfig.playFasterNearDeath.get();
+	}
+
+	/**
+	 * Instantiates a new Health monitor.
+	 */
+//	private HealthMonitor() {}
 
 	/**
 	 * Toggles this module on or off
@@ -37,25 +66,6 @@ public class HealthMonitor extends ZyinHUDModuleBase {
 		ZyinHUDConfig.enableHealthMonitor.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
 		return isEnabled = !isEnabled;
 	}
-
-	/**
-	 * The current mode for this module
-	 */
-	public static HealthMonitorOptions.HealthMonitorModes mode = ZyinHUDConfig.healthMonitorMode.get();
-
-	private static Timer timer = new Timer();
-
-	static int lowHealthSoundThreshold = ZyinHUDConfig.lowHealthSoundThreshold.get();
-	static float volume = ZyinHUDConfig.healthMonitorVolume.get().floatValue();
-	static boolean playFasterNearDeath = ZyinHUDConfig.playFasterNearDeath.get();
-
-	private static boolean isPlayingLowHealthSound = false;
-	private static final int repeatDelay = 1000;
-
-	/**
-	 * Instantiates a new Health monitor.
-	 */
-	private HealthMonitor() {}
 
 	/**
 	 * We use a ClientTickEvent instead of a LivingHurtEvent because a LivingHurtEvent will only

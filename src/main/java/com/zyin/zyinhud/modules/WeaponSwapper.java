@@ -1,11 +1,11 @@
 package com.zyin.zyinhud.modules;
 
 import com.google.common.collect.Multimap;
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.ZyinHUDRenderer;
+import com.zyin.zyinhud.compat.TinkersConstructCompat;
 import com.zyin.zyinhud.util.InventoryUtil;
 import com.zyin.zyinhud.util.Localization;
-import com.zyin.zyinhud.util.ModCompatibility;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -34,7 +34,16 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableWeaponSwap.get();
+	public static boolean isEnabled;
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableWeaponSwap.get();
+	}
+
+	//private static List<Class> meleeWeaponClasses = null;
+	private static List<Class> rangedWeaponClasses = null;
 
 	/**
 	 * Toggles this module on or off
@@ -46,9 +55,6 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 		ZyinHUDConfig.enableWeaponSwap.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
 		return isEnabled = !isEnabled;
 	}
-
-	//private static List<Class> meleeWeaponClasses = null;
-	private static List<Class> rangedWeaponClasses = null;
 
 	/**
 	 * Makes the player select their sword. If a sword is already selected, it selects the bow instead.
@@ -207,9 +213,9 @@ public class WeaponSwapper extends ZyinHUDModuleBase {
 			rangedWeaponClasses = new ArrayList<Class>();
 			rangedWeaponClasses.add(BowItem.class);
 
-			if (ModCompatibility.TConstruct.isLoaded) {
+			if (TinkersConstructCompat.isLoaded) {
 				try {
-					rangedWeaponClasses.add(Class.forName(ModCompatibility.TConstruct.tConstructBowClass));
+					rangedWeaponClasses.add(Class.forName(TinkersConstructCompat.tConstructBowClass));
 				}
 				catch (ClassNotFoundException e) {
 					e.printStackTrace();

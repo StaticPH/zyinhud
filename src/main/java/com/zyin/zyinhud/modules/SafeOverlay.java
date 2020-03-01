@@ -1,7 +1,7 @@
 package com.zyin.zyinhud.modules;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.SafeOverlayOptions;
 import com.zyin.zyinhud.util.Localization;
 import net.minecraft.block.AirBlock;
@@ -40,25 +40,14 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableSafeOverlay.get();
-
-	/**
-	 * Toggles this module on or off
-	 *
-	 * @return The state the module was changed to
-	 */
-	public static boolean toggleEnabled() {
-		ZyinHUDConfig.enableSafeOverlay.set(!isEnabled);
-		ZyinHUDConfig.enableSafeOverlay.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return isEnabled = !isEnabled;
-	}
+	public static boolean isEnabled;
 
 	private static MobEntity zombie = null;
 
 	/**
 	 * The current mode for this module
 	 */
-	public static SafeOverlayOptions.safeOverlayModes mode = ZyinHUDConfig.safeOverlayMode.get();
+	public static SafeOverlayOptions.safeOverlayModes mode;
 
 	/**
 	 * USE THE Getter/Setter METHODS FOR THIS!!
@@ -75,17 +64,15 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	 * <br>
 	 * drawDistance = 175 = 42,875,000 blocks (max)
 	 */
-	static int drawDistance = ZyinHUDConfig.safeOverlayDrawDistance.get();
+	static int drawDistance;
 
 	/**
 	 * The transprancy of the "X" marks when rendered, between (0.1 and 1]
 	 */
-	static float unsafeOverlayTransparency = ZyinHUDConfig.safeOverlayTransparency.get().floatValue();
-	private static float minUnsafeOverlayTransparency = SafeOverlayOptions.minUnsafeOverlayTransparency;
-	private static float maxUnsafeOverlayTransparency = SafeOverlayOptions.maxUnsafeOverlayTransparency;
+	static float unsafeOverlayTransparency;
 
-	static boolean displayInNether = ZyinHUDConfig.safeOverlayDisplayInNether.get();
-	static boolean renderUnsafePositionsThroughWalls = ZyinHUDConfig.safeOverlaySeeThroughWalls.get();
+	static boolean displayInNether;
+	static boolean renderUnsafePositionsThroughWalls;
 
 	private BlockPos playerPosition;
 
@@ -97,8 +84,32 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 	/**
 	 * Use this instance of the Safe Overlay for method calls.
 	 */
-	public static SafeOverlay instance = new SafeOverlay();
+	public static SafeOverlay instance;
 
+	static {
+		loadFromConfig();
+		instance = new SafeOverlay();
+	}
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableSafeOverlay.get();
+		mode = ZyinHUDConfig.safeOverlayMode.get();
+		drawDistance = ZyinHUDConfig.safeOverlayDrawDistance.get();
+		unsafeOverlayTransparency = ZyinHUDConfig.safeOverlayTransparency.get().floatValue();
+		displayInNether = ZyinHUDConfig.safeOverlayDisplayInNether.get();
+		renderUnsafePositionsThroughWalls = ZyinHUDConfig.safeOverlaySeeThroughWalls.get();
+	}
+
+	/**
+	 * Toggles this module on or off
+	 *
+	 * @return The state the module was changed to
+	 */
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableSafeOverlay.set(!isEnabled);
+		ZyinHUDConfig.enableSafeOverlay.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
+	}
 
 	/**
 	 * Instantiates a new Safe Overlay.
@@ -477,7 +488,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 //	 */
 //	public float setUnsafeOverlayTransparency(float alpha) {
 //		return unsafeOverlayTransparency = MathHelper.clamp(
-//			alpha, minUnsafeOverlayTransparency, maxUnsafeOverlayTransparency
+//			alpha, SafeOverlayOptions.minUnsafeOverlayTransparency, SafeOverlayOptions.maxUnsafeOverlayTransparency
 //		);
 //	}
 //
@@ -495,8 +506,8 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 //	 *
 //	 * @return the alpha value
 //	 */
-//	public float getminUnsafeOverlayTransparency() {
-//		return minUnsafeOverlayTransparency;
+//	public float getMinUnsafeOverlayTransparency() {
+//		return SafeOverlayOptions.minUnsafeOverlayTransparency;
 //	}
 //
 //	/**
@@ -504,7 +515,7 @@ public class SafeOverlay extends ZyinHUDModuleBase {
 //	 *
 //	 * @return the alpha value
 //	 */
-//	public float getmaxUnsafeOverlayTransparency() {
-//		return maxUnsafeOverlayTransparency;
+//	public float getMaxUnsafeOverlayTransparency() {
+//		return SafeOverlayOptions.maxUnsafeOverlayTransparency;
 //	}
 }

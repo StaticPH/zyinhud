@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.CoordinateOptions;
 import com.zyin.zyinhud.util.Localization;
 import net.minecraft.entity.Entity;
@@ -27,35 +27,24 @@ public class Coordinates extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableCoordinates.get();
-
-	/**
-	 * Toggles this module on or off
-	 *
-	 * @return The state the module was changed to
-	 */
-	public static boolean toggleEnabled() {
-		ZyinHUDConfig.enableCoordinates.set(!isEnabled);
-		ZyinHUDConfig.enableCoordinates.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
-		return isEnabled = !isEnabled;
-	}
+	public static boolean isEnabled;
 
 	/**
 	 * The current mode for this module
 	 */
-	public static CoordinateOptions.CoordinateModes mode = ZyinHUDConfig.coordinatesMode.get();
+	public static CoordinateOptions.CoordinateModes mode;
 
 	/**
 	 * A String which replaces "{x}", "{y}", and "{z}" with coordinates
 	 */
-	public static String chatStringFormat = ZyinHUDConfig.coordinatesChatStringFormat.get();
+	private static String chatStringFormat;
 
-	static boolean showChunkCoordinates = ZyinHUDConfig.showChunkCoordinates.get();
+	private static boolean showChunkCoordinates;
 	/**
 	 * Use colors to show what ores spawn at the elevation level
 	 */
-	static boolean useYCoordinateColors = ZyinHUDConfig.useYCoordinateColors.get();
-	static boolean showDeathLocation = ZyinHUDConfig.showDeathLocation.get();
+	private static boolean useYCoordinateColors;
+	private static boolean showDeathLocation;
 
 
 	private static final int[] oreBoundaries = {
@@ -72,6 +61,28 @@ public class Coordinates extends ZyinHUDModuleBase {
 		TextFormatting.YELLOW.toString()    //gold stops
 		//TextFormatting.GRAY		//coal stops
 	};
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableCoordinates.get();
+		mode = ZyinHUDConfig.coordinatesMode.get();
+		chatStringFormat = ZyinHUDConfig.coordinatesChatStringFormat.get();
+		showChunkCoordinates = ZyinHUDConfig.showChunkCoordinates.get();
+		useYCoordinateColors = ZyinHUDConfig.useYCoordinateColors.get();
+		showDeathLocation = ZyinHUDConfig.showDeathLocation.get();
+	}
+
+	/**
+	 * Toggles this module on or off
+	 *
+	 * @return The state the module was changed to
+	 */
+	public static boolean toggleEnabled() {
+		ZyinHUDConfig.enableCoordinates.set(!isEnabled);
+		ZyinHUDConfig.enableCoordinates.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
+		return isEnabled = !isEnabled;
+	}
 
 	/**
 	 * Calculates the player's coordinates

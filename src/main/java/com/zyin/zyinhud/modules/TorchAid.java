@@ -1,7 +1,7 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
-import com.zyin.zyinhud.helper.TagHelper.ItemLike;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
+import com.zyin.zyinhud.compat.GeneralCompat.ItemLike;
 import com.zyin.zyinhud.util.InventoryUtil;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
@@ -9,7 +9,6 @@ import net.minecraft.util.math.RayTraceResult;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import static com.zyin.zyinhud.helper.TagHelper.ItemLike.canItemPlaceTorches;
 import static com.zyin.zyinhud.util.ZyinHUDUtil.useItem;
 
 /**
@@ -23,7 +22,20 @@ public class TorchAid extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableTorchAid.get();
+	public static boolean isEnabled;
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableTorchAid.get();
+	}
+
+	/**
+	 * After the <code>equipTorchIfToolIsEquipped()</code> function fires, this is set to the index of where the torch was in the inventory,
+	 * or the index of the hotbar slot that was selected. The <code>unequipTorch()</code> function uses this value to determine
+	 * what to do next. -1 means there are no torches in inventory.
+	 */
+	private static int previousTorchIndex = -1;
 
 	/**
 	 * Toggles this module on or off
@@ -35,20 +47,6 @@ public class TorchAid extends ZyinHUDModuleBase {
 		ZyinHUDConfig.enableTorchAid.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
 		return isEnabled = !isEnabled;
 	}
-
-	/**
-	 * Use this instance for all instance method calls.
-	 */
-	public static TorchAid instance = new TorchAid();
-
-	private TorchAid() {}
-
-	/**
-	 * After the <code>EquipTorchIfToolIsEquipped()</code> function fires, this is set to the index of where the torch was in the inventory,
-	 * or the index of the hotbar slot that was selected. The <code>UnequipTorch()</code> function uses this value to determine
-	 * what to do next. -1 means there are no torches in inventory.
-	 */
-	private static int previousTorchIndex = -1;
 
 	public static void onPressed() {
 		// FIXME: resorting to requiring sneak to use this feature was a cop-out,
@@ -66,7 +64,7 @@ public class TorchAid extends ZyinHUDModuleBase {
 	public static void equipTorchIfToolIsEquipped() {
 		if (mc.currentScreen == null && mc.mouseHelper.isMouseGrabbed()) {
 			ItemStack currentItemStack = mc.player.getHeldItemMainhand();
-			if (!currentItemStack.isEmpty() && canItemPlaceTorches(currentItemStack.getItem())) {
+			if (!currentItemStack.isEmpty() && ItemLike.canItemPlaceTorches(currentItemStack.getItem())) {
 				useTorch();
 			}
 		}

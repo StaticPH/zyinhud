@@ -1,6 +1,6 @@
 //package com.zyin.zyinhud.modules;
 //
-//import com.zyin.zyinhud.ZyinHUDConfig;
+//import com.zyin.zyinhud.config.ZyinHUDConfig;
 //import com.zyin.zyinhud.ZyinHUDRenderer;
 ////import com.zyin.zyinhud.gui.GuiZyinHUDOptions;
 //import com.zyin.zyinhud.modules.ZyinHUDModuleModes.PotionTimerOptions;

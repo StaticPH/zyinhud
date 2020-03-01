@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import com.zyin.zyinhud.util.Localization;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.text.TextFormatting;
@@ -11,7 +11,16 @@ public class Fps extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableFPS.get();
+	public static boolean isEnabled;
+
+	// The assignment here seems unnecessary, but surely there was a reason at one point
+	public static String currentFps = "0";
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableFPS.get();
+	}
 
 	/**
 	 * Toggles this module on or off
@@ -23,8 +32,6 @@ public class Fps extends ZyinHUDModuleBase {
 		ZyinHUDConfig.enableFPS.save();    //Temp: will eventually move to something in a UI, likely connected to a "DONE" button
 		return isEnabled = !isEnabled;
 	}
-
-	public static String currentFps = "0";
 
 	/**
 	 * Calculate message for info line string.

@@ -1,6 +1,7 @@
-package com.zyin.zyinhud;
+package com.zyin.zyinhud.config;
 
 import com.electronwill.nightconfig.core.EnumGetMethod;
+import com.zyin.zyinhud.compat.CompatDefaults;
 import com.zyin.zyinhud.modules.ZyinHUDModuleModes.*;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -8,6 +9,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.config.ModConfig.Type;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import static net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
 import static net.minecraftforge.common.ForgeConfigSpec.Builder;
@@ -21,13 +24,14 @@ import static net.minecraftforge.common.ForgeConfigSpec.IntValue;
  */
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ZyinHUDConfig {
-
+	private static final Logger logger = LogManager.getLogger(ZyinHUDConfig.class);
 	private static ForgeConfigSpec SPEC; // Will hold the built config when done
 	public static Builder BUILDER;
 	public static ForgeConfigSpec SPEC_OVERRIDE;
 	public static Builder BUILDER_OVERRIDE;
 
 	private static final String CATEGORY_DEBUG = "debug options";
+	private static final String CATEGORY_COMPAT = "general compatibility options";
 
 	private static final String CATEGORY_ANIMALINFO = "animalinfo";
 	private static final String CATEGORY_CLOCK = "clock";
@@ -61,6 +65,25 @@ public class ZyinHUDConfig {
 	public static BooleanValue enableLoggingUnequip;
 
 	// ######################################################################
+	// General Compatibility Options
+	// ######################################################################
+	// In addition to the regular vanilla torch, these items can be considered torches where relevant
+	// This option should be a comma-separated list of namespaced items
+	public static ConfigValue<String> useAsTorch;
+	// In addition to the regular vanilla arrow, these items can be considered arrows where relevant
+	// This option should be a comma-separated list of namespaced items
+	public static ConfigValue<String> treatAsArrow;
+	// In addition to the regular vanilla torch, these items can be considered torches where relevant
+	// This option should be a comma-separated list of namespaced items
+	public static ConfigValue<String> treatAsCrossbowAmmo;
+	// In addition to the regular vanilla torch, these items can be considered torches where relevant
+	// This option should be a comma-separated list of namespaced items
+	public static ConfigValue<String> treatAsEnderpearls;
+	// In addition to the regular vanilla torch, these items can be considered torches where relevant
+	// This option should be a comma-separated list of namespaced items
+	public static ConfigValue<String> toolsForTorchAid;
+
+	// ######################################################################
 	// Animal(Mainly Horse) Info Module
 	// ######################################################################
 	// Enable/Disable Animal Info
@@ -89,7 +112,7 @@ public class ZyinHUDConfig {
 	public static EnumValue<ClockOptions.ClockModes> clockMode;
 
 	// ######################################################################
-	//Compass Module
+	// Compass Module
 	// ######################################################################
 	// Enable/Disable showing the compass
 	public static BooleanValue enableCompass;
@@ -357,9 +380,8 @@ public class ZyinHUDConfig {
 	// after ranges/accepted values, but before the configuration option itself.
 
 	//TODO: config option for quickdeposit not to deposit (item)"minecraft:tipped_arrow" and (item)"minecraft:spectral_arrow"
-	//			maybe I should add an option that holds a list of namespaced items(/?tags?) that should be handled the same way as regular arrows are?
-	//      add configurable lists of namespaced items(/?tags?) for quickdeposit to treat as tools, weapons, torches, or arrows
-	//          or just provide a data Tag in the zyinhud namespace for each, and let the end user deal with it?
+	//			maybe I should add an option that holds a list of namespaced items( that should be handled the same way as regular arrows are?
+	//      add configurable lists of namespaced items for quickdeposit to treat as tools, weapons, torches, or arrows
 	private static void configure(Builder builder, Builder builder_override) {
 		// ######################################################################
 		// Mod Debugging Options
@@ -385,6 +407,50 @@ public class ZyinHUDConfig {
 					"Enable/Disable logging when a tool or armor piece has been automatically unequipped to prevent it from breaking."
 				)
 				.define("enableLoggingUnequip", false);
+		}
+		builder.pop();
+
+		// ######################################################################
+		// General Compatibility Options
+		// ######################################################################
+		builder.comment(
+			"Options for general mod compatibility"
+		).push(CATEGORY_COMPAT);
+		{
+			useAsTorch = builder
+				.comment(
+					"A comma-separated list of namespaced items which the mod should consider as torches " +
+					"(in addition to normal vanilla torches) where relevant."
+				)
+				.define("useAsTorch", CompatDefaults.defaultTorchLike);
+
+			treatAsArrow = builder
+				.comment(
+					"A comma-separated list of namespaced items which the mod should consider as arrows " +
+					"(in addition to normal vanilla arrows) where relevant. Arrows should be usable with a vanilla bow."
+				)
+				.define("treatAsArrow", CompatDefaults.defaultArrowLike);
+
+			treatAsCrossbowAmmo = builder
+				.comment(
+					"A comma-separated list of namespaced items which the mod should consider as crossbow ammunition"
+				)
+				.define("treatAsCrossbowAmmo", CompatDefaults.defaultCrossbowAmmoLike);
+
+			treatAsEnderpearls = builder
+				.comment(
+					"A comma-separated list of namespaced items which the mod should considered as ender pearls " +
+					"(in addition to normal vanilla ender pearls) where relevant."
+				)
+				.define("treatAsEnderpearls", CompatDefaults.defaultEnderPearlLike);
+
+			toolsForTorchAid = builder
+				.comment(
+					"A comma-separated list of namespaced items which TorchAid should recognize as a tool for" +
+					" torch-placing purposes."
+				)
+				.define("toolsForTorchAid", CompatDefaults.defaultTorchPlacingTools);
+
 		}
 		builder.pop();
 
@@ -1010,16 +1076,7 @@ public class ZyinHUDConfig {
 
 	@SubscribeEvent
 	public static void onLoad(final ModConfig.Loading configEvent) {
-		ZyinHUD.ZyinLogger.debug("Loaded Zyin's HUD config file {}", configEvent.getConfig().getFileName());
-	}
-
-	@SubscribeEvent
-	public static void onFileChange(final ModConfig.ConfigReloading configEvent) {
-		ZyinHUD.ZyinLogger.fatal("Zyin's HUD config just got changed on the file system!");
-//		ModConfig config = configEvent.getConfig();
-//		if (config.getModId().equals(MODID)){
-//			do stuff??
-//		}
+		logger.debug("Loaded Zyin's HUD config file {}", configEvent.getConfig().getFileName());
 	}
 
 	public static ForgeConfigSpec getConfigSpec() {

@@ -1,6 +1,6 @@
 //package com.zyin.zyinhud.modules;
 //
-//import com.zyin.zyinhud.ZyinHUDConfig;
+//import com.zyin.zyinhud.config.ZyinHUDConfig;
 //import com.zyin.zyinhud.ZyinHUDRenderer;
 //import com.zyin.zyinhud.util.InventoryUtil;
 //import com.zyin.zyinhud.util.Localization;

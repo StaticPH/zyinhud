@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import net.minecraft.client.gui.screen.EditSignScreen;
 import net.minecraft.client.gui.screen.inventory.AnvilScreen;
 import net.minecraft.inventory.IInventory;
@@ -27,11 +27,11 @@ import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.findFiel
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class Miscellaneous extends ZyinHUDModuleBase {
 	private static final Logger logger = LogManager.getLogger(Miscellaneous.class);
-	public static final Miscellaneous instance = new Miscellaneous();
+//	public static final Miscellaneous instance = new Miscellaneous();
 
-	static boolean useQuickPlaceSign = ZyinHUDConfig.useQuickPlaceSign.get();
-	static boolean useUnlimitedSprintingSP = ZyinHUDConfig.useUnlimitedSprintingSP.get();
-	static boolean showAnvilRepairs = ZyinHUDConfig.showAnvilRepairs.get();
+	private static boolean useQuickPlaceSign;
+	private static boolean useUnlimitedSprintingSP;
+	private static boolean showAnvilRepairs;
 
 	private static final int maxRepairTimes = 6;
 
@@ -39,6 +39,14 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	 * The private RepairContainer field "inputSlots"
 	 */
 	private static final Field anvilInputSlots = findField(RepairContainer.class, "field_82853_g");
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		useQuickPlaceSign = ZyinHUDConfig.useQuickPlaceSign.get();
+		useUnlimitedSprintingSP = ZyinHUDConfig.useUnlimitedSprintingSP.get();
+		showAnvilRepairs = ZyinHUDConfig.showAnvilRepairs.get();
+	}
 
 	@SubscribeEvent
 	public static void onGuiOpenEvent(GuiOpenEvent event) {
@@ -52,6 +60,18 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	public static void onDrawScreenEvent(DrawScreenEvent.Post event) {
 		if (showAnvilRepairs && event.getGui() instanceof AnvilScreen) {
 			drawGuiRepairCounts((AnvilScreen) event.getGui());
+		}
+	}
+
+	/**
+	 * Client tick event.
+	 *
+	 * @param event the event
+	 */
+	@SubscribeEvent()
+	public static void onClientTickEvent(ClientTickEvent event) {
+		if (mc.isSingleplayer() && useUnlimitedSprintingSP) {
+			makeSprintingUnlimited();
 		}
 	}
 
@@ -142,18 +162,6 @@ public class Miscellaneous extends ZyinHUDModuleBase {
 	@SuppressWarnings("SameParameterValue")
 	private static int log(int x, int base) {
 		return (int) (Math.log(x) / Math.log(base));
-	}
-
-	/**
-	 * Client tick event.
-	 *
-	 * @param event the event
-	 */
-	@SubscribeEvent()
-	public static void onClientTickEvent(ClientTickEvent event) {
-		if (mc.isSingleplayer() && useUnlimitedSprintingSP) {
-			makeSprintingUnlimited();
-		}
 	}
 
 	/**

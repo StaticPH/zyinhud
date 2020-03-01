@@ -1,6 +1,6 @@
 package com.zyin.zyinhud.modules;
 
-import com.zyin.zyinhud.ZyinHUDConfig;
+import com.zyin.zyinhud.config.ZyinHUDConfig;
 import net.minecraft.util.text.TextFormatting;
 
 import com.zyin.zyinhud.util.Localization;
@@ -16,7 +16,25 @@ public class Compass extends ZyinHUDModuleBase {
 	/**
 	 * Enables/Disables this module
 	 */
-	public static boolean isEnabled = ZyinHUDConfig.enableCompass.get();
+	public static boolean isEnabled;
+
+	private static boolean renderCompassTextInMiddle;
+
+	private static String south = Localization.get("compass.south");
+	private static String southwest = Localization.get("compass.southwest");
+	private static String west = Localization.get("compass.west");
+	private static String northwest = Localization.get("compass.northwest");
+	private static String north = Localization.get("compass.north");
+	private static String northeast = Localization.get("compass.northeast");
+	private static String east = Localization.get("compass.east");
+	private static String southeast = Localization.get("compass.southeast");
+
+	static { loadFromConfig(); }
+
+	public static void loadFromConfig() {
+		isEnabled = ZyinHUDConfig.enableCompass.get();
+		renderCompassTextInMiddle = ZyinHUDConfig.renderCompassTextInMiddle.get();
+	}
 
 	/**
 	 * Toggles this module on or off
@@ -29,20 +47,10 @@ public class Compass extends ZyinHUDModuleBase {
 		return isEnabled = !isEnabled;
 	}
 
-	static boolean renderCompassTextInMiddle = ZyinHUDConfig.renderCompassTextInMiddle.get();
-
-	private static String south = Localization.get("compass.south");
-	private static String southwest = Localization.get("compass.southwest");
-	private static String west = Localization.get("compass.west");
-	private static String northwest = Localization.get("compass.northwest");
-	private static String north = Localization.get("compass.north");
-	private static String northeast = Localization.get("compass.northeast");
-	private static String east = Localization.get("compass.east");
-	private static String southeast = Localization.get("compass.southeast");
-
 	//TODO: Add option to display =/- X/Z directions in addition to or instead of N/E/S/W
 	//      North = -Z  South = +Z
 	//      West = -X   East = +X
+	//  see: Direction and Direction8 classes
 
 	/**
 	 * Calculates the direction the player is facing

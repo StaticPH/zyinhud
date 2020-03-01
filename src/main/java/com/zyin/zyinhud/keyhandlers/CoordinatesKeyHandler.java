@@ -21,19 +21,16 @@ public class CoordinatesKeyHandler implements ZyinHUDKeyHandlerBase {
 		long handle = mc.mainWindow.getHandle();
 		int keyState = GLFW.glfwGetKey(handle, coordinateKey.getKey().getKeyCode());
 
-		if (mc.currentScreen instanceof ChatScreen) {
-			if (keyState == GLFW.GLFW_PRESS || keyState == GLFW.GLFW_RELEASE) {
-				if (keyState == GLFW.GLFW_PRESS) {
-					if (!keyDown) { onKeyDown(); }
-					keyDown = true;
-				}
-				else {
-					//if(keyDown == true)
-					//OnKeyUp();
-					keyDown = false;
-				}
+		if (mc.currentScreen instanceof ChatScreen && (keyState == GLFW.GLFW_PRESS || keyState == GLFW.GLFW_RELEASE)) {
+			if (keyState == GLFW.GLFW_PRESS) {
+				if (!keyDown) { onKeyDown(); }
+				keyDown = true;
 			}
-
+			else {
+				//if(keyDown == true)
+				//OnKeyUp();
+				keyDown = false;
+			}
 		}
 	}
 

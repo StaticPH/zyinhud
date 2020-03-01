@@ -17,10 +17,8 @@ public class QuickDepositKeyHandler implements ZyinHUDKeyHandlerBase {
 	//_CHECK: KeyInputEvent might need to be replaced by one of the events from GuiScreenEvent
 	public static void onPressed(KeyInputEvent event) {
 		//don't activate if the user isn't looking at a container gui
-		if (!(mc.currentScreen instanceof ContainerScreen)) { return; }
-
-		if (QuickDeposit.isEnabled) {
-			if ((GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS)) {
+		if ((mc.currentScreen instanceof ContainerScreen) && QuickDeposit.isEnabled) {
+			if (GLFW.glfwGetKey(handle, GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS) {
 				QuickDeposit.quickDepositItemsInChest(false);
 			}
 			else { QuickDeposit.quickDepositItemsInChest(true); }
