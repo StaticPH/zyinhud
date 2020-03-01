@@ -68,7 +68,7 @@ public class Clock extends ZyinHUDModuleBase {
 				return getTimeOfDay();
 			}
 			else if (Clock.mode == ClockOptions.ClockModes.COUNTDOWN) {
-				long time = mc.player.world.getDayTime() % 24000; // Does not necessarily match the sun/moon positions
+				long time = mc.world.getDayTime() % 24000; // Does not necessarily match the sun/moon positions
 				if (isNight(time)) {
 					//night time
 					long secondsTillDay = (mobSpawningStopTime - time) / 20;
@@ -108,7 +108,7 @@ public class Clock extends ZyinHUDModuleBase {
 	}
 
 	private static long getTimeFromGameTime() {
-		return (mc.player.world.getGameTime()) % 24000;
+		return (mc.world.getGameTime()) % 24000;
 	}
 
 	private static int getCurrentMinute(final long time) {
@@ -129,7 +129,7 @@ public class Clock extends ZyinHUDModuleBase {
 	 * @return true if it is currently night in-game, false otherwise
 	 */
 	public static boolean isNight() {
-		long time = (mc.player.world.getDayTime()) % 24000;
+		long time = (mc.world.getDayTime()) % 24000;
 		return time >= mobSpawningStartTime && time < mobSpawningStopTime;
 	}
 
@@ -152,7 +152,7 @@ public class Clock extends ZyinHUDModuleBase {
 			night is 13000
 			midnight is 18000
 		*/
-		long now = mc.player.world.getDayTime();
+		long now = mc.world.getDayTime();
 		return getColorForTime(now) + get12HTime(now);
 	}
 }
