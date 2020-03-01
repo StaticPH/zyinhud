@@ -65,33 +65,17 @@ public class Clock extends ZyinHUDModuleBase {
 	public static String calculateMessageForInfoLine(String infoLineMessageUpToThisPoint) {
 		if (Clock.isEnabled) {
 			if (Clock.mode == ClockOptions.ClockModes.STANDARD) {
-				long time = (mc.world.getGameTime()) % 24000;
-
-				//0 game time is 6am, so add 6000
-				long hours = (time + 6000) / 1000;
-				if (hours >= 24) { hours = hours - 24; }
-				long seconds = (long) (((time + 6000) % 1000) * (60.0 / 1000.0));
-
-				if (isNight()) {
-					//night time
-					return TextFormatting.GRAY + String.format("%02d:%02d", hours, seconds);
-				}
-				else {
-					//day time
-					return (time < bedTime ? TextFormatting.YELLOW : TextFormatting.GOLD) +
-					       String.format("%02d:%02d", hours, seconds);
-				}
+				return getTimeOfDay();
 			}
 			else if (Clock.mode == ClockOptions.ClockModes.COUNTDOWN) {
-				long time = (mc.world.getGameTime()) % 24000;
-
-				if (isNight()) {
+				long time = mc.player.world.getDayTime() % 24000; // Does not necessarily match the sun/moon positions
+				if (isNight(time)) {
 					//night time
 					long secondsTillDay = (mobSpawningStopTime - time) / 20;
 					long minutes = secondsTillDay / 60;
 					long seconds = secondsTillDay - minutes * 60;
 
-					return TextFormatting.GRAY + String.format("%02d:%02d", minutes, seconds);
+					return getColorForTime(time) + String.format("%02d:%02d", minutes, seconds);
 				}
 				else {
 					//day time
@@ -101,8 +85,7 @@ public class Clock extends ZyinHUDModuleBase {
 					long minutes = secondsTillNight / 60;
 					long seconds = secondsTillNight - minutes * 60;
 
-					return (time < bedTime ? TextFormatting.YELLOW : TextFormatting.GOLD) +
-					       String.format("%02d:%02d", minutes, seconds);
+					return getColorForTime(time) + String.format("%02d:%02d", minutes, seconds);
 				}
 			}
 			else if (Clock.mode == ClockOptions.ClockModes.GRAPHIC) {
@@ -124,11 +107,52 @@ public class Clock extends ZyinHUDModuleBase {
 		return "";
 	}
 
+	private static long getTimeFromGameTime() {
+		return (mc.player.world.getGameTime()) % 24000;
+	}
+
+	private static int getCurrentMinute(final long time) {
+		return (int) (time % 1000) * 60 / 1000;
+	}
+
+	private static String get12HTime(final long time) {
+		final int hour = (time >= 6000 && time < 7000) ? 12 : ((int) (time / 1000 + 6) % 24 % 12);
+		return String.format("%02d:%02d", hour, getCurrentMinute(time));
+	}
+
+	private static String get24HTime(final long time) {
+		final int hour = (time >= 6000 && time < 7000) ? 12 : ((int) (time / 1000 + 6) % 24);
+		return String.format("%02d:%02d", hour, getCurrentMinute(time));
+	}
+
 	/**
 	 * @return true if it is currently night in-game, false otherwise
 	 */
 	public static boolean isNight() {
-		long time = (mc.world.getGameTime()) % 24000;
+		long time = (mc.player.world.getDayTime()) % 24000;
 		return time >= mobSpawningStartTime && time < mobSpawningStopTime;
+	}
+
+	public static boolean isNight(final long time) {
+		return time >= mobSpawningStartTime && time < mobSpawningStopTime;
+	}
+
+	private static TextFormatting getColorForTime(final long time) {
+		return isNight(time) ? TextFormatting.GRAY :
+		       time < bedTime ? TextFormatting.YELLOW : TextFormatting.GOLD;
+	}
+
+	private static String getTimeOfDay() {
+		/*
+		 Unlike World.getGameTime(), the return value of World.getDayTime() does not change if
+		 the doDaylightCycle GameRule is false AND it's per dimension
+			time 24000 or 0 is ~6am
+			day is 1000
+			noon is 6000
+			night is 13000
+			midnight is 18000
+		*/
+		long now = mc.player.world.getDayTime();
+		return getColorForTime(now) + get12HTime(now);
 	}
 }
