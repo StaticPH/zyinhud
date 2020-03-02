@@ -77,9 +77,8 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 //	protected static int equipmentLocX = 20 + armorDurabilityIconWidth;
 //	protected static int equipmentLocY = 20;
 
-	//used to push items into the list of broken equipment to render
-	private static ArrayList<ItemStack> damagedItemsList = new ArrayList<ItemStack>(13);
-
+	/** Used to push items into the list of broken equipment to render */
+	private static ArrayList<ItemStack> damagedItemsList = new ArrayList<ItemStack>(14);
 
 	/**
 	 * The last time the item cache was generated
