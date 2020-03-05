@@ -133,9 +133,7 @@ public class InventoryUtil {
 	 * @return true if the item was used.
 	 */
 	public static boolean useItemInHotbar(Object object) {
-		int itemHotbarIndex = getItemIndexFromHotbar(object);
-
-		return useItemInHotbar(object, itemHotbarIndex);
+		return useItemInHotbar(object, getItemIndexFromHotbar(object));
 	}
 
 	/**
@@ -174,9 +172,7 @@ public class InventoryUtil {
 	 * @return true if the item was used.
 	 */
 	public static boolean useItemInInventory(Object object) {
-		int itemInventoryIndex = getItemIndexFromInventory(object);
-
-		return useItemInInventory(object, itemInventoryIndex);
+		return useItemInInventory(object, getItemIndexFromInventory(object));
 	}
 
 	/**
@@ -300,10 +296,9 @@ public class InventoryUtil {
 	 */
 	public static boolean swap(int srcIndex, int destIndex) {
 		if (srcIndex == destIndex || srcIndex < 0 || destIndex < 0) { return false; }
-		List inventorySlots = mc.player.container.inventorySlots;
-		ItemStack srcStack = ((Slot) inventorySlots.get(srcIndex)).getStack();
-		ItemStack destStack = ((Slot) inventorySlots.get(destIndex)).getStack();
-
+		List<Slot> inventorySlots = mc.player.container.inventorySlots;
+		ItemStack srcStack = inventorySlots.get(srcIndex).getStack();
+		ItemStack destStack = inventorySlots.get(destIndex).getStack();
 
 		ItemStack handStack = mc.player.inventory.getItemStack();
 		if (!handStack.isEmpty()) {
@@ -311,7 +306,6 @@ public class InventoryUtil {
 			if (emptyIndex < 0) {
 				emptyIndex = 1;    //use the crafting area
 			}
-
 			leftClickInventorySlot(emptyIndex);
 		}
 
@@ -334,11 +328,10 @@ public class InventoryUtil {
 		}
 		//4: src = item, dest = item        srcStack != null && destStack != null
 		else {
-	    	/*if(srcStack.itemID == destStack.itemID) {
-	    		//if the 2 items are the same, do nothing
-	    		return false;
-	    	}*/
-
+			/*if (srcStack == destStack || srcStack.getItem() == destStack.getItem()){
+				// If the items are identical, do nothing
+				return false;
+			}*/
 
 			//LeftClickInventorySlot(srcIndex);
 			//LeftClickInventorySlot(destIndex);
@@ -410,8 +403,7 @@ public class InventoryUtil {
 		}
 
 
-		List chestSlots = mc.player.openContainer.inventorySlots;
-
+		List<Slot> chestSlots = mc.player.openContainer.inventorySlots;
 		int numDisplayedSlots = mc.player.openContainer.inventorySlots.size();
 
 		int numInventorySlots = 36;
@@ -425,10 +417,8 @@ public class InventoryUtil {
 
 		//iterate over the player's inventory and deposit items as needed
 		for (int i = iStart; i < iEnd; i++) {
-			Slot slot = (Slot) chestSlots.get(i);
-			ItemStack itemStack = slot.getStack();
+			ItemStack itemStack = chestSlots.get(i).getStack();
 			if (!itemStack.isEmpty()) {
-
 				if (onlyDepositMatchingItems) {
 					int itemIndex = getFirstItemIndexInContainer(itemStack);
 
@@ -472,14 +462,17 @@ public class InventoryUtil {
 		int numContainerSlots = numDisplayedSlots - numInventorySlots;
 
 		//Don't try to move from the container into itself
-		if (numContainerSlots == 53 - numInventorySlots && (srcIndex < 18 || srcIndex > 53)) { return false; }
-		if (numContainerSlots == 63 - numInventorySlots && (srcIndex < 28 || srcIndex > 63)) { return false; }
-		if (numContainerSlots == 90 - numInventorySlots && (srcIndex < 55 || srcIndex > 90)) { return false; }
-
-		if (destIndex < 0) { return false; }
-		if (numContainerSlots == 53 - numInventorySlots && destIndex > 17) { return false; }
-		if (numContainerSlots == 63 - numInventorySlots && destIndex > 27) { return false; }
-		if (numContainerSlots == 90 - numInventorySlots && destIndex > 54) { return false; }
+		if (
+			destIndex < 0 ||
+			(numContainerSlots == 53 - numInventorySlots && (srcIndex < 18 || srcIndex > 53)) ||
+			(numContainerSlots == 63 - numInventorySlots && (srcIndex < 28 || srcIndex > 63)) ||
+			(numContainerSlots == 90 - numInventorySlots && (srcIndex < 55 || srcIndex > 90)) ||
+			(numContainerSlots == 53 - numInventorySlots && destIndex > 17) ||
+			(numContainerSlots == 63 - numInventorySlots && destIndex > 27) ||
+			(numContainerSlots == 90 - numInventorySlots && destIndex > 54)
+		) {
+			return false;
+		}
 
 		ItemStack srcStack = mc.player.openContainer.inventorySlots.get(srcIndex).getStack();
 		ItemStack destStack = mc.player.openContainer.inventorySlots.get(destIndex).getStack();
@@ -626,15 +619,13 @@ public class InventoryUtil {
 			}
 		}
 
-		List merchantSlots = mc.player.openContainer.inventorySlots;
-
+		List<Slot> merchantSlots = mc.player.openContainer.inventorySlots;
 		int iStart = numMerchantSlots;    //villagers have 3 container slots
 		int iEnd = numDisplayedSlots;
 
 		//find items in our inventory that match the items the villager is selling
 		for (int i = iStart; i < iEnd; i++) {
-			Slot slot = (Slot) merchantSlots.get(i);
-			ItemStack itemStack = slot.getStack();
+			ItemStack itemStack = merchantSlots.get(i).getStack();
 			if (!itemStack.isEmpty()) {
 				if (!buyingItemStack1.isEmpty() && areItemStacksEqualIgnoreAmount(itemStack, buyingItemStack1)) {
 					depositItemInMerchant(i, 0);
@@ -649,8 +640,7 @@ public class InventoryUtil {
 	}
 
 	private static boolean depositItemInMerchant(int srcIndex, int destIndex) {
-		if (destIndex < 0 || destIndex > 1) { return false; }
-		if (srcIndex < 3 || srcIndex > 39) { return false; }
+		if (destIndex < 0 || destIndex > 1 || srcIndex < 3 || srcIndex > 39) { return false; }
 
 		return depositItemsIgnoringQuantity(srcIndex, destIndex);
 	}
@@ -705,7 +695,7 @@ public class InventoryUtil {
 		int numInventorySlots = 36;
 		int numFurnaceSlots = numDisplayedSlots - numInventorySlots;
 
-		List furnaceSlots = mc.player.openContainer.inventorySlots;
+		List<Slot> furnaceSlots = mc.player.openContainer.inventorySlots;
 
 		ItemStack inputStack = mc.player.openContainer.inventorySlots.get(0).getStack();
 		ItemStack fuelStack = mc.player.openContainer.inventorySlots.get(1).getStack();
@@ -727,8 +717,7 @@ public class InventoryUtil {
 
 		//find items in our inventory that match the items in the furnace fuel/input slot
 		for (int i = iStart; i < iEnd; i++) {
-			Slot slot = (Slot) furnaceSlots.get(i);
-			ItemStack itemStack = slot.getStack();
+			ItemStack itemStack = furnaceSlots.get(i).getStack();
 			if (!itemStack.isEmpty()) {
 				if (!inputStack.isEmpty() && areItemStacksEqualIgnoreAmount(itemStack, inputStack)) {
 					depositItemInFurnace(i, 0);
@@ -817,7 +806,7 @@ public class InventoryUtil {
 		int numInventorySlots = 36;
 		int numFurnaceSlots = numDisplayedSlots - numInventorySlots;
 
-		List brewingStandSlots = mc.player.openContainer.inventorySlots;
+		List<Slot> brewingStandSlots = mc.player.openContainer.inventorySlots;
 
 		ItemStack inputStack = mc.player.openContainer.inventorySlots.get(3).getStack();
 		ItemStack outputStack1 = mc.player.openContainer.inventorySlots.get(0).getStack();
@@ -853,8 +842,7 @@ public class InventoryUtil {
 
 		//find items in our inventory that match the items in the furnace fuel/input slot
 		for (int i = iStart; i < iEnd; i++) {
-			Slot slot = (Slot) brewingStandSlots.get(i);
-			ItemStack itemStack = slot.getStack();
+			ItemStack itemStack = brewingStandSlots.get(i).getStack();
 			if (!itemStack.isEmpty()) {
 				if (!inputStack.isEmpty() && areItemStacksEqualIgnoreAmount(itemStack, inputStack)) {
 					depositItemInBrewingStand(i, 3);
@@ -882,8 +870,7 @@ public class InventoryUtil {
 	}
 
 	private static boolean depositItemInBrewingStand(int srcIndex, int destIndex) {
-		if (destIndex < 0 || destIndex > 3) { return false; }
-		if (srcIndex < 5 || srcIndex > 39) { return false; }
+		if (destIndex < 0 || destIndex > 3 || srcIndex < 5 || srcIndex > 39) { return false; }
 
 		return depositItemsIgnoringQuantity(srcIndex, destIndex);
 	}
@@ -891,13 +878,12 @@ public class InventoryUtil {
 	/**
 	 * Gets the index of an item class.
 	 *
-	 * @param object  The type of item being used. E.x.: Blocks.torch, Items.ender_pearl, or the BlockPos of a block
 	 * @param iStart  index in the inventory to start looking
 	 * @param iEnd    index in the inventory to stop looking
 	 * @param matchTo only match items for which this Predicate holds true.
 	 * @return 9-44, -1 if not found
 	 */
-	private static int getItemIndex(Object object, int iStart, int iEnd, Predicate<Item> matchTo) {
+	private static int getItemIndex(int iStart, int iEnd, Predicate<Item> matchTo) {
 		List<Slot> inventorySlots = mc.player.container.inventorySlots.subList(iStart, iEnd);
 
 		//iterate over the main inventory CONTAINER (9~44)
@@ -930,8 +916,7 @@ public class InventoryUtil {
 
 		//iterate over the main inventory (9~44)
 		for (int i = iStart; i <= iEnd; i++) {
-			Slot slot = inventorySlots.get(i);
-			ItemStack itemStack = slot.getStack();
+			ItemStack itemStack = inventorySlots.get(i).getStack();
 			if (!itemStack.isEmpty()) {
 				Item item = itemStack.getItem();
 				if (object instanceof BlockPos) {
@@ -989,15 +974,14 @@ public class InventoryUtil {
 	/**
 	 * Gets the index of an item class in your inventory.
 	 *
-	 * @param object  The type of item being used. E.x.: Blocks.torch, Items.ender_pearl
 	 * @param matchTo only match items for which this Predicate holds true.
 	 * @return 9 -44, -1 if not found
 	 */
-	public static int getItemIndexFromInventory(Object object, Predicate<Item> matchTo) {
+	public static int getItemIndexFromInventory(Predicate<Item> matchTo) {
 		// FIXME: GET RID OF THIS DANG OFFSET, WITHOUT BREAKING OTHER FUNCTIONS (like calls to translateHotbarIndexToInventoryIndex)
 		// Offset the hotbar index so that we get the correct result(actually the value we originally got in
 		// GetItemIndex before adding an offset for the sake of translateHotbarIndexToInventoryIndex)
-		return getItemIndex(object, 9, 35, matchTo) - 36;
+		return getItemIndex(9, 35, matchTo) - 36;
 	}
 
 	/**
@@ -1024,12 +1008,11 @@ public class InventoryUtil {
 	/**
 	 * Gets the index of an item class in your hotbar.
 	 *
-	 * @param object  The type of item being used. E.x.: Blocks.torch, Items.ender_pearl
 	 * @param matchTo only match items for which this Predicate holds true.
 	 * @return 36 -44, -1 if not found
 	 */
-	public static int getItemIndexFromHotbar(Object object, Predicate<Item> matchTo) {
-		return getItemIndex(object, 36, 44, matchTo);
+	public static int getItemIndexFromHotbar(Predicate<Item> matchTo) {
+		return getItemIndex(36, 44, matchTo);
 	}
 
 	/**
@@ -1038,13 +1021,11 @@ public class InventoryUtil {
 	 * @return 9-44, -1 if no empty spot
 	 */
 	private static int getFirstEmptyIndexInInventory() {
-		List inventorySlots = mc.player.inventory.mainInventory; // almost certain this should NOT be container.inventorySlots
+		List<ItemStack> inventorySlots = mc.player.inventory.mainInventory;
 
 		//iterate over the main inventory (9-35) then the hotbar (36-44)
 		for (int i = 9; i <= 44; i++) {
-			Slot slot = (Slot) inventorySlots.get(i);
-			ItemStack itemStack = slot.getStack();
-			if (itemStack.isEmpty()) {
+			if (inventorySlots.get(i).isEmpty()) {
 				return i;
 			}
 		}
@@ -1069,7 +1050,7 @@ public class InventoryUtil {
 	 * @return 0, 1-15,27,54. -1 if no empty spot
 	 */
 	private static int getFirstEmptyIndexInContainerInventory(ItemStack itemStackToMatch) {
-		List containerSlots = mc.player.openContainer.inventorySlots;
+		List<Slot> containerSlots = mc.player.openContainer.inventorySlots;
 
 		int numDisplayedSlots = containerSlots.size();
 
@@ -1082,18 +1063,18 @@ public class InventoryUtil {
 		return seekEmptyContainerIndex(itemStackToMatch, containerSlots, iStart, iEnd);
 	}
 
-	private static int seekEmptyContainerIndex(ItemStack itemStackToMatch, List containerSlots, int iStart, int iEnd) {
+	private static int seekEmptyContainerIndex(
+		ItemStack itemStackToMatch, List<Slot> containerSlots, int iStart, int iEnd
+	) {
 		int firstEmptyIndex = -1;
 
 		//iterate over the chest's inventory (0,1-15,27,54)
 		for (int i = iStart; i <= iEnd - 1; i++) {
-			Slot slot = (Slot) containerSlots.get(i);
-			ItemStack itemStack = slot.getStack();
+			ItemStack itemStack = containerSlots.get(i).getStack();
 			if (itemStack.isEmpty() && firstEmptyIndex == -1) {
 				firstEmptyIndex = i;
 			}
 			else if (
-				!itemStack.isEmpty() && !itemStackToMatch.isEmpty() &&
 				areItemStacksEqualIgnoreAmount(itemStack, itemStackToMatch) &&
 				itemStack.getCount() < itemStack.getMaxStackSize()
 			) {
@@ -1120,7 +1101,7 @@ public class InventoryUtil {
 	 * @return 0, 1-15,27,54. -1 if no empty spot
 	 */
 	private static int getFirstEmptyIndexInContainer(ItemStack itemStackToMatch) {
-		List containerSlots = mc.player.openContainer.inventorySlots;
+		List<Slot> containerSlots = mc.player.openContainer.inventorySlots;
 
 		// containerSlots.size() returns the number of slots in a given container(the one currently opened by the player)
 		// 36 is the number of normal slots in the player's inventory
@@ -1140,7 +1121,7 @@ public class InventoryUtil {
 	 * @return 0-27,54, -1 if no item found
 	 */
 	private static int getFirstItemIndexInContainer(ItemStack itemStackToMatch) {
-		List containerSlots = mc.player.openContainer.inventorySlots;
+		List<Slot> containerSlots = mc.player.openContainer.inventorySlots;
 
 		// containerSlots.size() returns the number of slots in a given container(the one currently opened by the player)
 		// 36 is the number of normal slots in the player's inventory
@@ -1152,8 +1133,7 @@ public class InventoryUtil {
 
 		//iterate over the chest's inventory (0,1-16,27,54)
 		for (int i = iStart; i <= iEnd - 1; i++) {
-			Slot slot = (Slot) containerSlots.get(i);
-			ItemStack itemStack = slot.getStack();
+			ItemStack itemStack = containerSlots.get(i).getStack();
 			if (!itemStack.isEmpty() && areItemStacksEqualIgnoreAmount(itemStack, itemStackToMatch)) {
 				return i;
 			}
