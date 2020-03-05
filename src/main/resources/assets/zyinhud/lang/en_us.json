@@ -86,7 +86,7 @@
     "durabilityinfo.textmode.none": "None",
     "durabilityinfo.textmode.text": "Text",
     "durabilityinfo.textmode.percentage": "Percentage",
-    "durabilityinfo.unequippeditem": "unequipped",
+    "durabilityinfo.unequippeditem": "Unequipped:",
     "durabilityinfo.options.tooltip": "Shows the durability of any armor you have equipped as well as any tools or weapons you have on your hotbar. They will only be displayed when their durabilities are below a specified threshold (default 10%%).",
     "durabilityinfo.options.usecolorednumbers": "Colored Numbers:",
     "durabilityinfo.options.showitemdurability": "Show Tools:",

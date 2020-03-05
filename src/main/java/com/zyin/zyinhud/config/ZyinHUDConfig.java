@@ -149,7 +149,7 @@ public class ZyinHUDConfig {
 	// ######################################################################
 	// Enable/Disable showing all durability info
 	public static BooleanValue enableDurabilityInfo;
-	// Display when armor gets damaged less than this fraction of its durability
+	// Display when armor durability is less than this fraction of its maximum durability
 	public static DoubleValue armorDurabilityDisplayThreshold;
 	// Enable/Disable automatically unequipping armor before it breaks.
 	public static BooleanValue autoUnequipArmor;
@@ -165,7 +165,7 @@ public class ZyinHUDConfig {
 	public static IntValue durabilityVerticalPos;
 	// Hide/Show durability info while chat is open.
 	public static BooleanValue hideDurabilityInfoInChat;
-	// Display when an item gets damaged less than this fraction of its durability
+	// Display when an item has durability less than this fraction of its maximum durability
 	public static DoubleValue itemDurabilityDisplayThreshold;
 	// Enable/Disable showing breaking armor
 	public static BooleanValue showArmorDurability;
@@ -596,7 +596,7 @@ public class ZyinHUDConfig {
 				.comment("Enable/Disable automatically unequipping tools before they breaks")
 				.define("autoUnequipTools", DurabilityInfoOptions.defaultAutoUnequipTools);
 			armorDurabilityDisplayThreshold = builder
-				.comment("Display when armor has less than this fraction of its durability")
+				.comment("Display when armor durability is equal to or below this fraction of its maximum durability")
 				.defineInRange(
 					"armorDurabilityDisplayThreshold",
 					DurabilityInfoOptions.defaultDurabilityDisplayThreshold,
@@ -607,7 +607,7 @@ public class ZyinHUDConfig {
 				.comment("Hide/Show durability info while chat is open.")
 				.define("hideDurabilityInfoInChat", DurabilityInfoOptions.defaultHideDurabilityInfoInChat);
 			itemDurabilityDisplayThreshold = builder
-				.comment("Display when an item has less than this fraction of its durability")
+				.comment("Display when an item has durability less or equal to this fraction of its maximum durability")
 				.defineInRange(
 					"itemDurabilityDisplayThreshold",
 					DurabilityInfoOptions.defaultDurabilityDisplayThreshold,

@@ -60,25 +60,14 @@ public class Compass extends ZyinHUDModuleBase {
 	 */
 	public static String calculateMessageForInfoLine(String infoLineMessageUpToThisPoint) {
 		if (Compass.isEnabled) {
-			String compassDirection;
-			int facing;
-			int yaw = (int) mc.player.rotationYaw;
-			yaw += 22;    //+22 centers the compass (45degrees/2)
-			yaw %= 360;
+			//+22 centers the compass (45degrees/2)     %360 keeps value in range [-360,360]
+			int yaw = ((int) mc.player.rotationYaw + 22) % 360;
+			if (yaw < 0){ yaw += 360; }
 
-			if (yaw < 0) { yaw += 360; }
+			//  360 degrees divided by 45 == 8 zones
+			int facing = yaw / 45;
 
-			facing = yaw / 45; //  360 degrees divided by 45 == 8 zones
-
-
-			if (facing == 0) { compassDirection = south; }
-			else if (facing == 1) { compassDirection = southwest; }
-			else if (facing == 2) { compassDirection = west; }
-			else if (facing == 3) { compassDirection = northwest; }
-			else if (facing == 4) { compassDirection = north; }
-			else if (facing == 5) { compassDirection = northeast; }
-			else if (facing == 6) { compassDirection = east; }
-			else { compassDirection = southeast; } // if(facing == 7)
+			String compassDirection = getFacingDirection(facing);
 
 			if (renderCompassTextInMiddle) {
 				String brackets;
@@ -99,8 +88,9 @@ public class Compass extends ZyinHUDModuleBase {
 //            	{
 				brackets = "[   ]";
 				x = mc.fontRenderer.getStringWidth(infoLineMessageUpToThisPoint);
-				x_padding = mc.fontRenderer.getStringWidth(brackets) / 2 - 6;
-				if (facing % 2 == 0) { x_padding += 3; }   //s,w,n,e
+				x_padding = (facing % 2 != 0) ?
+				            ((mc.fontRenderer.getStringWidth(brackets) / 2) - 6) : //nw,ne,sw,se
+				            ((mc.fontRenderer.getStringWidth(brackets) / 2) - 3); //s,w,n,e
 //            	}
 
 				mc.fontRenderer.drawStringWithShadow(
@@ -117,6 +107,17 @@ public class Compass extends ZyinHUDModuleBase {
 		}
 
 		return "";
+	}
+
+	private static String getFacingDirection(int facing) {
+		if (facing == 0) { return south; }
+		else if (facing == 1) { return southwest; }
+		else if (facing == 2) { return west; }
+		else if (facing == 3) { return northwest; }
+		else if (facing == 4) { return north; }
+		else if (facing == 5) { return northeast; }
+		else if (facing == 6) { return east; }
+		else { return southeast; } // if(facing == 7)
 	}
 
 }

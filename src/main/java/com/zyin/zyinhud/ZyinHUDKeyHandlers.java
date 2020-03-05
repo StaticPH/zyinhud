@@ -199,6 +199,7 @@ public class ZyinHUDKeyHandlers {
 //			QuickDepositKeyHandler.onClientTickEvent(event);
 
 			//since this method is in the ClientTickEvent, it'll overcome the Screen limitation of not handling mouse clicks
+			//...I don't know why you would WANT this to work while on a (non-null) Screen...
 			onFireUseBlockEvents();
 		}
 	}
