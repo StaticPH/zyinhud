@@ -18,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 
 /**
@@ -126,64 +127,57 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 		//and F3 not shown
 		if (
 			DurabilityInfo.isEnabled &&
-			(mc.mouseHelper.isMouseGrabbed() || ((mc.currentScreen instanceof ChatScreen && !hideDurabilityInfoInChat)/* || tabIsSelectedInOptionsGui()*/)) &&
+			(mc.mouseHelper.isMouseGrabbed() || mc.currentScreen == null ||/* tabIsSelectedInOptionsGui() ||*/
+			 (mc.currentScreen instanceof ChatScreen && !hideDurabilityInfoInChat)) &&
 			!mc.gameSettings.showDebugInfo
 		) {
 			//don't waste time recalculating things every tick
 			if (System.currentTimeMillis() - lastGenerate > durabilityUpdateFrequency) {
 				calculateDurabilityIcons();
 			}
-			//TODO: compact this?
-			boolean armorExists = false;
 
-			for (ItemStack itemStack : damagedItemsList) {
-				if (itemStack.getItem() instanceof ArmorItem || itemStack.getItem() instanceof ElytraItem) {
-					armorExists = true;
-				}
-			}
+			renderDamagedGear();
+		}
+	}
 
-			int numTools = 0;
-			int numArmors = 0;
+	private static void renderDamagedGear() {
+		int numTools = 0;
+		int numArmors = 0;
+		int xPos = (int) Math.floor(durabilityLocX / durabilityIconScale);
+		int yPos = (int) Math.floor(durabilityLocY / durabilityIconScale);
+		boolean armorExists = damagedItemsList.stream().anyMatch(
+			itemStack -> mc.player.inventory.armorInventory.contains(itemStack)
+//				itemStack -> itemStack.getItem() instanceof ArmorItem || itemStack.getItem() instanceof ElytraItem
+		);
 
-			for (ItemStack itemStack : damagedItemsList) {
-				Item equipment = itemStack.getItem();
-				int xPos = (int) Math.floor(durabilityLocX / durabilityIconScale);
-				int yPos = (int) Math.floor(durabilityLocY / durabilityIconScale);
+		for (ItemStack itemStack : damagedItemsList) {
+			Item equipment = itemStack.getItem();
+			GL11.glScalef(durabilityIconScale, durabilityIconScale, durabilityIconScale);
 
-				//if this equipment is an armor
-				if (equipment instanceof ArmorItem || equipment instanceof ElytraItem) {
-					if (showArmorDurability) {
-						GL11.glScalef(durabilityIconScale, durabilityIconScale, durabilityIconScale);
-
-						if (showIndividualArmorIcons) {
-							renderItemIconWithDurability(itemStack, xPos, (yPos + (numArmors * toolIconHeight)));
-							numArmors++;
-						}
-						else {
-							drawBrokenArmorTexture(xPos, yPos);
-						}
-
-						GL11.glScalef(1f / durabilityIconScale, 1f / durabilityIconScale, 1f / durabilityIconScale);
+			//if this equipment is an armor
+//			if (equipment instanceof ArmorItem || equipment instanceof ElytraItem) {
+			if (mc.player.inventory.armorInventory.contains(itemStack)) {
+				if (showArmorDurability) {
+					if (showIndividualArmorIcons) {
+						renderItemIconWithDurability(itemStack, xPos, (yPos + (numArmors * toolIconHeight)));
+						numArmors++;
 					}
-				}
-				else {
-					//if this equipment is an equipment/equipment
-					if (showItemDurability) {
-						GL11.glScalef(durabilityIconScale, durabilityIconScale, durabilityIconScale);
-
-						//Render the item icon, pushing it to the right if armor is also being rendered
-						renderItemIconWithDurability(
-							itemStack,
-							(armorExists && showArmorDurability) ? xPos : (xPos + toolIconWidth),
-							(yPos + (numTools * toolIconHeight))
-						);
-
-						GL11.glScalef(1f / durabilityIconScale, 1f / durabilityIconScale, 1f / durabilityIconScale);
-
-						numTools++;
+					else {
+						drawBrokenArmorTexture(xPos, yPos);
 					}
 				}
 			}
+			//if this is a tool or other piece of equipment, and item durability is set to display
+			else if (showItemDurability) {
+				//Render the item icon, pushing it to the right if armor is also being rendered
+				renderItemIconWithDurability(
+					itemStack,
+					((armorExists && showArmorDurability) ? (xPos + toolIconWidth) : xPos),
+					(yPos + (numTools * toolIconHeight))
+				);
+				numTools++;
+			}
+			GL11.glScalef(1f / durabilityIconScale, 1f / durabilityIconScale, 1f / durabilityIconScale);
 		}
 	}
 
@@ -206,44 +200,43 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 		GL11.glDisable(GL11.GL_LIGHTING);    //the itemRenderer.renderItem() method enables lighting
 
 		//render the number of durability it has left
-		if (mode != DurabilityInfoOptions.DurabilityInfoTextModes.NONE && itemStack.getDamage() != 0) {
+		if (mode != DurabilityInfoOptions.DurabilityInfoTextModes.NONE/* && itemStack.getDamage() != 0*/) {
 // _CHECK: I can only assume that unicode is somehow supported by default, because I can't seem to find anything dealing with it.
 //				boolean unicodeFlag = mc.fontRenderer.getUnicodeFlag();
 //				mc.fontRenderer.setUnicodeFlag(true);
 
-			String damageStringText;
 			int itemDamage = itemStack.getDamage();
 			int itemMaxDamage = itemStack.getMaxDamage();
+			String damageStringText = getDamageString(itemStack, itemDamage, itemMaxDamage);
 
-			if (mode == DurabilityInfoOptions.DurabilityInfoTextModes.PERCENTAGE) {
-				damageStringText = 100 - (int) ((double) itemDamage / itemMaxDamage * 100) + "%";
-			}
-			else if (mode == DurabilityInfoOptions.DurabilityInfoTextModes.TEXT) {
-				if (TinkersConstructCompat.isTConstructItem(itemStack.getItem())) {
-					Integer temp = TinkersConstructCompat.getDamage(itemStack);
-					if (temp != null) {
-						itemDamage = temp;
-						itemMaxDamage = TinkersConstructCompat.getMaxDamage(itemStack);
-						damageStringText = Integer.toString(itemMaxDamage - itemDamage);
-					}
-					else { damageStringText = ""; }
-				}
-				else { damageStringText = Integer.toString(itemMaxDamage - itemDamage); }
-
-			}
-			else { damageStringText = ""; }
-
-			int damageStringX = x + toolIconWidth - mc.fontRenderer.getStringWidth(damageStringText);
-			int damageStringY = y + toolIconHeight - mc.fontRenderer.FONT_HEIGHT - 2;
-			int damageStringColor = useColoredNumbers ?
-			                        getDamageColor(itemStack.getDamage(), itemStack.getMaxDamage()) :
-			                        0xffffff;
+			int damageStringX = (x + toolIconWidth - mc.fontRenderer.getStringWidth(damageStringText)) + 5;
+			float damageStringY = (y + toolIconHeight - mc.fontRenderer.FONT_HEIGHT - 2) * 1.15f;
+			int damageStringColor = useColoredNumbers ? getDamageColor(itemDamage, itemMaxDamage) : 0xffffff;
+			// TODO: May want to change horizontal pos default to 0
+			//      also probably want to decrease font scale for numbers by ~15%, and/or offset them
 
 			GL11.glDisable(GL11.GL_DEPTH_TEST);    //so the text renders above the item
 			mc.fontRenderer.drawStringWithShadow(damageStringText, damageStringX, damageStringY, damageStringColor);
 //				mc.fontRenderer.setUnicodeFlag(unicodeFlag);
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
+	}
+
+	@Nonnull
+	private static String getDamageString(ItemStack itemStack, int itemDamage, int itemMaxDamage) {
+		if (mode == DurabilityInfoOptions.DurabilityInfoTextModes.PERCENTAGE) {
+			return 100 - (int) ((double) itemDamage / itemMaxDamage * 100) + "%";
+		}
+		else if (mode == DurabilityInfoOptions.DurabilityInfoTextModes.TEXT) {
+			if (!TinkersConstructCompat.isTConstructItem(itemStack.getItem())) {
+				return itemMaxDamage - itemDamage + "";
+			}
+			Integer temp = TinkersConstructCompat.getDamage(itemStack);
+			if (temp != null) {
+				return TinkersConstructCompat.getMaxDamage(itemStack) - temp + "";
+			}
+		}
+		return "";
 	}
 
 	/**
@@ -297,8 +290,11 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 			!mc.gameSettings.keyBindPlayerList.isPressed()
 		) {
 			damagedItemsList.clear();
-			unequipDamagedArmor();
-			unequipDamagedTool();
+			// If we're in creative, odds are that items we wear or hold wont take damage
+			if (mc.player != null && !mc.playerController.isInCreativeMode()) {
+				unequipDamagedArmor();
+				unequipDamagedTool();
+			}
 			calculateDurabilityIconsForTools();
 			calculateDurabilityIconsForArmor();
 			lastGenerate = System.currentTimeMillis();
@@ -310,6 +306,7 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 	 * It adds damaged tools to the static damagedItemsList list.
 	 */
 	private static void calculateDurabilityIconsForTools() {
+		//TODO: probably want to add a config option for monitoring the whole hotbar vs just the held item
 		NonNullList<ItemStack> items = mc.player.inventory.mainInventory;
 		NonNullList<ItemStack> offhanditems = mc.player.inventory.offHandInventory;
 
@@ -353,7 +350,7 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 		}
 	}
 
-	//FIXME: deprecate this
+	//FIXME: deprecate isTool
 
 	/**
 	 * Determines if the item is a tool. Pickaxe, sword, bow, shears, etc.
@@ -385,20 +382,25 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 			//iterate over the armor the user is wearing
 			for (int i = 0; i < itemStacks.size(); i++) {
 				ItemStack itemStack = itemStacks.get(i);
+				int maxDamage = itemStack.getMaxDamage();
+
+				//TODO: May want a configurable "Never unequip" list
 				if (
-					!(itemStack.isEmpty() || itemStack.getItem() instanceof ElytraItem ||
+					!(itemStack.isEmpty() || maxDamage == 0 ||
+					  itemStack.getItem() instanceof ElytraItem ||
 					  (itemStack.isEnchanted() && EnchantmentHelper.hasBindingCurse(itemStack)))
 				) {
 					int itemDamage = itemStack.getDamage();
-					int maxDamage = itemStack.getMaxDamage();
 
-					if (maxDamage != 0 && (maxDamage - itemDamage < 5)) {
+					// TODO: the point at which the armor is unequipped should really be configurable
+					if (maxDamage - itemDamage < 5) {
+						// InventoryUtil.swap causes the value of the ItemStack to change,
+						// so get the display name for the itemstack in advance
+						String displayName = itemStack.getDisplayName().getString();
 						InventoryUtil.moveArmorIntoPlayerInventory(i);
 						ZyinHUDSound.playPlopSound();
 						ZyinHUDRenderer.displayNotification(
-							Localization.get("durabilityinfo.name") +
-							Localization.get("durabilityinfo.unequippeditem") +
-							itemStack.getDisplayName().getString()
+							Localization.get("durabilityinfo.unequippeditem") + " " + displayName
 						);
 						if (doLogUnequips) {
 							logger.info(
@@ -419,8 +421,9 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 	private static void unequipDamagedTool() {
 		if (autoUnequipTools) {
 			ItemStack itemStack = mc.player.inventory.getCurrentItem();
+			int maxDamage = itemStack.getMaxDamage();
 
-			if (!itemStack.isEmpty()) {
+			if (!itemStack.isEmpty() && maxDamage != 0) {
 				Item item = itemStack.getItem();
 
 				if (
@@ -429,19 +432,17 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 					item instanceof ShearsItem || item instanceof FishingRodItem
 				) {
 					int itemDamage = itemStack.getDamage();
-					int maxDamage = itemStack.getMaxDamage();
 					int threshold = (item instanceof FishingRodItem) ? 5 : 15;
 
+					// TODO: the point at which the tool is unequipped should really be configurable
 					if (
-						maxDamage != 0 &&
 						maxDamage - itemDamage < threshold &&                //less than 15 durability
 						(float) itemDamage / (float) maxDamage > 0.9        //less than 10%
 					) {
 						InventoryUtil.moveHeldItemIntoPlayerInventory();
 						ZyinHUDSound.playPlopSound();
 						ZyinHUDRenderer.displayNotification(
-							Localization.get("durabilityinfo.name") +
-							Localization.get("durabilityinfo.unequippeditem") +
+							Localization.get("durabilityinfo.unequippeditem") + " " +
 							item.getDisplayName(itemStack).getString()
 						);
 						if (doLogUnequips) {
@@ -455,7 +456,6 @@ public class DurabilityInfo extends ZyinHUDModuleBase {
 			}
 		}
 	}
-
 
 	/**
 	 * Checks to see if the Durability Info tab is selected in GuiZyinHUDOptions

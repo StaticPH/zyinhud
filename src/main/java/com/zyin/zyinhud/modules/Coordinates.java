@@ -6,7 +6,6 @@ import com.zyin.zyinhud.util.Localization;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,6 +16,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
+
+import static com.zyin.zyinhud.util.ZyinHUDUtil.showChatMessage;
 
 /**
  * The Coordinates calculates the player's position.
@@ -154,10 +155,10 @@ public class Coordinates extends ZyinHUDModuleBase {
 			Entity entity = event.getEntity();
 			if (entity instanceof PlayerEntity && !entity.world.isRemote) {
 				//TODO: Decide how to handle localization for this message
-				mc.ingameGUI.getChatGUI().printChatMessage(new StringTextComponent(
+				showChatMessage(
 					entity.getName().getString() + " died in " +
 					getDimensionStr(entity.dimension) + " at " + fmtCoordinateString()
-				));
+				);
 			}
 		}
 	}

@@ -25,6 +25,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -248,6 +249,12 @@ public class ZyinHUDUtil {
 		             .map(ZyinHUDUtil::getItemFromResourceLocationStr)
 		             .filter(item -> item != null && !(item instanceof AirItem))
 		             .collect(Collectors.toCollection(ArrayList::new));
+	}
+
+	public static void showChatMessage(@Nonnull String message) {
+		if(mc.ingameGUI != null) {
+			mc.ingameGUI.getChatGUI().printChatMessage(new StringTextComponent(message));
+		}
 	}
 
 	/**
