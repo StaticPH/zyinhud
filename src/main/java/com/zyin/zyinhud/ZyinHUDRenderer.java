@@ -2,7 +2,7 @@ package com.zyin.zyinhud;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
-//import net.minecraft.client.gui.DisplayEffectsScreen;
+import net.minecraft.client.gui.DisplayEffectsScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
@@ -54,7 +54,7 @@ public class ZyinHUDRenderer {
 			InfoLine.renderOntoHUD();
 			DistanceMeasurer.renderOntoHUD();
 			DurabilityInfo.renderOntoHUD();
-//            PotionTimers.renderOntoHUD();
+            PotionTimers.renderOntoHUD();
 
 			//Call other modules that need to render things on the HUD near entities
 			HUDEntityTrackerHelper.renderEntityInfo(event.getPartialTicks());
@@ -67,10 +67,9 @@ public class ZyinHUDRenderer {
 
 
 		//change how the inventories are rendered (this has to be done on every game tick)
-//    	if (mc.currentScreen instanceof DisplayEffectsScreen)
-//    	{
-//            PotionTimers.DisableInventoryPotionEffects((DisplayEffectsScreen)mc.currentScreen);
-//        }
+		if (mc.currentScreen instanceof DisplayEffectsScreen) {
+			PotionTimers.disableInventoryPotionEffects((DisplayEffectsScreen) mc.currentScreen);
+		}
 	}
 
 
@@ -113,12 +112,16 @@ public class ZyinHUDRenderer {
 		afterGL11DrawInWorld();
 	}
 
-   /* @SubscribeEvent
-    public void RenderGameOverlay(RenderGameOverlayEvent.Pre event) {
-        if (event.getType().equals(RenderGameOverlayEvent.ElementType.POTION_ICONS) && !PotionTimers.showVanillaStatusEffectHUD) {
+    @SubscribeEvent
+    public static void RenderGameOverlay(RenderGameOverlayEvent.Pre event) {
+        /** Disable the vanilla status effect HUD */
+		if (
+        	event.getType().equals(RenderGameOverlayEvent.ElementType.POTION_ICONS) &&
+            !PotionTimers.canShowVanillaStatusEffectHUD()
+        ) {
             event.setCanceled(true);
         }
-    }*/
+    }
 
 	/**
 	 * Renders a texture at the specified location
@@ -187,15 +190,12 @@ public class ZyinHUDRenderer {
 		int x, int y, int u, int v, int width, int height,
 		ResourceLocation resourceLocation, float scale
 	) {
-		x /= scale;
-		y /= scale;
-
 		GL11.glPushMatrix();
 		GL11.glScalef(scale, scale, scale);
 
 		if (resourceLocation != null) { mc.getTextureManager().bindTexture(resourceLocation); }
 
-		mc.ingameGUI.blit(x, y, u, v, width, height);
+		mc.ingameGUI.blit((int)(x/scale), (int)(y/scale), u, v, width, height);
 
 		GL11.glPopMatrix();
 	}
@@ -346,7 +346,7 @@ public class ZyinHUDRenderer {
 
 		int i = 0;
 		for (String message : text) {
-			mc.fontRenderer.drawString(message, (float)(-textWidth / 2), i * lineHeight, color);
+			mc.fontRenderer.drawString(message, (float) (-textWidth / 2), i * lineHeight, color);
 			i++;
 		}
 		GlStateManager.enableDepthTest();

@@ -257,6 +257,25 @@ public class ZyinHUDUtil {
 		}
 	}
 
+	public static float scaleValue(float value, float scaleMax, float unscaledMax){
+		return (value/scaleMax) * unscaledMax;
+	}
+
+	/**
+	 * Scale a value according to either the horizontal or vertical size of the window
+	 * @param value The current value
+	 * @param scaleMax The maximum that the value could reach on its current scale
+	 * @param horizontal Whether to scale according to the window's horizontal or vertical size.
+	 *                   Scales according to window width when <tt>true</tt>, height when <tt>false</tt>.
+	 * @return The value after it has been scaled up or down from having a maximum of <tt>scaleMax</tt> to a maximum of
+	 * either the window's width or height, as indicated by the <tt>horizontal</tt> parameter.
+	 */
+	public static float scaleWithWindowSize(float value, float scaleMax, boolean horizontal){
+		return scaleValue(
+			value, scaleMax, (horizontal ? mc.mainWindow.getScaledWidth() : mc.mainWindow.getScaledHeight())
+		);
+	}
+
 	/**
 	 * Extremely minimal Object for holding a <tt>double[]</tt> that must always contain exactly 3 values
 	 * The only available methods are the static <tt>create</tt> method, whose parameters cannot be null,

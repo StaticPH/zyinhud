@@ -521,9 +521,11 @@ public class ZyinHUDModuleModes {
 //		public static PotionTimerModes potionTimerMode;
 
 		public static final boolean defaultHidePotionEffectsInInventory = false;
+		public static final boolean defaultHideBeaconPotionEffects = false;
+		public static final boolean defaultShowVanillaStatusEffectHUD = true;
 
 		public static final double minPotionScale = 0.25d;
-		public static final double maxPotionScale = 5.0d;
+		public static final double maxPotionScale = 1.0d;
 		public static final double defaultPotionScale = 1.0d;
 
 		public static final int minPotionTimersHorizontalPos = 0;
@@ -535,8 +537,6 @@ public class ZyinHUDModuleModes {
 		public static final int defaultPotionTimersVerticalPos = 16;
 
 		public static final boolean defaultShowPotionIcons = true;
-		public static final boolean defaultHideBeaconPotionEffects = false;
-		public static final boolean defaultShowVanillaStatusEffectHUD = true;
 		public static final boolean defaultShowEffectName = true;
 		public static final boolean defaultShowEffectLevel = true;
 

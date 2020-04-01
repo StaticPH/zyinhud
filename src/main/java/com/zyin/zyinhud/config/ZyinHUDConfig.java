@@ -48,7 +48,7 @@ public class ZyinHUDConfig {
 	private static final String CATEGORY_MISCELLANEOUS = "miscellaneous";
 	private static final String CATEGORY_PLAYERLOCATOR = "playerlocator";
 	private static final String CATEGORY_POTIONAID = "potionaid";
-	//    private static final String CATEGORY_POTIONTIMERS = "potiontimers";
+    private static final String CATEGORY_POTIONTIMERS = "potiontimers";
 	private static final String CATEGORY_QUICKDEPOSIT = "quickdeposit";
 	private static final String CATEGORY_SAFEOVERLAY = "safeoverlay";
 	private static final String CATEGORY_TORCHAID = "torchaid";
@@ -291,22 +291,24 @@ public class ZyinHUDConfig {
 	// Potion Timers Module
 	// ######################################################################
 	// Enable/Disable showing the time remaining on potions.
-//	public static BooleanValue enablePotionTimers;
+	public static BooleanValue enablePotionTimers;
 	// Sets Potion Timer's text display mode. Valid modes are WHITE, COLORED, and NONE
-//	public static EnumValue<PotionTimerOptions.PotionTimerModes> potionTimerMode;
+	public static EnumValue<PotionTimerOptions.PotionTimerModes> potionTimerMode;
+	// Enable/Disable showing timers for effects granted by beacons and other ambient sources
+	public static BooleanValue hideBeaconPotionEffects;
 	// Enable/Disable hiding the default potion effects when you open your inventory.
-//	public static BooleanValue hidePotionEffectsInInventory;
+	public static BooleanValue hidePotionEffectsInInventory;
 	// How large the potion timers are rendered, 1.0 being the normal size. Range [0.25, 5.0]
-//	public static DoubleValue potionScale;
+	public static DoubleValue potionScale;
 	// The horizontal position of the potion timers. 0 is left, 400 is far right.
-//	public static IntValue potionTimersHorizontalPos;
+	public static IntValue potionTimersHorizontalPos;
 	// The vertical position of the potion timers. 0 is top, 200 is very bottom.
-//	public static IntValue potionTimersVerticalPos;
+	public static IntValue potionTimersVerticalPos;
 	// Enable/Disable showing the status effect of potions next to the timers.
-//	public static BooleanValue showPotionIcons;
+	public static BooleanValue showPotionIcons;
+	// Enable/Disable showing the vanilla status effect HUD
+	public static BooleanValue showVanillaStatusEffectHUD;
 	//TODO?
-	// hideBeaconPotionEffects, boolean, default false
-	// showVanillaStatusEffectHUD, boolean, default true
 	// showEffectName, boolean, default true
 	// showEffectLevel, boolean, default true
 
@@ -913,42 +915,48 @@ public class ZyinHUDConfig {
 		// ######################################################################
 		// Potion Timers Module
 		// ######################################################################
-//		builder.comment(
-//			"Potion Timers shows the duration remaining on potions that you drink."
-//		).push(CATEGORY_POTIONTIMERS);
-//		{
-//			enablePotionTimers = builder
-//				.comment("Enable/Disable showing the time remaining on potions")
-//				.define("enablePotionTimers", PotionTimerOptions.defaultEnabled);
-//			potionTimerMode = builder
-//				.comment("Sets Potion Timer's text display mode.")
-//				.defineEnum("potionTimerMode", PotionTimers.PotionTimerModes.COLORED, EnumGetMethod.NAME_IGNORECASE);
-//			hidePotionEffectsInInventory = builder
-//				.comment("Enable/Disable hiding the default potion effects when you open your inventory")
-//				.define("hidePotionEffectsInInventory", PotionTimerOptions.defaultHidePotionEffectsInInventory);
-//			potionScale = builder
-//				.comment("How large the potion timers are rendered, 1.0 being the normal size")
-//				.defineInRange(
-//					"potionScale", PotionTimerOptions.defaultPotionScale,
-//					PotionTimerOptions.minPotionScale, PotionTimerOptions.maxPotionScale
-//				);
-//			potionTimersHorizontalPos = builder
-//				.comment("The horizontal position of the potion timers. 0 is left, 400 is far right")
-//				.defineInRange(
-//					"potionTimersHorizontalPos", PotionTimerOptions.defaultPotionTimersHorizontalPos,
-//					PotionTimerOptions.minPotionTimersHorizontalPos, PotionTimerOptions.maxPotionTimersHorizontalPos
-//				);
-//			potionTimersVerticalPos = builder
-//				.comment("The vertical position of the potion timers. 0 is top, 200 is very bottom")
-//				.defineInRange(
-//					"potionTimersVerticalPos", PotionTimerOptions.defaultPotionTimersVerticalPos,
-//					PotionTimerOptions.minPotionTimersVerticalPos, PotionTimerOptions.maxPotionTimersVerticalPos
-//				);
-//			showPotionIcons = builder
-//				.comment("Enable/Disable showing the status effect of potions next to the timers")
-//				.define("showPotionIcons", PotionTimerOptions.defaultShowPotionIcons);
-//		}
-//		builder.pop();
+		builder.comment(
+			"Potion Timers shows the duration remaining on potions that you drink."
+		).push(CATEGORY_POTIONTIMERS);
+		{
+			enablePotionTimers = builder
+				.comment("Enable/Disable showing the time remaining on potions")
+				.define("enablePotionTimers", PotionTimerOptions.defaultEnabled);
+			potionTimerMode = builder
+				.comment("Sets Potion Timer's text display mode.")
+				.defineEnum("potionTimerMode", PotionTimerOptions.PotionTimerModes.COLORED, EnumGetMethod.NAME_IGNORECASE);
+			hideBeaconPotionEffects = builder
+				.comment("Enable/Disable showing timers for effects granted by beacons and other ambient sources")
+				.define("hideBeaconPotionEffects", PotionTimerOptions.defaultHideBeaconPotionEffects);
+			hidePotionEffectsInInventory = builder
+				.comment("Enable/Disable hiding the default potion effects when you open your inventory")
+				.define("hidePotionEffectsInInventory", PotionTimerOptions.defaultHidePotionEffectsInInventory);
+			potionScale = builder
+				.comment("How large the potion timers are rendered, 1.0 being the normal size")
+				.defineInRange(
+					"potionScale", PotionTimerOptions.defaultPotionScale,
+					PotionTimerOptions.minPotionScale, PotionTimerOptions.maxPotionScale
+				);
+			potionTimersHorizontalPos = builder
+				.comment("The horizontal position of the potion timers. 0 is left, 400 is far right")
+				.defineInRange(
+					"potionTimersHorizontalPos", PotionTimerOptions.defaultPotionTimersHorizontalPos,
+					PotionTimerOptions.minPotionTimersHorizontalPos, PotionTimerOptions.maxPotionTimersHorizontalPos
+				);
+			potionTimersVerticalPos = builder
+				.comment("The vertical position of the potion timers. 0 is top, 200 is very bottom")
+				.defineInRange(
+					"potionTimersVerticalPos", PotionTimerOptions.defaultPotionTimersVerticalPos,
+					PotionTimerOptions.minPotionTimersVerticalPos, PotionTimerOptions.maxPotionTimersVerticalPos
+				);
+			showPotionIcons = builder
+				.comment("Enable/Disable showing the status effect of potions next to the timers")
+				.define("showPotionIcons", PotionTimerOptions.defaultShowPotionIcons);
+			showVanillaStatusEffectHUD = builder
+				.comment("Enable/Disable showing the vanilla status effect HUD")
+				.define("showVanillaStatusEffectHUD", PotionTimerOptions.defaultShowVanillaStatusEffectHUD);
+		}
+		builder.pop();
 
 		// ######################################################################
 		// Quick Deposit Module
