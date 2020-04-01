@@ -206,7 +206,7 @@ public class PotionTimers extends ZyinHUDModuleBase {
 
 //        boolean unicodeFlag = mc.fontRenderer.getUnicodeFlag();
 //        mc.fontRenderer.setUnicodeFlag(true);
-
+		//TODO: May want to remove the text shadowing. It makes certain colors a little harder to read.
 		//render the potion duration text onto the screen
 		if (potionDuration >= blinkingThresholds[blinkingThresholds.length - 1]) {
 			//if the text is not blinking then render it normally
